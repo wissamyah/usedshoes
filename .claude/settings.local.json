@@ -7,7 +7,8 @@
       "Bash(npm install:*)",
       "WebSearch",
       "Read(/c:\\Users\\wissa\\Pictures\\Screenshots/**)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []
