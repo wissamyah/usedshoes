@@ -1,18 +1,18 @@
 import { useEffect } from 'react';
 import {
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
-  XCircleIcon,
-  InformationCircleIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  Info,
+  X,
+} from 'lucide-react';
 import { useUI, NOTIFICATION_TYPES } from '../../context/UIContext';
 
 const iconMap = {
-  [NOTIFICATION_TYPES.SUCCESS]: CheckCircleIcon,
-  [NOTIFICATION_TYPES.ERROR]: XCircleIcon,
-  [NOTIFICATION_TYPES.WARNING]: ExclamationTriangleIcon,
-  [NOTIFICATION_TYPES.INFO]: InformationCircleIcon,
+  [NOTIFICATION_TYPES.SUCCESS]: CheckCircle2,
+  [NOTIFICATION_TYPES.ERROR]: XCircle,
+  [NOTIFICATION_TYPES.WARNING]: AlertTriangle,
+  [NOTIFICATION_TYPES.INFO]: Info,
 };
 
 const colorMap = {
@@ -81,7 +81,7 @@ function NotificationItem({ notification, onRemove }) {
               onClick={() => onRemove(notification.id)}
             >
               <span className="sr-only">Close</span>
-              <XMarkIcon className="h-5 w-5" />
+              <X className="h-5 w-5" />
             </button>
           </div>
         </div>

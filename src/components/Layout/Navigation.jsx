@@ -1,55 +1,55 @@
 import { useState } from 'react';
 import {
-  ChartBarIcon,
-  CubeIcon,
-  ShoppingBagIcon,
-  CurrencyDollarIcon,
-  ReceiptPercentIcon,
-  DocumentChartBarIcon,
-  Cog6ToothIcon,
-} from '@heroicons/react/24/outline';
+  BarChart3,
+  Package,
+  ShoppingBag,
+  DollarSign,
+  Receipt,
+  FileBarChart,
+  Settings,
+} from 'lucide-react';
 
 const navigationTabs = [
   {
     id: 'dashboard',
     name: 'Dashboard',
-    icon: ChartBarIcon,
+    icon: BarChart3,
     description: 'Overview and KPIs',
   },
   {
     id: 'products',
     name: 'Products',
-    icon: CubeIcon,
+    icon: Package,
     description: 'Inventory management',
   },
   {
     id: 'containers',
     name: 'Containers',
-    icon: ShoppingBagIcon,
+    icon: ShoppingBag,
     description: 'Container tracking',
   },
   {
     id: 'sales',
     name: 'Sales',
-    icon: CurrencyDollarIcon,
+    icon: DollarSign,
     description: 'Sales transactions',
   },
   {
     id: 'expenses',
     name: 'Expenses',
-    icon: ReceiptPercentIcon,
+    icon: Receipt,
     description: 'Expense tracking',
   },
   {
     id: 'reports',
     name: 'Reports',
-    icon: DocumentChartBarIcon,
+    icon: FileBarChart,
     description: 'Analytics & P&L',
   },
   {
     id: 'settings',
     name: 'Settings',
-    icon: Cog6ToothIcon,
+    icon: Settings,
     description: 'App configuration',
   },
 ];

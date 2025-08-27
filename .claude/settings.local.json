@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run dev:*)",
+      "Bash(npm install)",
+      "Read(/c:\\Users\\wissa\\Downloads/**)",
+      "Bash(npm install:*)",
+      "WebSearch",
+      "Read(/c:\\Users\\wissa\\Pictures\\Screenshots/**)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

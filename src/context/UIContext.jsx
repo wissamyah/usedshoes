@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect } from 'react';
+import { createContext, useContext, useReducer, useEffect, useState } from 'react';
 
 // UI state structure
 const initialState = {
@@ -272,6 +272,34 @@ export function UIProvider({ children }) {
     });
   };
 
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'warning',
+    onConfirm: null,
+    onCancel: null,
+  });
+
+  const showConfirmDialog = (title, message, type = 'warning') => {
+    return new Promise((resolve) => {
+      setConfirmModal({
+        isOpen: true,
+        title,
+        message,
+        type,
+        onConfirm: () => {
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+          resolve(true);
+        },
+        onCancel: () => {
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+          resolve(false);
+        },
+      });
+    });
+  };
+
   const updatePreferences = (preferences) => {
     dispatch({
       type: UI_ACTIONS.UPDATE_PREFERENCES,
@@ -314,6 +342,7 @@ export function UIProvider({ children }) {
 
   const value = {
     ...state,
+    confirmModal,
     
     // Modal functions
     openModal,
@@ -330,6 +359,7 @@ export function UIProvider({ children }) {
     showErrorMessage,
     showWarningMessage,
     showInfoMessage,
+    showConfirmDialog,
     clearNotifications: () => dispatch({ type: UI_ACTIONS.CLEAR_NOTIFICATIONS }),
     
     // Preference functions
