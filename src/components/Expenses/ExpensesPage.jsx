@@ -11,18 +11,31 @@ export default function ExpensesPage() {
 
   // Calculate today's expenses
   const today = new Date().toISOString().split('T')[0];
-  const todaysExpenses = expenses.filter(expense => expense.date === today);
-  const todaysTotal = todaysExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
+  const todaysExpenses = expenses.filter(expense => {
+    // Ensure date exists and matches today
+    return expense.date && expense.date === today;
+  });
+  const todaysTotal = todaysExpenses.reduce((sum, expense) => {
+    const amount = typeof expense.amount === 'number' ? expense.amount : parseFloat(expense.amount) || 0;
+    return sum + amount;
+  }, 0);
 
   // Calculate this month's expenses
   const currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
-  const thisMonthsExpenses = expenses.filter(expense => expense.date && expense.date.startsWith(currentMonth));
-  const monthlyTotal = thisMonthsExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
+  const thisMonthsExpenses = expenses.filter(expense => {
+    // Ensure date exists and matches current month
+    return expense.date && expense.date.startsWith(currentMonth);
+  });
+  const monthlyTotal = thisMonthsExpenses.reduce((sum, expense) => {
+    const amount = typeof expense.amount === 'number' ? expense.amount : parseFloat(expense.amount) || 0;
+    return sum + amount;
+  }, 0);
 
   // Calculate category breakdown for this month
   const categoryTotals = thisMonthsExpenses.reduce((acc, expense) => {
     const category = expense.category || 'Miscellaneous';
-    acc[category] = (acc[category] || 0) + (expense.amount || 0);
+    const amount = typeof expense.amount === 'number' ? expense.amount : parseFloat(expense.amount) || 0;
+    acc[category] = (acc[category] || 0) + amount;
     return acc;
   }, {});
 
@@ -31,7 +44,10 @@ export default function ExpensesPage() {
     : ['No expenses', 0];
 
   // Calculate total expenses for all time
-  const totalExpenses = expenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
+  const totalExpenses = expenses.reduce((sum, expense) => {
+    const amount = typeof expense.amount === 'number' ? expense.amount : parseFloat(expense.amount) || 0;
+    return sum + amount;
+  }, 0);
 
   const handleAddExpense = () => {
     setSelectedExpense(null);
@@ -81,8 +97,8 @@ export default function ExpensesPage() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Today's Expenses</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(todaysTotal)}</p>
-              <p className="text-sm text-gray-600">{todaysExpenses.length} transactions</p>
+              <p className="text-2xl font-bold text-gray-900">{formatCurrency(todaysTotal || 0)}</p>
+              <p className="text-sm text-gray-600">{todaysExpenses.length || 0} transaction{todaysExpenses.length !== 1 ? 's' : ''}</p>
             </div>
           </div>
         </div>
@@ -94,8 +110,8 @@ export default function ExpensesPage() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Monthly Expenses</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(monthlyTotal)}</p>
-              <p className="text-sm text-gray-600">{thisMonthsExpenses.length} transactions</p>
+              <p className="text-2xl font-bold text-gray-900">{formatCurrency(monthlyTotal || 0)}</p>
+              <p className="text-sm text-gray-600">{thisMonthsExpenses.length || 0} transaction{thisMonthsExpenses.length !== 1 ? 's' : ''}</p>
             </div>
           </div>
         </div>
@@ -107,8 +123,8 @@ export default function ExpensesPage() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Top Category</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(topCategory[1])}</p>
-              <p className="text-sm text-gray-600">{topCategory[0]}</p>
+              <p className="text-2xl font-bold text-gray-900">{formatCurrency(topCategory[1] || 0)}</p>
+              <p className="text-sm text-gray-600">{topCategory[0] || 'No expenses'}</p>
             </div>
           </div>
         </div>
@@ -120,8 +136,8 @@ export default function ExpensesPage() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Total Expenses</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(totalExpenses)}</p>
-              <p className="text-sm text-gray-600">All time</p>
+              <p className="text-2xl font-bold text-gray-900">{formatCurrency(totalExpenses || 0)}</p>
+              <p className="text-sm text-gray-600">{expenses.length || 0} all time</p>
             </div>
           </div>
         </div>
