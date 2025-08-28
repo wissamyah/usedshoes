@@ -47,11 +47,6 @@ export default function FinancePage() {
           'Finance Data Synced',
           `Successfully synced ${syncedData.cashFlows.length} cash flow records from existing transactions`
         );
-      } else {
-        showInfoMessage(
-          'Initial Setup Complete',
-          'Finance module has been initialized with your existing data'
-        );
       }
     } catch (error) {
       console.error('Sync error:', error);

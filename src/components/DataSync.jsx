@@ -10,7 +10,8 @@ export default function DataSync() {
     expenses,
     partners,
     withdrawals,
-    cashFlows, 
+    cashFlows,
+    cashInjections, 
     metadata,
     loadData, 
     setLoading, 
@@ -55,6 +56,7 @@ export default function DataSync() {
             partners: githubData.partners || [],
             withdrawals: githubData.withdrawals || [],
             cashFlows: githubData.cashFlows || [],
+            cashInjections: githubData.cashInjections || [],
             metadata: githubData.metadata || {
               version: '1.0.0',
               lastUpdated: new Date().toISOString(),
@@ -66,6 +68,7 @@ export default function DataSync() {
                 partner: 1,
                 withdrawal: 1,
                 cashFlow: 1,
+                cashInjection: 1,
               },
             }
           });
@@ -88,6 +91,7 @@ export default function DataSync() {
             partners: [],
             withdrawals: [],
             cashFlows: [],
+            cashInjections: [],
             metadata: {
               version: '1.0.0',
               lastUpdated: new Date().toISOString(),
@@ -99,6 +103,7 @@ export default function DataSync() {
                 partner: 1,
                 withdrawal: 1,
                 cashFlow: 1,
+                cashInjection: 1,
               },
             }
           };
@@ -132,6 +137,7 @@ export default function DataSync() {
             partners: [],
             withdrawals: [],
             cashFlows: [],
+            cashInjections: [],
             metadata: {
               version: '1.0.0',
               lastUpdated: new Date().toISOString(),
@@ -143,6 +149,7 @@ export default function DataSync() {
                 partner: 1,
                 withdrawal: 1,
                 cashFlow: 1,
+                cashInjection: 1,
               },
             }
           });
@@ -177,6 +184,7 @@ export default function DataSync() {
           partners,
           withdrawals,
           cashFlows,
+          cashInjections,
           metadata: {
             ...metadata,
             lastUpdated: new Date().toISOString()
@@ -198,7 +206,7 @@ export default function DataSync() {
     }, 3000); // 3 second delay
     
     return () => clearTimeout(saveTimer);
-  }, [isConnected, unsavedChanges, products, containers, sales, expenses, partners, withdrawals, cashFlows]); // Remove metadata and function dependencies
+  }, [isConnected, unsavedChanges, products, containers, sales, expenses, partners, withdrawals, cashFlows, cashInjections]); // Remove metadata and function dependencies
 
   // Manual save function that can be triggered
   const forceSave = async () => {
@@ -214,6 +222,7 @@ export default function DataSync() {
         partners,
         withdrawals,
         cashFlows,
+        cashInjections,
         metadata: {
           ...metadata,
           lastUpdated: new Date().toISOString()
