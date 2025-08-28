@@ -6,10 +6,11 @@ import CashFlowDashboard from './CashFlow/CashFlowDashboard';
 import WithdrawalHistory from './Withdrawals/WithdrawalHistory';
 import PartnerList from './Partners/PartnerList';
 import DistributionCalculator from './Distribution/DistributionCalculator';
+import CashInjectionHistory from './CashInjections/CashInjectionHistory';
 import { syncFinanceData } from '../../utils/financeSync';
 
 export default function FinancePage() {
-  const { partners, withdrawals, cashFlows, sales, expenses, containers, syncFinanceData: syncData } = useData();
+  const { partners, withdrawals, cashFlows, cashInjections = [], sales, expenses, containers, syncFinanceData: syncData } = useData();
   const { showSuccessMessage, showInfoMessage, showErrorMessage } = useUI();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSyncing, setIsSyncing] = useState(false);
@@ -70,18 +71,21 @@ export default function FinancePage() {
   const todaysCashOut = todaysExpenses.reduce((sum, expense) => sum + expense.amount, 0) +
                         todaysWithdrawals.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
   
-  // Calculate total revenue from all sales (this is our opening balance)
+  // Calculate total revenue from all sales
   const totalRevenue = sales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
+  
+  // Calculate total cash injections
+  const totalInjections = cashInjections.reduce((sum, injection) => sum + (injection.amount || 0), 0);
   
   // Calculate total expenses and withdrawals up to today
   const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
   const totalWithdrawals = withdrawals.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
   
-  // Opening balance should be total revenue
-  const openingBalance = totalRevenue;
+  // Opening balance should be total revenue + cash injections
+  const openingBalance = totalRevenue + totalInjections;
   
-  // Current cash position = Total Revenue - Total Expenses - Total Withdrawals
-  const currentCashPosition = totalRevenue - totalExpenses - totalWithdrawals;
+  // Current cash position = Total Revenue + Cash Injections - Total Expenses - Total Withdrawals
+  const currentCashPosition = totalRevenue + totalInjections - totalExpenses - totalWithdrawals;
   
   // Calculate total partner equity
   const totalEquity = partners.reduce((sum, partner) => {
@@ -104,6 +108,7 @@ export default function FinancePage() {
   
   const tabs = [
     { id: 'dashboard', name: 'Cash Flow', icon: TrendingUp },
+    { id: 'injections', name: 'Cash Injections', icon: Plus },
     { id: 'withdrawals', name: 'Withdrawals', icon: Wallet },
     { id: 'partners', name: 'Partners', icon: Users },
     { id: 'distribution', name: 'Distribution', icon: Calculator },
@@ -319,6 +324,9 @@ export default function FinancePage() {
                   currentCashPosition={currentCashPosition}
                   openingBalance={openingBalance}
                 />
+              )}
+              {activeTab === 'injections' && (
+                <CashInjectionHistory />
               )}
               {activeTab === 'withdrawals' && (
                 <WithdrawalHistory 

@@ -6,7 +6,7 @@ import { DollarSign, TrendingUp, TrendingDown, AlertTriangle, Check } from 'luci
 import CashReconciliation from './CashReconciliation';
 
 export default function CashFlowDashboard({ currentCashPosition, openingBalance }) {
-  const { sales, expenses, withdrawals, cashFlows, addCashFlow } = useData();
+  const { sales, expenses, withdrawals, cashInjections = [], cashFlows, addCashFlow } = useData();
   const { showSuccessMessage, showErrorMessage } = useUI();
   const [showReconciliation, setShowReconciliation] = useState(false);
   
@@ -14,19 +14,24 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
   
   // All transactions (for calculating actual opening balance for today)
   const allSales = sales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
+  const allInjections = cashInjections.reduce((sum, injection) => sum + (injection.amount || 0), 0);
   const previousExpenses = expenses.filter(e => e.date < today).reduce((sum, e) => sum + e.amount, 0);
   const previousWithdrawals = withdrawals.filter(w => w.date < today).reduce((sum, w) => sum + w.amount, 0);
+  const previousInjections = cashInjections.filter(i => i.date < today).reduce((sum, i) => sum + i.amount, 0);
   
-  // Today's opening balance = Total Revenue - Previous Expenses - Previous Withdrawals
-  const todaysOpeningBalance = allSales - previousExpenses - previousWithdrawals;
+  // Today's opening balance = Total Revenue + Previous Injections - Previous Expenses - Previous Withdrawals
+  const todaysOpeningBalance = allSales + previousInjections - previousExpenses - previousWithdrawals;
   
   // Today's transactions
   const todaysSales = sales.filter(s => s.date === today);
   const todaysExpenses = expenses.filter(e => e.date === today);
   const todaysWithdrawals = withdrawals.filter(w => w.date === today);
+  const todaysInjections = cashInjections.filter(i => i.date === today);
   
   // Calculate today's flows
-  const cashInflows = todaysSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
+  const salesInflows = todaysSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
+  const injectionInflows = todaysInjections.reduce((sum, injection) => sum + (injection.amount || 0), 0);
+  const cashInflows = salesInflows + injectionInflows;
   const expenseOutflows = todaysExpenses.reduce((sum, expense) => sum + expense.amount, 0);
   const withdrawalOutflows = todaysWithdrawals.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
   const cashOutflows = expenseOutflows + withdrawalOutflows;
@@ -133,7 +138,9 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
             <div>
               <p className="text-sm text-gray-600">Cash Inflows</p>
               <p className="text-xl font-semibold text-green-600">+{formatCurrency(cashInflows)}</p>
-              <p className="text-xs text-gray-500">{todaysSales.length} sales</p>
+              <p className="text-xs text-gray-500">
+                Sales: {formatCurrency(salesInflows)} | Injections: {formatCurrency(injectionInflows)}
+              </p>
             </div>
             <TrendingUp className="h-8 w-8 text-green-500" />
           </div>
@@ -176,18 +183,29 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
             <h4 className="text-sm font-medium text-gray-900">Cash Inflows</h4>
           </div>
           <div className="p-4">
-            {todaysSales.length === 0 ? (
-              <p className="text-sm text-gray-500">No cash sales today</p>
+            {todaysSales.length === 0 && todaysInjections.length === 0 ? (
+              <p className="text-sm text-gray-500">No cash inflows today</p>
             ) : (
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {todaysSales.map(sale => (
                   <div key={sale.id} className="flex justify-between items-center">
                     <div>
                       <p className="text-sm font-medium text-gray-900">{sale.productName}</p>
-                      <p className="text-xs text-gray-500">Qty: {sale.quantity}</p>
+                      <p className="text-xs text-gray-500">Sale - Qty: {sale.quantity}</p>
                     </div>
                     <span className="text-sm font-medium text-green-600">
                       +{formatCurrency(sale.totalAmount)}
+                    </span>
+                  </div>
+                ))}
+                {todaysInjections.map(injection => (
+                  <div key={injection.id} className="flex justify-between items-center">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">{injection.description}</p>
+                      <p className="text-xs text-gray-500">{injection.type}</p>
+                    </div>
+                    <span className="text-sm font-medium text-green-600">
+                      +{formatCurrency(injection.amount)}
                     </span>
                   </div>
                 ))}

@@ -13,6 +13,7 @@ const initialState = {
       partner: 1,
       withdrawal: 1,
       cashFlow: 1,
+      cashInjection: 1,
     },
   },
   containers: [],
@@ -22,6 +23,7 @@ const initialState = {
   partners: [],
   withdrawals: [],
   cashFlows: [],
+  cashInjections: [],
   // UI state
   loading: false,
   error: null,
@@ -71,6 +73,11 @@ export const DATA_ACTIONS = {
   UPDATE_CASH_FLOW: 'UPDATE_CASH_FLOW',
   DELETE_CASH_FLOW: 'DELETE_CASH_FLOW',
   SYNC_FINANCE_DATA: 'SYNC_FINANCE_DATA',
+  
+  // Cash Injection actions
+  ADD_CASH_INJECTION: 'ADD_CASH_INJECTION',
+  UPDATE_CASH_INJECTION: 'UPDATE_CASH_INJECTION',
+  DELETE_CASH_INJECTION: 'DELETE_CASH_INJECTION',
   
   // Utility actions
   MARK_SAVED: 'MARK_SAVED',
@@ -837,6 +844,95 @@ function dataReducer(state, action) {
       };
     }
     
+    // Cash Injection actions
+    case DATA_ACTIONS.ADD_CASH_INJECTION: {
+      const cashInjection = {
+        ...action.payload,
+        id: `CI${state.metadata.nextIds.cashInjection}`,
+        createdAt: new Date().toISOString()
+      };
+      
+      // If it's a capital contribution, update partner equity
+      let updatedPartners = state.partners;
+      if (cashInjection.type === 'Capital Contribution' && cashInjection.partnerId) {
+        updatedPartners = state.partners.map(partner => {
+          if (partner.id === cashInjection.partnerId) {
+            return {
+              ...partner,
+              capitalAccount: {
+                ...partner.capitalAccount,
+                initialInvestment: (partner.capitalAccount?.initialInvestment || 0) + cashInjection.amount,
+                currentEquity: (partner.capitalAccount?.currentEquity || 0) + cashInjection.amount
+              }
+            };
+          }
+          return partner;
+        });
+      }
+      
+      return {
+        ...state,
+        cashInjections: [...state.cashInjections, cashInjection],
+        partners: updatedPartners,
+        metadata: {
+          ...state.metadata,
+          nextIds: {
+            ...state.metadata.nextIds,
+            cashInjection: state.metadata.nextIds.cashInjection + 1,
+          },
+          lastUpdated: new Date().toISOString(),
+        },
+        unsavedChanges: true,
+      };
+    }
+    
+    case DATA_ACTIONS.UPDATE_CASH_INJECTION: {
+      return {
+        ...state,
+        cashInjections: state.cashInjections.map(ci =>
+          ci.id === action.payload.id ? { ...ci, ...action.payload, updatedAt: new Date().toISOString() } : ci
+        ),
+        metadata: {
+          ...state.metadata,
+          lastUpdated: new Date().toISOString(),
+        },
+        unsavedChanges: true,
+      };
+    }
+    
+    case DATA_ACTIONS.DELETE_CASH_INJECTION: {
+      const injectionToDelete = state.cashInjections.find(ci => ci.id === action.payload);
+      
+      // If it was a capital contribution, reverse the partner equity update
+      let updatedPartners = state.partners;
+      if (injectionToDelete && injectionToDelete.type === 'Capital Contribution' && injectionToDelete.partnerId) {
+        updatedPartners = state.partners.map(partner => {
+          if (partner.id === injectionToDelete.partnerId) {
+            return {
+              ...partner,
+              capitalAccount: {
+                ...partner.capitalAccount,
+                initialInvestment: (partner.capitalAccount?.initialInvestment || 0) - injectionToDelete.amount,
+                currentEquity: (partner.capitalAccount?.currentEquity || 0) - injectionToDelete.amount
+              }
+            };
+          }
+          return partner;
+        });
+      }
+      
+      return {
+        ...state,
+        cashInjections: state.cashInjections.filter(ci => ci.id !== action.payload),
+        partners: updatedPartners,
+        metadata: {
+          ...state.metadata,
+          lastUpdated: new Date().toISOString(),
+        },
+        unsavedChanges: true,
+      };
+    }
+    
     case DATA_ACTIONS.MARK_SAVED:
       return { ...state, unsavedChanges: false };
     
@@ -922,6 +1018,11 @@ export function DataProvider({ children }) {
     updateCashFlow: (id, data) => dispatch({ type: DATA_ACTIONS.UPDATE_CASH_FLOW, payload: { id, data } }),
     deleteCashFlow: (cashFlowId) => dispatch({ type: DATA_ACTIONS.DELETE_CASH_FLOW, payload: cashFlowId }),
     syncFinanceData: (syncData) => dispatch({ type: DATA_ACTIONS.SYNC_FINANCE_DATA, payload: syncData }),
+    
+    // Cash Injection operations
+    addCashInjection: (injectionData) => dispatch({ type: DATA_ACTIONS.ADD_CASH_INJECTION, payload: injectionData }),
+    updateCashInjection: (id, data) => dispatch({ type: DATA_ACTIONS.UPDATE_CASH_INJECTION, payload: { id, ...data } }),
+    deleteCashInjection: (injectionId) => dispatch({ type: DATA_ACTIONS.DELETE_CASH_INJECTION, payload: injectionId }),
     
     loadData: (data) => dispatch({ type: DATA_ACTIONS.LOAD_DATA, payload: data }),
     setLoading: (loading) => dispatch({ type: DATA_ACTIONS.SET_LOADING, payload: loading }),
