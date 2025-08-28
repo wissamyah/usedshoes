@@ -63,7 +63,8 @@ export default function ContainersPage() {
     const productCount = containerProducts.length;
     const totalStock = containerProducts.reduce((sum, p) => sum + (p.bagQuantity || 0), 0);
     const totalKg = containerProducts.reduce((sum, p) => sum + ((p.bagQuantity || 0) * (p.bagWeight || 25)), 0);
-    const totalValue = containerProducts.reduce((sum, p) => sum + ((p.bagQuantity || 0) * (p.costPerKg || 0) * (p.bagWeight || 25)), 0) + (parseFloat(container.shippingCost) || 0);
+    const productsCost = containerProducts.reduce((sum, p) => sum + ((p.bagQuantity || 0) * (p.costPerKg || 0) * (p.bagWeight || 25)), 0);
+    const totalValue = productsCost + (parseFloat(container.shippingCost) || 0) + (parseFloat(container.customsCost) || 0);
     return { productCount, totalStock, totalKg, totalValue };
   };
 
@@ -369,7 +370,7 @@ export default function ContainersPage() {
                         </div>
                       </th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Current Value
+                        Total Value
                       </th>
                       <th scope="col" className="relative px-6 py-3">
                         <span className="sr-only">Actions</span>
