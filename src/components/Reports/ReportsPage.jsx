@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import ProfitLoss from './ProfitLoss';
+import SalesReport from './SalesReport';
+import ExpenseReport from './ExpenseReport';
 import ReportFilters from './ReportFilters';
 import ExportButton from './ExportButton';
 
@@ -77,23 +79,17 @@ export default function ReportsPage() {
         )}
         
         {activeReport === 'sales' && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Sales Report</h3>
-            <div className="text-center py-8 text-gray-500">
-              <p>Detailed sales report coming soon...</p>
-              <p className="text-sm mt-2">Will include sales by product, customer, time period, etc.</p>
-            </div>
-          </div>
+          <SalesReport 
+            startDate={dateRange.startDate || null} 
+            endDate={dateRange.endDate || null}
+          />
         )}
         
         {activeReport === 'expenses' && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Expense Report</h3>
-            <div className="text-center py-8 text-gray-500">
-              <p>Detailed expense report coming soon...</p>
-              <p className="text-sm mt-2">Will include expense trends, category analysis, cost optimization, etc.</p>
-            </div>
-          </div>
+          <ExpenseReport 
+            startDate={dateRange.startDate || null} 
+            endDate={dateRange.endDate || null}
+          />
         )}
       </div>
     </div>
