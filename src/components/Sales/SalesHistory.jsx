@@ -9,6 +9,8 @@ export default function SalesHistory({ onEditSale }) {
   
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [sortBy, setSortBy] = useState('date'); // date, amount, profit
   const [sortOrder, setSortOrder] = useState('desc'); // desc, asc
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,7 +23,28 @@ export default function SalesHistory({ onEditSale }) {
         sale.productName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         sale.notes?.toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesDate = !dateFilter || sale.date === dateFilter;
+      // Date filtering logic - support both single date and date range
+      let matchesDate = true;
+      
+      if (dateFilter) {
+        // Single date filter
+        matchesDate = sale.date === dateFilter;
+      } else if (startDate || endDate) {
+        // Date range filter
+        const saleDate = new Date(sale.date);
+        
+        if (startDate && endDate) {
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+          matchesDate = saleDate >= start && saleDate <= end;
+        } else if (startDate) {
+          const start = new Date(startDate);
+          matchesDate = saleDate >= start;
+        } else if (endDate) {
+          const end = new Date(endDate);
+          matchesDate = saleDate <= end;
+        }
+      }
       
       return matchesSearch && matchesDate;
     })
@@ -189,13 +212,32 @@ export default function SalesHistory({ onEditSale }) {
           </div>
         </div>
 
-        {/* Date Filter */}
-        <div>
+        {/* Date Range Filter */}
+        <div className="flex gap-2 items-center">
           <input
             type="date"
-            value={dateFilter}
-            onChange={(e) => handleDateFilterChange(e.target.value)}
+            value={startDate}
+            onChange={(e) => {
+              setStartDate(e.target.value);
+              setDateFilter(''); // Clear single date when using range
+              setCurrentPage(1);
+            }}
             className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            placeholder="Start date"
+            title="Start date"
+          />
+          <span className="text-gray-500">to</span>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => {
+              setEndDate(e.target.value);
+              setDateFilter(''); // Clear single date when using range
+              setCurrentPage(1);
+            }}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            placeholder="End date"
+            title="End date"
           />
         </div>
 
@@ -221,11 +263,13 @@ export default function SalesHistory({ onEditSale }) {
         </div>
 
         {/* Clear Filters */}
-        {(searchTerm || dateFilter) && (
+        {(searchTerm || dateFilter || startDate || endDate) && (
           <button
             onClick={() => {
               setSearchTerm('');
               setDateFilter('');
+              setStartDate('');
+              setEndDate('');
               setCurrentPage(1);
             }}
             className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900"
@@ -420,11 +464,13 @@ export default function SalesHistory({ onEditSale }) {
               ? 'No sales match your current filters.'
               : 'No sales have been recorded yet. Start by recording your first sale!'}
           </p>
-          {(searchTerm || dateFilter) && (
+          {(searchTerm || dateFilter || startDate || endDate) && (
             <button
               onClick={() => {
                 setSearchTerm('');
                 setDateFilter('');
+                setStartDate('');
+                setEndDate('');
                 setCurrentPage(1);
               }}
               className="text-green-600 hover:text-green-500"

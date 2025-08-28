@@ -17,11 +17,17 @@ export default function FinancePage() {
   
   // Auto-sync on first load if no finance data exists
   useEffect(() => {
-    if (!hasInitialSync && cashFlows.length === 0 && partners.length === 0) {
-      handleSync(true);
+    // Only auto-sync if we have transaction data but no cash flows
+    // Don't auto-sync if partners exist (user has already set them up)
+    if (!hasInitialSync && cashFlows.length === 0 && (containers.length > 0 || sales.length > 0 || expenses.length > 0)) {
+      // Only sync cash flows, not partners
+      if (partners.length === 0) {
+        // Only sync if truly no partners exist
+        handleSync(true);
+      }
       setHasInitialSync(true);
     }
-  }, []);
+  }, [hasInitialSync, cashFlows.length, containers.length, sales.length, expenses.length, partners.length]);
   
   const handleSync = async (isAutoSync = false) => {
     setIsSyncing(true);

@@ -818,16 +818,16 @@ function dataReducer(state, action) {
     
     case DATA_ACTIONS.SYNC_FINANCE_DATA: {
       // Sync finance data from existing transactions
-      const { partners, cashFlows, withdrawals, financialSummary } = action.payload;
+      const { cashFlows, financialSummary } = action.payload;
       
       return {
         ...state,
-        // Only update partners if we're initializing (state has no partners)
-        partners: state.partners.length > 0 ? state.partners : (partners || state.partners),
+        // Never overwrite partners from sync - they are managed manually
+        partners: state.partners,
         // Always update cash flows from sync to get latest transaction data
         cashFlows: cashFlows.length > 0 ? cashFlows : state.cashFlows,
         // Keep existing withdrawals
-        withdrawals: state.withdrawals.length > 0 ? state.withdrawals : (withdrawals || state.withdrawals),
+        withdrawals: state.withdrawals,
         metadata: {
           ...state.metadata,
           lastUpdated: new Date().toISOString(),
