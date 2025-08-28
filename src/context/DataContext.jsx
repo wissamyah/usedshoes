@@ -822,9 +822,12 @@ function dataReducer(state, action) {
       
       return {
         ...state,
-        partners: partners.length > 0 ? partners : state.partners,
+        // Only update partners if we're initializing (state has no partners)
+        partners: state.partners.length > 0 ? state.partners : (partners || state.partners),
+        // Always update cash flows from sync to get latest transaction data
         cashFlows: cashFlows.length > 0 ? cashFlows : state.cashFlows,
-        withdrawals: withdrawals,
+        // Keep existing withdrawals
+        withdrawals: state.withdrawals.length > 0 ? state.withdrawals : (withdrawals || state.withdrawals),
         metadata: {
           ...state.metadata,
           lastUpdated: new Date().toISOString(),

@@ -179,9 +179,10 @@ export function syncFinanceData(existingData) {
   // Generate cash flow history
   const cashFlows = generateInitialCashFlow(containers, sales, expenses);
   
-  // Create default partners if none exist
-  let partners = existingData.partners || [];
-  if (partners.length === 0) {
+  // Don't overwrite existing partners - only use defaults if truly empty
+  let partners = existingData.partners;
+  // Only create default partners on very first initialization (no partners AND no cashFlows)
+  if ((!partners || partners.length === 0) && (!existingData.cashFlows || existingData.cashFlows.length === 0)) {
     partners = createDefaultPartners();
     // Update partners with proportional investment
     partners = updatePartnersWithInvestments(partners, financialPosition.totalContainerCost);

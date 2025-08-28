@@ -10,15 +10,37 @@ export default function SalesPage() {
   const [showSalesForm, setShowSalesForm] = useState(false);
   const [selectedSale, setSelectedSale] = useState(null);
 
-  // Calculate today's sales
+  // Get the most recent sales date (or today if no sales)
+  const mostRecentSaleDate = sales.length > 0 
+    ? sales.reduce((latest, sale) => {
+        const saleDate = new Date(sale.date);
+        return saleDate > latest ? saleDate : latest;
+      }, new Date(sales[0].date))
+    : new Date();
+  
   const today = new Date().toISOString().split('T')[0];
+  const recentDateStr = mostRecentSaleDate.toISOString().split('T')[0];
+  
+  // Show today's sales if there are any, otherwise show most recent date's sales
   const todaysSales = sales.filter(sale => sale.date === today);
-  const todaysRevenue = todaysSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
-  const todaysProfit = todaysSales.reduce((sum, sale) => sum + (sale.profit || 0), 0);
+  const recentSales = todaysSales.length > 0 ? todaysSales : sales.filter(sale => sale.date === recentDateStr);
+  const displayDate = todaysSales.length > 0 ? 'Today' : `Latest (${new Date(recentDateStr).toLocaleDateString()})`;
+  
+  const todaysRevenue = recentSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
+  const todaysProfit = recentSales.reduce((sum, sale) => sum + (sale.profit || 0), 0);
 
-  // Calculate this month's sales
+  // Calculate this month's sales (or most recent month with sales)
   const currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
-  const thisMonthsSales = sales.filter(sale => sale.date && sale.date.startsWith(currentMonth));
+  let thisMonthsSales = sales.filter(sale => sale.date && sale.date.startsWith(currentMonth));
+  
+  // If no sales this month, show most recent month with sales
+  let displayMonth = 'This Month';
+  if (thisMonthsSales.length === 0 && sales.length > 0) {
+    const recentMonth = mostRecentSaleDate.toISOString().substring(0, 7);
+    thisMonthsSales = sales.filter(sale => sale.date && sale.date.startsWith(recentMonth));
+    displayMonth = new Date(recentMonth + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  }
+  
   const monthlyRevenue = thisMonthsSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
   const monthlyProfit = thisMonthsSales.reduce((sum, sale) => sum + (sale.profit || 0), 0);
 
@@ -69,9 +91,9 @@ export default function SalesPage() {
               <DollarSign className="h-8 w-8 text-green-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Today's Revenue</p>
+              <p className="text-sm font-medium text-gray-500">{displayDate}'s Revenue</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(todaysRevenue)}</p>
-              <p className="text-sm text-gray-600">{todaysSales.length} transactions</p>
+              <p className="text-sm text-gray-600">{recentSales.length} transactions</p>
             </div>
           </div>
         </div>
@@ -82,7 +104,7 @@ export default function SalesPage() {
               <BarChart3 className="h-8 w-8 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Today's Profit</p>
+              <p className="text-sm font-medium text-gray-500">{displayDate}'s Profit</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(todaysProfit)}</p>
               <p className="text-sm text-gray-600">
                 {todaysRevenue > 0 ? `${((todaysProfit / todaysRevenue) * 100).toFixed(1)}% margin` : '0% margin'}
@@ -97,7 +119,7 @@ export default function SalesPage() {
               <DollarSign className="h-8 w-8 text-purple-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Monthly Revenue</p>
+              <p className="text-sm font-medium text-gray-500">{displayMonth} Revenue</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(monthlyRevenue)}</p>
               <p className="text-sm text-gray-600">{thisMonthsSales.length} transactions</p>
             </div>
@@ -110,7 +132,7 @@ export default function SalesPage() {
               <BarChart3 className="h-8 w-8 text-orange-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Monthly Profit</p>
+              <p className="text-sm font-medium text-gray-500">{displayMonth} Profit</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(monthlyProfit)}</p>
               <p className="text-sm text-gray-600">
                 {monthlyRevenue > 0 ? `${((monthlyProfit / monthlyRevenue) * 100).toFixed(1)}% margin` : '0% margin'}
