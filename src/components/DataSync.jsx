@@ -17,7 +17,8 @@ export default function DataSync() {
     setLoading, 
     setError,
     unsavedChanges,
-    markSaved 
+    markSaved,
+    registerSaveCallback 
   } = useData();
   
   const { 
@@ -240,12 +241,16 @@ export default function DataSync() {
     }
   };
 
-  // Expose forceSave to window for debugging
+  // Expose forceSave to window for debugging and register with DataContext
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.forceSave = forceSave;
     }
-  }, [forceSave]);
+    // Register the save callback with DataContext
+    if (registerSaveCallback) {
+      registerSaveCallback(forceSave);
+    }
+  }, [forceSave, registerSaveCallback]);
 
   return null; // This component doesn't render anything
 }

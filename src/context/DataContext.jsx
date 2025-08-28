@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect } from 'react';
+import { createContext, useContext, useReducer, useEffect, useRef } from 'react';
 
 // Initial data structure based on our data model
 const initialState = {
@@ -950,6 +950,19 @@ const DataContext = createContext(null);
 // Context provider
 export function DataProvider({ children }) {
   const [state, dispatch] = useReducer(dataReducer, initialState);
+  const saveCallbackRef = useRef(null);
+  
+  // Allow DataSync to register a save callback
+  const registerSaveCallback = (callback) => {
+    saveCallbackRef.current = callback;
+  };
+  
+  // Trigger immediate save
+  const triggerSave = async () => {
+    if (saveCallbackRef.current) {
+      return await saveCallbackRef.current();
+    }
+  };
 
   // Auto-save detection
   useEffect(() => {
@@ -1020,9 +1033,27 @@ export function DataProvider({ children }) {
     syncFinanceData: (syncData) => dispatch({ type: DATA_ACTIONS.SYNC_FINANCE_DATA, payload: syncData }),
     
     // Cash Injection operations
-    addCashInjection: (injectionData) => dispatch({ type: DATA_ACTIONS.ADD_CASH_INJECTION, payload: injectionData }),
-    updateCashInjection: (id, data) => dispatch({ type: DATA_ACTIONS.UPDATE_CASH_INJECTION, payload: { id, ...data } }),
-    deleteCashInjection: (injectionId) => dispatch({ type: DATA_ACTIONS.DELETE_CASH_INJECTION, payload: injectionId }),
+    addCashInjection: async (injectionData) => {
+      dispatch({ type: DATA_ACTIONS.ADD_CASH_INJECTION, payload: injectionData });
+      // Trigger immediate save after addition
+      if (saveCallbackRef.current) {
+        await saveCallbackRef.current();
+      }
+    },
+    updateCashInjection: async (id, data) => {
+      dispatch({ type: DATA_ACTIONS.UPDATE_CASH_INJECTION, payload: { id, ...data } });
+      // Trigger immediate save after update
+      if (saveCallbackRef.current) {
+        await saveCallbackRef.current();
+      }
+    },
+    deleteCashInjection: async (injectionId) => {
+      dispatch({ type: DATA_ACTIONS.DELETE_CASH_INJECTION, payload: injectionId });
+      // Trigger immediate save after deletion
+      if (saveCallbackRef.current) {
+        await saveCallbackRef.current();
+      }
+    },
     
     loadData: (data) => dispatch({ type: DATA_ACTIONS.LOAD_DATA, payload: data }),
     setLoading: (loading) => dispatch({ type: DATA_ACTIONS.SET_LOADING, payload: loading }),
@@ -1034,6 +1065,10 @@ export function DataProvider({ children }) {
     // Alias for compatibility
     hasUnsavedChanges: state.unsavedChanges,
     markChanged: () => dispatch({ type: DATA_ACTIONS.MARK_UNSAVED }),
+    
+    // Save management
+    registerSaveCallback,
+    triggerSave,
   };
 
   return (
