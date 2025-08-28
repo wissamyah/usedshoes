@@ -13,7 +13,8 @@
       "Read(C:\\Users\\wissa\\Downloads/**)",
       "Read(C:\\Users\\wissa\\Downloads/**)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Read(c:\\Users\\wissa\\Pictures\\Screenshots/**)"
     ],
     "deny": [],
     "ask": []
