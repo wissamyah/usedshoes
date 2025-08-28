@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Package } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 import { useUI } from '../../context/UIContext';
 import ProductList from './ProductList';
@@ -315,11 +315,7 @@ export default function ProductsPage() {
           {/* Products Display */}
           {filteredProducts.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-lg shadow">
-              <div className="mx-auto h-12 w-12 text-gray-400">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 48 48">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v20c0 4.418 7.163 8 16 8 1.381 0 2.721-.087 4-.252M8 14c0 4.418 7.163 8 16 8s16-3.582 16-8M8 14c0-4.418 7.163-8 16-8s16 3.582 16 8m0 0v14m-16-4c0 4.418 7.163 8 16 8 1.381 0 2.721-.087 4-.252"/>
-                </svg>
-              </div>
+              <Package className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-2 text-sm font-medium text-gray-900">No products found</h3>
               <p className="mt-1 text-sm text-gray-500">
                 {totalProducts === 0 
