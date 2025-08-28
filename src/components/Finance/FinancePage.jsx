@@ -1,14 +1,62 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useData } from '../../context/DataContext';
-import { Wallet, Users, TrendingUp, DollarSign, Plus, Calculator, ClipboardCheck } from 'lucide-react';
+import { useUI } from '../../context/UIContext';
+import { Wallet, Users, TrendingUp, DollarSign, Plus, Calculator, ClipboardCheck, RefreshCw } from 'lucide-react';
 import CashFlowDashboard from './CashFlow/CashFlowDashboard';
 import WithdrawalHistory from './Withdrawals/WithdrawalHistory';
 import PartnerList from './Partners/PartnerList';
 import DistributionCalculator from './Distribution/DistributionCalculator';
+import { syncFinanceData } from '../../utils/financeSync';
 
 export default function FinancePage() {
-  const { partners, withdrawals, cashFlows, sales, expenses } = useData();
+  const { partners, withdrawals, cashFlows, sales, expenses, containers, syncFinanceData: syncData } = useData();
+  const { showSuccessMessage, showInfoMessage, showErrorMessage } = useUI();
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [hasInitialSync, setHasInitialSync] = useState(false);
+  
+  // Auto-sync on first load if no finance data exists
+  useEffect(() => {
+    if (!hasInitialSync && cashFlows.length === 0 && partners.length === 0) {
+      handleSync(true);
+      setHasInitialSync(true);
+    }
+  }, []);
+  
+  const handleSync = async (isAutoSync = false) => {
+    setIsSyncing(true);
+    
+    try {
+      // Get synced data from utility
+      const syncedData = syncFinanceData({
+        containers,
+        sales,
+        expenses,
+        partners,
+        withdrawals
+      });
+      
+      // Update the context with synced data
+      await syncData(syncedData);
+      
+      if (!isAutoSync) {
+        showSuccessMessage(
+          'Finance Data Synced',
+          `Successfully synced ${syncedData.cashFlows.length} cash flow records from existing transactions`
+        );
+      } else {
+        showInfoMessage(
+          'Initial Setup Complete',
+          'Finance module has been initialized with your existing data'
+        );
+      }
+    } catch (error) {
+      console.error('Sync error:', error);
+      showErrorMessage('Sync Failed', error.message);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
   
   // Calculate today's cash position
   const today = new Date().toISOString().split('T')[0];
@@ -56,12 +104,40 @@ export default function FinancePage() {
       <div className="py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Finance Management</h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Manage cash flow, partner withdrawals, and equity distributions
-            </p>
+          <div className="mb-6 flex justify-between items-start">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Finance Management</h2>
+              <p className="text-sm text-gray-600 mt-1">
+                Manage cash flow, partner withdrawals, and equity distributions
+              </p>
+            </div>
+            <button
+              onClick={() => handleSync(false)}
+              disabled={isSyncing}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+              title="Sync financial data from existing transactions"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
+              {isSyncing ? 'Syncing...' : 'Sync Data'}
+            </button>
           </div>
+          
+          {/* Initial Sync Notice */}
+          {cashFlows.length === 0 && !isSyncing && (
+            <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <RefreshCw className="h-5 w-5 text-blue-400" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-blue-800">No Financial Data Found</h3>
+                  <div className="mt-2 text-sm text-blue-700">
+                    <p>It looks like you haven't synced your financial data yet. Click the "Sync Data" button above to import your existing transactions (containers, sales, expenses) into the finance module.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

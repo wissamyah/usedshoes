@@ -70,6 +70,7 @@ export const DATA_ACTIONS = {
   ADD_CASH_FLOW: 'ADD_CASH_FLOW',
   UPDATE_CASH_FLOW: 'UPDATE_CASH_FLOW',
   DELETE_CASH_FLOW: 'DELETE_CASH_FLOW',
+  SYNC_FINANCE_DATA: 'SYNC_FINANCE_DATA',
   
   // Utility actions
   MARK_SAVED: 'MARK_SAVED',
@@ -794,6 +795,24 @@ function dataReducer(state, action) {
       };
     }
     
+    case DATA_ACTIONS.SYNC_FINANCE_DATA: {
+      // Sync finance data from existing transactions
+      const { partners, cashFlows, withdrawals, financialSummary } = action.payload;
+      
+      return {
+        ...state,
+        partners: partners.length > 0 ? partners : state.partners,
+        cashFlows: cashFlows.length > 0 ? cashFlows : state.cashFlows,
+        withdrawals: withdrawals,
+        metadata: {
+          ...state.metadata,
+          lastUpdated: new Date().toISOString(),
+          financialSummary,
+        },
+        unsavedChanges: true,
+      };
+    }
+    
     case DATA_ACTIONS.MARK_SAVED:
       return { ...state, unsavedChanges: false };
     
@@ -878,6 +897,7 @@ export function DataProvider({ children }) {
     addCashFlow: (cashFlowData) => dispatch({ type: DATA_ACTIONS.ADD_CASH_FLOW, payload: cashFlowData }),
     updateCashFlow: (id, data) => dispatch({ type: DATA_ACTIONS.UPDATE_CASH_FLOW, payload: { id, data } }),
     deleteCashFlow: (cashFlowId) => dispatch({ type: DATA_ACTIONS.DELETE_CASH_FLOW, payload: cashFlowId }),
+    syncFinanceData: (syncData) => dispatch({ type: DATA_ACTIONS.SYNC_FINANCE_DATA, payload: syncData }),
     
     loadData: (data) => dispatch({ type: DATA_ACTIONS.LOAD_DATA, payload: data }),
     setLoading: (loading) => dispatch({ type: DATA_ACTIONS.SET_LOADING, payload: loading }),
