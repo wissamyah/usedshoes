@@ -7,7 +7,10 @@ export default function DataSync() {
     products, 
     containers, 
     sales, 
-    expenses, 
+    expenses,
+    partners,
+    withdrawals,
+    cashFlows, 
     metadata,
     loadData, 
     setLoading, 
@@ -49,6 +52,9 @@ export default function DataSync() {
             containers: githubData.containers || [],
             sales: githubData.sales || [],
             expenses: githubData.expenses || [],
+            partners: githubData.partners || [],
+            withdrawals: githubData.withdrawals || [],
+            cashFlows: githubData.cashFlows || [],
             metadata: githubData.metadata || {
               version: '1.0.0',
               lastUpdated: new Date().toISOString(),
@@ -57,6 +63,9 @@ export default function DataSync() {
                 container: 1,
                 sale: 1,
                 expense: 1,
+                partner: 1,
+                withdrawal: 1,
+                cashFlow: 1,
               },
             }
           });
@@ -76,6 +85,9 @@ export default function DataSync() {
             containers: [],
             sales: [],
             expenses: [],
+            partners: [],
+            withdrawals: [],
+            cashFlows: [],
             metadata: {
               version: '1.0.0',
               lastUpdated: new Date().toISOString(),
@@ -84,6 +96,9 @@ export default function DataSync() {
                 container: 1,
                 sale: 1,
                 expense: 1,
+                partner: 1,
+                withdrawal: 1,
+                cashFlow: 1,
               },
             }
           };
@@ -114,6 +129,9 @@ export default function DataSync() {
             containers: [],
             sales: [],
             expenses: [],
+            partners: [],
+            withdrawals: [],
+            cashFlows: [],
             metadata: {
               version: '1.0.0',
               lastUpdated: new Date().toISOString(),
@@ -122,6 +140,9 @@ export default function DataSync() {
                 container: 1,
                 sale: 1,
                 expense: 1,
+                partner: 1,
+                withdrawal: 1,
+                cashFlow: 1,
               },
             }
           });
@@ -153,6 +174,9 @@ export default function DataSync() {
           containers,
           sales,
           expenses,
+          partners,
+          withdrawals,
+          cashFlows,
           metadata: {
             ...metadata,
             lastUpdated: new Date().toISOString()
@@ -174,7 +198,7 @@ export default function DataSync() {
     }, 3000); // 3 second delay
     
     return () => clearTimeout(saveTimer);
-  }, [isConnected, unsavedChanges, products, containers, sales, expenses]); // Remove metadata and function dependencies
+  }, [isConnected, unsavedChanges, products, containers, sales, expenses, partners, withdrawals, cashFlows]); // Remove metadata and function dependencies
 
   // Manual save function that can be triggered
   const forceSave = async () => {
@@ -187,6 +211,9 @@ export default function DataSync() {
         containers,
         sales,
         expenses,
+        partners,
+        withdrawals,
+        cashFlows,
         metadata: {
           ...metadata,
           lastUpdated: new Date().toISOString()
