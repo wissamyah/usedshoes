@@ -7,7 +7,7 @@ import ExpenseChart from './ExpenseChart';
 import TopProductsChart from './TopProductsChart';
 
 export default function Dashboard() {
-  const { products, sales, expenses, containers } = useData();
+  const { products, sales, expenses, containers, cashInjections = [], withdrawals = [] } = useData();
 
   // Calculate inventory value (using same logic as Products page)
   const inventoryValue = products.reduce((total, product) => {
@@ -41,6 +41,11 @@ export default function Dashboard() {
   const totalExpenses = expenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
   const totalProfit = sales.reduce((sum, sale) => sum + (sale.profit || 0), 0);
   const totalNetProfit = totalProfit - totalExpenses;
+  
+  // Calculate cash position (same as Finance page)
+  const totalInjections = cashInjections.reduce((sum, injection) => sum + (injection.amount || 0), 0);
+  const totalWithdrawals = withdrawals.reduce((sum, withdrawal) => sum + (withdrawal.amount || 0), 0);
+  const currentCashPosition = totalRevenue + totalInjections - totalExpenses - totalWithdrawals;
 
   // Recent activity (last 5 transactions)
   const recentSales = sales
@@ -76,34 +81,43 @@ export default function Dashboard() {
         monthlyRevenue={monthlyRevenue}
         inventoryValue={inventoryValue}
         netProfit={netProfit}
+        cashPosition={currentCashPosition}
       />
 
       {/* Secondary Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Business Summary</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Cash Flow Summary</h3>
           <div className="space-y-3">
+            <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">Inflows</div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Total Products:</span>
-              <span className="font-semibold">{products.length}</span>
+              <span className="text-gray-600">Sales Revenue:</span>
+              <span className="font-semibold text-green-600">+{formatCurrency(totalRevenue)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Total Containers:</span>
-              <span className="font-semibold">{containers.length}</span>
+              <span className="text-gray-600">Cash Injections:</span>
+              <span className="font-semibold text-green-600">+{formatCurrency(totalInjections)}</span>
+            </div>
+            <div className="text-sm font-medium text-gray-500 uppercase tracking-wider mt-3">Outflows</div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Expenses:</span>
+              <span className="font-semibold text-red-600">-{formatCurrency(totalExpenses)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Total Sales:</span>
-              <span className="font-semibold">{sales.length}</span>
+              <span className="text-gray-600">Withdrawals:</span>
+              <span className="font-semibold text-red-600">-{formatCurrency(totalWithdrawals)}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Total Expenses:</span>
-              <span className="font-semibold">{expenses.length}</span>
+            <div className="flex justify-between border-t pt-2 mt-2">
+              <span className="text-gray-900 font-medium">Net Cash:</span>
+              <span className={`font-bold ${currentCashPosition >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
+                {formatCurrency(currentCashPosition)}
+              </span>
             </div>
           </div>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">All-Time Performance</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Financial Overview</h3>
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-600">Total Revenue:</span>
@@ -114,13 +128,15 @@ export default function Dashboard() {
               <span className="font-semibold text-red-600">{formatCurrency(totalExpenses)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Gross Profit:</span>
-              <span className="font-semibold text-blue-600">{formatCurrency(totalProfit)}</span>
+              <span className="text-gray-600">Net Profit:</span>
+              <span className={`font-semibold ${totalNetProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {formatCurrency(totalNetProfit)}
+              </span>
             </div>
             <div className="flex justify-between border-t pt-2">
-              <span className="text-gray-900 font-medium">Net Profit:</span>
-              <span className={`font-bold ${totalNetProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {formatCurrency(totalNetProfit)}
+              <span className="text-gray-900 font-medium">Cash Position:</span>
+              <span className={`font-bold text-lg ${currentCashPosition >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
+                {formatCurrency(currentCashPosition)}
               </span>
             </div>
           </div>

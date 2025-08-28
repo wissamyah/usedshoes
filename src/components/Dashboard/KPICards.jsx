@@ -1,6 +1,6 @@
-import { DollarSign, BarChart3, Package, TrendingUp } from 'lucide-react';
+import { DollarSign, BarChart3, Package, TrendingUp, Wallet } from 'lucide-react';
 
-export default function KPICards({ todaysRevenue, monthlyRevenue, inventoryValue, netProfit }) {
+export default function KPICards({ todaysRevenue, monthlyRevenue, inventoryValue, netProfit, cashPosition }) {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -51,8 +51,22 @@ export default function KPICards({ todaysRevenue, monthlyRevenue, inventoryValue
     }
   ];
 
+  // Add cash position card if provided
+  if (cashPosition !== undefined) {
+    kpiData.splice(2, 0, {
+      title: "Cash Position",
+      value: formatCurrency(cashPosition),
+      description: "Available cash",
+      icon: Wallet,
+      color: cashPosition >= 0 ? "blue" : "red",
+      bgColor: cashPosition >= 0 ? "bg-blue-50" : "bg-red-50",
+      textColor: cashPosition >= 0 ? "text-blue-600" : "text-red-600",
+      iconColor: cashPosition >= 0 ? "text-blue-600" : "text-red-600"
+    });
+  }
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className={`grid grid-cols-1 md:grid-cols-2 ${cashPosition !== undefined ? 'lg:grid-cols-5' : 'lg:grid-cols-4'} gap-6 mb-8`}>
       {kpiData.map((kpi, index) => {
         const Icon = kpi.icon;
         

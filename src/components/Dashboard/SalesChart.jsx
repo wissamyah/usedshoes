@@ -55,7 +55,7 @@ export default function SalesChart() {
               tickFormatter={formatCurrency}
             />
             <Tooltip 
-              formatter={(value, name) => [formatCurrency(value), name === 'revenue' ? 'Revenue' : 'Profit']}
+              formatter={(value, name) => [formatCurrency(value), name]}
               labelFormatter={(label) => `Date: ${label}`}
               contentStyle={{
                 backgroundColor: '#f9fafb',

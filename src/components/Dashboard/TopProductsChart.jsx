@@ -75,22 +75,21 @@ export default function TopProductsChart() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={chartData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
-                layout="horizontal"
+                margin={{ top: 20, right: 30, left: 20, bottom: 100 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis 
-                  type="number"
-                  stroke="#6b7280"
-                  fontSize={12}
-                />
-                <YAxis 
-                  type="category"
                   dataKey="productName"
                   stroke="#6b7280"
+                  fontSize={11}
+                  angle={-45}
+                  textAnchor="end"
+                  height={100}
+                  interval={0}
+                />
+                <YAxis 
+                  stroke="#6b7280"
                   fontSize={12}
-                  width={120}
-                  tick={{ fontSize: 10 }}
                 />
                 <Tooltip 
                   formatter={(value, name) => {
@@ -99,14 +98,13 @@ export default function TopProductsChart() {
                     if (name === 'totalProfit') return [formatCurrency(value), 'Profit'];
                     return [value, name];
                   }}
-                  labelFormatter={(productName) => `Product: ${productName}`}
                   contentStyle={{
                     backgroundColor: '#f9fafb',
                     border: '1px solid #e5e7eb',
                     borderRadius: '6px'
                   }}
                 />
-                <Bar dataKey="totalQuantity" radius={[0, 4, 4, 0]}>
+                <Bar dataKey="totalQuantity" radius={[4, 4, 0, 0]}>
                   {chartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                   ))}
