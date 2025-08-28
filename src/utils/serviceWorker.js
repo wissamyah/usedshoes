@@ -11,13 +11,14 @@ const isLocalhost = Boolean(
 // Register service worker
 export function register(config = {}) {
   if ('serviceWorker' in navigator) {
-    const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href);
+    const baseUrl = import.meta.env.BASE_URL || '/';
+    const publicUrl = new URL(baseUrl, window.location.href);
     if (publicUrl.origin !== window.location.origin) {
       return;
     }
 
     window.addEventListener('load', () => {
-      const swUrl = `${process.env.PUBLIC_URL}/sw.js`;
+      const swUrl = `${baseUrl}sw.js`;
 
       if (isLocalhost) {
         checkValidServiceWorker(swUrl, config);

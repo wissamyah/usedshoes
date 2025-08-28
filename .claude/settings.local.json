@@ -14,7 +14,8 @@
       "Read(C:\\Users\\wissa\\Downloads/**)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Read(c:\\Users\\wissa\\Pictures\\Screenshots/**)"
+      "Read(c:\\Users\\wissa\\Pictures\\Screenshots/**)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []
