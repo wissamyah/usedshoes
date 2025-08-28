@@ -227,7 +227,10 @@ export function validateExpense(expense) {
     'Supplies',
     'Insurance',
     'Legal',
-    'Maintenance'
+    'Maintenance',
+    'Financial Expenses',
+    'Taxes',
+    'Discount'
   ];
 
   if (!validCategories.includes(expense.category)) {

@@ -70,21 +70,18 @@ export default function FinancePage() {
   const todaysCashOut = todaysExpenses.reduce((sum, expense) => sum + expense.amount, 0) +
                         todaysWithdrawals.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
   
-  // Get opening balance - check for yesterday's closing balance or use latest cash flow
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  // Calculate total revenue from all sales (this is our opening balance)
+  const totalRevenue = sales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
   
-  const yesterdayCashFlow = cashFlows.find(cf => cf.date === yesterdayStr);
-  const latestCashFlowBeforeToday = cashFlows
-    .filter(cf => cf.date < today)
-    .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+  // Calculate total expenses and withdrawals up to today
+  const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const totalWithdrawals = withdrawals.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
   
-  // Use yesterday's balance if available, otherwise latest cash flow before today
-  const openingBalance = yesterdayCashFlow?.theoreticalBalance || 
-                         latestCashFlowBeforeToday?.theoreticalBalance || 
-                         0;
-  const currentCashPosition = openingBalance + todaysCashIn - todaysCashOut;
+  // Opening balance should be total revenue
+  const openingBalance = totalRevenue;
+  
+  // Current cash position = Total Revenue - Total Expenses - Total Withdrawals
+  const currentCashPosition = totalRevenue - totalExpenses - totalWithdrawals;
   
   // Calculate total partner equity
   const totalEquity = partners.reduce((sum, partner) => {

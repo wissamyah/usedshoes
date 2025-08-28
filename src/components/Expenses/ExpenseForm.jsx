@@ -28,7 +28,10 @@ export default function ExpenseForm({ expense, onClose }) {
     'Staff Salaries',
     'Miscellaneous',
     'Marketing',
-    'Utilities'
+    'Utilities',
+    'Financial Expenses',
+    'Taxes',
+    'Discount'
   ];
 
   useEffect(() => {

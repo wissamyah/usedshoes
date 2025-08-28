@@ -12,18 +12,27 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
   
   const today = new Date().toISOString().split('T')[0];
   
+  // All transactions (for calculating actual opening balance for today)
+  const allSales = sales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
+  const previousExpenses = expenses.filter(e => e.date < today).reduce((sum, e) => sum + e.amount, 0);
+  const previousWithdrawals = withdrawals.filter(w => w.date < today).reduce((sum, w) => sum + w.amount, 0);
+  
+  // Today's opening balance = Total Revenue - Previous Expenses - Previous Withdrawals
+  const todaysOpeningBalance = allSales - previousExpenses - previousWithdrawals;
+  
   // Today's transactions
   const todaysSales = sales.filter(s => s.date === today);
   const todaysExpenses = expenses.filter(e => e.date === today);
   const todaysWithdrawals = withdrawals.filter(w => w.date === today);
   
-  // Calculate flows
+  // Calculate today's flows
   const cashInflows = todaysSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
-  const cashOutflows = todaysExpenses.reduce((sum, expense) => sum + expense.amount, 0) +
-                       todaysWithdrawals.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
+  const expenseOutflows = todaysExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const withdrawalOutflows = todaysWithdrawals.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
+  const cashOutflows = expenseOutflows + withdrawalOutflows;
   
   const netCashFlow = cashInflows - cashOutflows;
-  const expectedBalance = openingBalance + netCashFlow;
+  const expectedBalance = todaysOpeningBalance + netCashFlow;
   
   // Check if today's cash has been reconciled
   const todaysReconciliation = cashFlows.find(cf => cf.date === today);
@@ -40,9 +49,9 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
     try {
       await addCashFlow({
         date: today,
-        openingBalance,
+        openingBalance: todaysOpeningBalance,
         cashSales: cashInflows,
-        cashExpenses: cashOutflows - todaysWithdrawals.reduce((sum, w) => sum + w.amount, 0),
+        cashExpenses: expenseOutflows,
         withdrawals: todaysWithdrawals.map(w => w.id),
         theoreticalBalance: expectedBalance,
         actualCount: reconciledData.actualCount,
@@ -111,7 +120,8 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Opening Balance</p>
-              <p className="text-xl font-semibold text-gray-900">{formatCurrency(openingBalance)}</p>
+              <p className="text-xl font-semibold text-gray-900">{formatCurrency(todaysOpeningBalance)}</p>
+              <p className="text-xs text-gray-500">Total Revenue: {formatCurrency(allSales)}</p>
             </div>
             <DollarSign className="h-8 w-8 text-gray-400" />
           </div>
@@ -136,7 +146,7 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
               <p className="text-sm text-gray-600">Cash Outflows</p>
               <p className="text-xl font-semibold text-red-600">-{formatCurrency(cashOutflows)}</p>
               <p className="text-xs text-gray-500">
-                {todaysExpenses.length} expenses, {todaysWithdrawals.length} withdrawals
+                Expenses: {formatCurrency(expenseOutflows)} | Withdrawals: {formatCurrency(withdrawalOutflows)}
               </p>
             </div>
             <TrendingDown className="h-8 w-8 text-red-500" />
