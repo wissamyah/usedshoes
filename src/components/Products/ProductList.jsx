@@ -1,6 +1,6 @@
-import { Package, BarChart3, Pencil, Trash2, PackageX } from 'lucide-react';
+import { Package, BarChart3, Pencil, Trash2, PackageX, AlertTriangle, TrendingUp } from 'lucide-react';
 
-export default function ProductList({ products, containers, onEdit, onDelete, onViewMovement }) {
+export default function ProductList({ products, containers, onEdit, onDelete, onViewMovement, onDestroy }) {
   const getStockStatusColor = (stock) => {
     if (stock === 0) return 'text-red-600 bg-red-100';
     if (stock <= 5) return 'text-yellow-600 bg-yellow-100';
@@ -39,6 +39,9 @@ export default function ProductList({ products, containers, onEdit, onDelete, on
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Cost/kg
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Avg. Selling Price
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Total Value
@@ -91,6 +94,27 @@ export default function ProductList({ products, containers, onEdit, onDelete, on
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {formatCurrency(product.costPerKg || product.costPerUnit)}
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {product.avgSellingPrice ? (
+                      <div className="flex items-center">
+                        <span className="text-sm font-medium text-gray-900">
+                          {formatCurrency(product.avgSellingPrice)}
+                        </span>
+                        {product.avgSellingPrice > (product.costPerKg || product.costPerUnit || 0) ? (
+                          <TrendingUp className="h-4 w-4 text-green-500 ml-1" />
+                        ) : (
+                          <TrendingUp className="h-4 w-4 text-red-500 ml-1 transform rotate-180" />
+                        )}
+                        {product.totalSold > 0 && (
+                          <span className="text-xs text-gray-500 ml-2">
+                            ({product.totalSold} sold)
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-400 italic">No sales yet</span>
+                    )}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {formatCurrency(product.currentStock * (product.bagWeight || 25) * (product.costPerKg || product.costPerUnit || 0))}
                   </td>
@@ -110,6 +134,15 @@ export default function ProductList({ products, containers, onEdit, onDelete, on
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
+                      {product.currentStock > 0 && (
+                        <button
+                          onClick={() => onDestroy(product)}
+                          className="text-orange-600 hover:text-orange-900 p-1 rounded-md hover:bg-orange-50"
+                          title="Destroy/damage product"
+                        >
+                          <AlertTriangle className="h-4 w-4" />
+                        </button>
+                      )}
                       <button
                         onClick={() => onDelete(product.id)}
                         className="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50"

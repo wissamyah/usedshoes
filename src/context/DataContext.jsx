@@ -38,6 +38,7 @@ export const DATA_ACTIONS = {
   UPDATE_PRODUCT: 'UPDATE_PRODUCT',
   DELETE_PRODUCT: 'DELETE_PRODUCT',
   UPDATE_STOCK: 'UPDATE_STOCK',
+  DESTROY_PRODUCT: 'DESTROY_PRODUCT',
   
   // Sales actions
   ADD_SALE: 'ADD_SALE',
@@ -239,6 +240,52 @@ function dataReducer(state, action) {
         products: state.products.filter(p => p.id !== action.payload),
         metadata: {
           ...state.metadata,
+          lastUpdated: new Date().toISOString(),
+        },
+        unsavedChanges: true,
+      };
+    }
+    
+    case DATA_ACTIONS.DESTROY_PRODUCT: {
+      const { productId, quantity, reason, notes, date, time } = action.payload;
+      
+      // Update product stock
+      const updatedProducts = state.products.map(product => {
+        if (product.id === productId) {
+          return {
+            ...product,
+            currentStock: Math.max(0, product.currentStock - quantity),
+          };
+        }
+        return product;
+      });
+      
+      // Add destruction record as an expense
+      const product = state.products.find(p => p.id === productId);
+      const destructionExpense = {
+        id: state.metadata.nextIds.expense,
+        type: 'product_destruction',
+        category: 'Loss/Damage',
+        description: `Destroyed ${quantity} bag(s) of ${product?.name || 'Unknown Product'} - ${reason}`,
+        amount: quantity * (product?.costPerKg || product?.costPerUnit || 0) * (product?.bagWeight || 25),
+        date,
+        time,
+        notes: notes || reason,
+        productId,
+        quantity,
+        createdAt: new Date().toISOString()
+      };
+      
+      return {
+        ...state,
+        products: updatedProducts,
+        expenses: [...state.expenses, destructionExpense],
+        metadata: {
+          ...state.metadata,
+          nextIds: {
+            ...state.metadata.nextIds,
+            expense: state.metadata.nextIds.expense + 1,
+          },
           lastUpdated: new Date().toISOString(),
         },
         unsavedChanges: true,
@@ -571,8 +618,29 @@ export function DataProvider({ children }) {
     }
   }, [state.unsavedChanges]);
 
+  // Calculate average selling prices for products
+  const productsWithAvgPrice = state.products.map(product => {
+    const productSales = state.sales.filter(sale => sale.productId === product.id);
+    
+    if (productSales.length === 0) {
+      return { ...product, avgSellingPrice: null, totalSold: 0 };
+    }
+    
+    const totalRevenue = productSales.reduce((sum, sale) => sum + (sale.quantity * sale.pricePerUnit), 0);
+    const totalQuantity = productSales.reduce((sum, sale) => sum + sale.quantity, 0);
+    const avgSellingPrice = totalRevenue / totalQuantity;
+    
+    return {
+      ...product,
+      avgSellingPrice,
+      totalSold: totalQuantity,
+      totalRevenue
+    };
+  });
+  
   const value = {
     ...state,
+    products: productsWithAvgPrice,
     dispatch,
     
     // Helper functions for common operations
@@ -583,6 +651,7 @@ export function DataProvider({ children }) {
     addProduct: (productData) => dispatch({ type: DATA_ACTIONS.ADD_PRODUCT, payload: productData }),
     updateProduct: (id, data) => dispatch({ type: DATA_ACTIONS.UPDATE_PRODUCT, payload: { id, data } }),
     deleteProduct: (productId) => dispatch({ type: DATA_ACTIONS.DELETE_PRODUCT, payload: productId }),
+    destroyProduct: (destroyData) => dispatch({ type: DATA_ACTIONS.DESTROY_PRODUCT, payload: destroyData }),
     
     addSale: (saleData) => dispatch({ type: DATA_ACTIONS.ADD_SALE, payload: saleData }),
     deleteSale: (saleId) => dispatch({ type: DATA_ACTIONS.DELETE_SALE, payload: saleId }),

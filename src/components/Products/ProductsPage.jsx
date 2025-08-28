@@ -6,12 +6,14 @@ import ProductList from './ProductList';
 import ProductForm from './ProductForm';
 import ProductCard from './ProductCard';
 import ProductMovementModal from './ProductMovementModal';
+import DestroyProductModal from './DestroyProductModal';
 
 export default function ProductsPage() {
   const { products, containers, addProduct, updateProduct, deleteProduct } = useData();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [viewingMovement, setViewingMovement] = useState(null);
+  const [destroyingProduct, setDestroyingProduct] = useState(null);
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -68,6 +70,10 @@ export default function ProductsPage() {
 
   const handleViewMovement = (product) => {
     setViewingMovement(product);
+  };
+  
+  const handleDestroyProduct = (product) => {
+    setDestroyingProduct(product);
   };
 
   const handleFormSubmit = async (formData) => {
@@ -343,6 +349,7 @@ export default function ProductsPage() {
                   onEdit={handleEditProduct}
                   onDelete={handleDeleteProduct}
                   onViewMovement={handleViewMovement}
+                  onDestroy={handleDestroyProduct}
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -353,6 +360,7 @@ export default function ProductsPage() {
                       onEdit={handleEditProduct}
                       onDelete={handleDeleteProduct}
                       onViewMovement={handleViewMovement}
+                      onDestroy={handleDestroyProduct}
                     />
                   ))}
                 </div>
@@ -377,6 +385,14 @@ export default function ProductsPage() {
         <ProductMovementModal
           product={viewingMovement}
           onClose={() => setViewingMovement(null)}
+        />
+      )}
+      
+      {/* Destroy Product Modal */}
+      {destroyingProduct && (
+        <DestroyProductModal
+          product={destroyingProduct}
+          onClose={() => setDestroyingProduct(null)}
         />
       )}
     </div>

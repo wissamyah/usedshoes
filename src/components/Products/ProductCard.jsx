@@ -1,4 +1,4 @@
-export default function ProductCard({ product, onEdit, onDelete, onViewMovement }) {
+export default function ProductCard({ product, onEdit, onDelete, onViewMovement, onDestroy }) {
   const getStockStatusColor = (stock) => {
     if (stock === 0) return 'text-red-600 bg-red-100';
     if (stock <= 5) return 'text-yellow-600 bg-yellow-100';
@@ -63,6 +63,17 @@ export default function ProductCard({ product, onEdit, onDelete, onViewMovement 
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
             </button>
+            {product.currentStock > 0 && onDestroy && (
+              <button
+                onClick={() => onDestroy(product)}
+                className="text-orange-600 hover:text-orange-800 p-1 rounded-md hover:bg-orange-50"
+                title="Destroy/damage product"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </button>
+            )}
             <button
               onClick={() => onDelete(product.id)}
               className="text-red-600 hover:text-red-800 p-1 rounded-md hover:bg-red-50"
@@ -119,6 +130,27 @@ export default function ProductCard({ product, onEdit, onDelete, onViewMovement 
             </p>
           </div>
         </div>
+        
+        {/* Average Selling Price */}
+        {product.avgSellingPrice !== undefined && (
+          <div className="border-t pt-3 mb-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-gray-500">Avg. Selling Price</p>
+              {product.avgSellingPrice ? (
+                <div className="flex items-center space-x-2">
+                  <p className="text-lg font-semibold text-gray-900">
+                    {formatCurrency(product.avgSellingPrice)}
+                  </p>
+                  <span className="text-xs text-gray-500">
+                    ({product.totalSold} sold)
+                  </span>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400 italic">No sales yet</p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Creation Date */}
         {product.createdAt && (
