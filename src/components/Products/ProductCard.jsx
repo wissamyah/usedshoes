@@ -1,3 +1,5 @@
+import { formatDate } from '../../utils/dateFormatter';
+
 export default function ProductCard({ product, onEdit, onDelete, onViewMovement, onDestroy }) {
   const getStockStatusColor = (stock) => {
     if (stock === 0) return 'text-red-600 bg-red-100';
@@ -156,7 +158,7 @@ export default function ProductCard({ product, onEdit, onDelete, onViewMovement,
         {product.createdAt && (
           <div className="mt-3 pt-3 border-t border-gray-100">
             <p className="text-xs text-gray-400">
-              Added {new Date(product.createdAt).toLocaleDateString()}
+              Added {formatDate(product.createdAt)}
             </p>
           </div>
         )}

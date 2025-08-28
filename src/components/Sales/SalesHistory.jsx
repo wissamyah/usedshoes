@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
 import { useUI } from '../../context/UIContext';
+import { formatDate as formatDateUtil } from '../../utils/dateFormatter';
 import { Pencil, Trash2, Search, ClipboardX, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
 export default function SalesHistory({ onEditSale }) {
@@ -160,7 +161,7 @@ export default function SalesHistory({ onEditSale }) {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
+    return formatDateUtil(dateString);
   };
 
   const formatTime = (timeString) => {

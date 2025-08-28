@@ -1,5 +1,6 @@
 import { AlertTriangle } from 'lucide-react';
 import { useData } from '../../context/DataContext';
+import { formatDate } from '../../utils/dateFormatter';
 import KPICards from './KPICards';
 import SalesChart from './SalesChart';
 import ExpenseChart from './ExpenseChart';
@@ -60,9 +61,6 @@ export default function Dashboard() {
     }).format(amount || 0);
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
-  };
 
   return (
     <div className="p-4 sm:p-6">

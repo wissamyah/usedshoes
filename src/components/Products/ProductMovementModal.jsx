@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { X } from 'lucide-react';
 import { useData } from '../../context/DataContext';
+import { formatDate } from '../../utils/dateFormatter';
 import Modal from '../UI/Modal';
 
 export default function ProductMovementModal({ product, onClose }) {
@@ -65,9 +66,6 @@ export default function ProductMovementModal({ product, onClose }) {
     }).format(amount || 0);
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
-  };
 
   const runningBalance = useMemo(() => {
     let balance = 0;

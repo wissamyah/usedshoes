@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useData } from '../../../context/DataContext';
 import { useUI } from '../../../context/UIContext';
+import { formatDate } from '../../../utils/dateFormatter';
 import { Plus, Trash2, Search } from 'lucide-react';
 import WithdrawalForm from './WithdrawalForm';
 
@@ -47,9 +48,6 @@ export default function WithdrawalHistory({ availableCash }) {
     }).format(amount || 0);
   };
   
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
-  };
   
   const totalWithdrawals = filteredWithdrawals.reduce((sum, w) => sum + w.amount, 0);
   

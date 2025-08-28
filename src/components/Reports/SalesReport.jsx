@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useData } from '../../context/DataContext';
+import { formatDate } from '../../utils/dateFormatter';
 import { TrendingUp, Package, DollarSign, Calendar, Users } from 'lucide-react';
 
 export default function SalesReport({ startDate, endDate }) {
@@ -107,13 +108,9 @@ export default function SalesReport({ startDate, endDate }) {
     }).format(amount || 0);
   };
 
-  const formatDate = (dateString) => {
+  const formatDateOrUnknown = (dateString) => {
     if (!dateString || dateString === 'unknown') return 'Unknown';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
+    return formatDate(dateString);
   };
 
   // Get date range display
@@ -280,7 +277,7 @@ export default function SalesReport({ startDate, endDate }) {
                 {salesByDate.map((day) => (
                   <tr key={day.date} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {formatDate(day.date)}
+                      {formatDateOrUnknown(day.date)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
                       {day.salesCount}

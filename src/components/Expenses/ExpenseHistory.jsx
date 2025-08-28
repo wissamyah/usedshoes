@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { useUI } from '../../context/UIContext';
+import { formatDate } from '../../utils/dateFormatter';
 import { Pencil, Trash2, Search, Filter, FileX } from 'lucide-react';
 
 export default function ExpenseHistory({ onEditExpense }) {
@@ -82,9 +83,6 @@ export default function ExpenseHistory({ onEditExpense }) {
     }).format(amount || 0);
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
-  };
 
   // Calculate totals for filtered expenses
   const totalAmount = filteredExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);

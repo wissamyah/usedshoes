@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 import { useUI } from '../../context/UIContext';
+import { formatDate } from '../../utils/dateFormatter';
 import Modal from '../UI/Modal';
 
 export default function ExpenseForm({ expense, onClose }) {
@@ -280,7 +281,7 @@ export default function ExpenseForm({ expense, onClose }) {
                   <div className="flex justify-between">
                     <span className="text-blue-700">Date:</span>
                     <span className="font-semibold text-blue-900">
-                      {new Date(formData.date).toLocaleDateString()}
+                      {formatDate(formData.date)}
                     </span>
                   </div>
                 </div>

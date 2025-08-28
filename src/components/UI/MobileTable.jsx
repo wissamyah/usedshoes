@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useScreenSize } from './ResponsiveContainer';
+import { formatDate } from '../../utils/dateFormatter';
 
 // Mobile-friendly table that switches to cards on small screens
 export default function MobileTable({ 
@@ -207,7 +208,7 @@ export const dateColumn = (key, header, sortable = true) => ({
   key,
   header,
   sortable,
-  cell: (value) => value ? new Date(value).toLocaleDateString() : '-'
+  cell: (value) => value ? formatDate(value) : '-'
 });
 
 export const badgeColumn = (key, header, colorMap = {}) => ({

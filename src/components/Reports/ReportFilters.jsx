@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { formatDate } from '../../utils/dateFormatter';
 
 export default function ReportFilters({ dateRange, onDateRangeChange }) {
   const [localDateRange, setLocalDateRange] = useState(dateRange);
@@ -147,14 +148,14 @@ export default function ReportFilters({ dateRange, onDateRangeChange }) {
             <strong>Selected Period:</strong>{' '}
             {localDateRange.startDate && localDateRange.endDate ? (
               localDateRange.startDate === localDateRange.endDate ? (
-                new Date(localDateRange.startDate).toLocaleDateString()
+formatDate(localDateRange.startDate)
               ) : (
-                `${new Date(localDateRange.startDate).toLocaleDateString()} - ${new Date(localDateRange.endDate).toLocaleDateString()}`
+                `${formatDate(localDateRange.startDate)} - ${formatDate(localDateRange.endDate)}`
               )
             ) : localDateRange.startDate ? (
-              `From ${new Date(localDateRange.startDate).toLocaleDateString()}`
+              `From ${formatDate(localDateRange.startDate)}`
             ) : (
-              `Until ${new Date(localDateRange.endDate).toLocaleDateString()}`
+              `Until ${formatDate(localDateRange.endDate)}`
             )}
           </div>
         </div>

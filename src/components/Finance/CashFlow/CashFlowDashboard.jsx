@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useData } from '../../../context/DataContext';
 import { useUI } from '../../../context/UIContext';
+import { formatDate } from '../../../utils/dateFormatter';
 import { DollarSign, TrendingUp, TrendingDown, AlertTriangle, Check } from 'lucide-react';
 import CashReconciliation from './CashReconciliation';
 

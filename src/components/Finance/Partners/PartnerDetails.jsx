@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import { useData } from '../../../context/DataContext';
+import { formatDate } from '../../../utils/dateFormatter';
 import Modal from '../../UI/Modal';
 
 export default function PartnerDetails({ partner, onClose }) {
@@ -23,9 +24,6 @@ export default function PartnerDetails({ partner, onClose }) {
     }).format(amount || 0);
   };
   
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
-  };
   
   return (
     <Modal isOpen={true} onClose={onClose} size="large">

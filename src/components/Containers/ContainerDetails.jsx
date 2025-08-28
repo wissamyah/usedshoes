@@ -1,4 +1,5 @@
 import { X, Pencil } from 'lucide-react';
+import { formatDate } from '../../utils/dateFormatter';
 import Modal from '../UI/Modal';
 
 export default function ContainerDetails({ container, onClose, onEdit }) {
@@ -9,9 +10,6 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
     }).format(amount || 0);
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
-  };
 
   // Calculate container totals
   const totalBags = container.products?.reduce((sum, p) => sum + (p.bagQuantity || 0), 0) || 0;

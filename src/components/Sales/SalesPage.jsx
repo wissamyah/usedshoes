@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { useUI } from '../../context/UIContext';
+import { formatDate } from '../../utils/dateFormatter';
 import SalesForm from './SalesForm';
 import SalesHistory from './SalesHistory';
 import { Plus, BarChart3, DollarSign } from 'lucide-react';
@@ -24,7 +25,7 @@ export default function SalesPage() {
   // Show today's sales if there are any, otherwise show most recent date's sales
   const todaysSales = sales.filter(sale => sale.date === today);
   const recentSales = todaysSales.length > 0 ? todaysSales : sales.filter(sale => sale.date === recentDateStr);
-  const displayDate = todaysSales.length > 0 ? 'Today' : `Latest (${new Date(recentDateStr).toLocaleDateString()})`;
+  const displayDate = todaysSales.length > 0 ? 'Today' : `Latest (${formatDate(recentDateStr)})`;
   
   const todaysRevenue = recentSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
   const todaysProfit = recentSales.reduce((sum, sale) => sum + (sale.profit || 0), 0);
@@ -38,7 +39,8 @@ export default function SalesPage() {
   if (thisMonthsSales.length === 0 && sales.length > 0) {
     const recentMonth = mostRecentSaleDate.toISOString().substring(0, 7);
     thisMonthsSales = sales.filter(sale => sale.date && sale.date.startsWith(recentMonth));
-    displayMonth = new Date(recentMonth + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const monthDate = new Date(recentMonth + '-01');
+    displayMonth = monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   }
   
   const monthlyRevenue = thisMonthsSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useData } from '../../context/DataContext';
+import { formatDate } from '../../utils/dateFormatter';
 import { DollarSign, TrendingDown, Calendar, Tag, FileText, AlertCircle } from 'lucide-react';
 
 export default function ExpenseReport({ startDate, endDate }) {
@@ -132,13 +133,9 @@ export default function ExpenseReport({ startDate, endDate }) {
     }).format(amount || 0);
   };
 
-  const formatDate = (dateString) => {
+  const formatDateOrUnknown = (dateString) => {
     if (!dateString || dateString === 'unknown') return 'Unknown';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
+    return formatDate(dateString);
   };
 
   const formatMonth = (monthString) => {
@@ -388,7 +385,7 @@ export default function ExpenseReport({ startDate, endDate }) {
                   .map((expense) => (
                     <tr key={expense.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {formatDate(expense.date)}
+                        {formatDateOrUnknown(expense.date)}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
                         {expense.description || 'No description'}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useData } from '../../../context/DataContext';
 import { useUI } from '../../../context/UIContext';
+import { formatDate } from '../../../utils/dateFormatter';
 import { Plus, Edit2, Trash2, User, TrendingUp, TrendingDown } from 'lucide-react';
 import PartnerForm from './PartnerForm';
 import PartnerDetails from './PartnerDetails';
@@ -78,9 +79,9 @@ export default function PartnerList() {
     }).format(amount || 0);
   };
   
-  const formatDate = (dateString) => {
+  const formatDateOrNever = (dateString) => {
     if (!dateString) return 'Never';
-    return new Date(dateString).toLocaleDateString();
+    return formatDate(dateString);
   };
   
   return (
@@ -202,7 +203,7 @@ export default function PartnerList() {
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600">Last Withdrawal</span>
                       <span className="text-sm text-gray-500">
-                        {metrics.lastWithdrawal ? formatDate(metrics.lastWithdrawal.date) : 'Never'}
+                        {formatDateOrNever(metrics.lastWithdrawal?.date)}
                       </span>
                     </div>
                   </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Archive, Plus, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 import { useUI } from '../../context/UIContext';
+import { formatDate } from '../../utils/dateFormatter';
 import ContainerForm from './ContainerForm';
 import ContainerDetails from './ContainerDetails';
 
@@ -127,9 +128,6 @@ export default function ContainersPage() {
     }).format(amount || 0);
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
-  };
 
   const handleSort = (field) => {
     if (sortBy === field) {
