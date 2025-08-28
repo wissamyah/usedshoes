@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
-import { register, setupInstallPrompt, onNetworkStatusChange } from './utils/serviceWorker'
+import { onNetworkStatusChange } from './utils/serviceWorker'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -10,24 +10,8 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 
-// Register service worker for caching and offline functionality
-if (process.env.NODE_ENV === 'production') {
-  register({
-    onSuccess: (registration) => {
-      console.log('App is cached and ready for offline use');
-    },
-    onUpdate: (registration) => {
-      console.log('New version available');
-      // You could show a user notification here
-      if (window.confirm('New version available. Refresh to update?')) {
-        window.location.reload();
-      }
-    }
-  });
-}
-
-// Setup PWA install prompt
-setupInstallPrompt();
+// Temporarily disable service worker to fix caching issues
+// Will re-enable after fixing the deployment
 
 // Monitor network status for offline handling
 onNetworkStatusChange((status) => {
@@ -40,7 +24,7 @@ onNetworkStatusChange((status) => {
 });
 
 // Performance monitoring in development
-if (process.env.NODE_ENV === 'development') {
+if (import.meta.env.DEV) {
   // Monitor bundle size and performance
   import('./utils/performanceMonitor').then(({ startPerformanceMonitoring }) => {
     startPerformanceMonitoring();
