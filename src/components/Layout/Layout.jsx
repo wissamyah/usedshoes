@@ -9,6 +9,7 @@ import {
   LazyContainersPage,
   LazySalesPage,
   LazyExpensesPage,
+  LazyFinancePage,
   LazyReportsPage,
   LazySettingsPage,
   preloadCriticalComponents,
@@ -24,6 +25,7 @@ const components = {
   containers: LazyContainersPage,
   sales: LazySalesPage,
   expenses: LazyExpensesPage,
+  finance: LazyFinancePage,
   reports: LazyReportsPage,
   settings: LazySettingsPage,
 };

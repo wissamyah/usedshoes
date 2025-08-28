@@ -8,6 +8,7 @@ const ProductsPage = lazy(() => import('./Products/ProductsPage'));
 const ContainersPage = lazy(() => import('./Containers/ContainersPage'));
 const SalesPage = lazy(() => import('./Sales/SalesPage'));
 const ExpensesPage = lazy(() => import('./Expenses/ExpensesPage'));
+const FinancePage = lazy(() => import('./Finance/FinancePage'));
 const ReportsPage = lazy(() => import('./Reports/ReportsPage'));
 const SettingsPage = lazy(() => import('./Settings/SettingsPage'));
 
@@ -103,6 +104,18 @@ export const LazyExpensesPage = withLazyLoading(ExpensesPage, (
       ))}
     </div>
     <SkeletonTable rows={8} columns={5} />
+  </div>
+));
+
+export const LazyFinancePage = withLazyLoading(FinancePage, (
+  <div className="p-4 sm:p-6 space-y-6">
+    <div className="h-8 bg-gray-200 rounded w-32 animate-pulse"></div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: 3 }, (_, i) => (
+        <SkeletonCard key={i} />
+      ))}
+    </div>
+    <SkeletonTable rows={8} columns={6} />
   </div>
 ));
 

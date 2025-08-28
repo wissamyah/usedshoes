@@ -7,6 +7,7 @@ import {
   Receipt,
   FileBarChart,
   Settings,
+  Wallet,
 } from 'lucide-react';
 
 const navigationTabs = [
@@ -39,6 +40,12 @@ const navigationTabs = [
     name: 'Expenses',
     icon: Receipt,
     description: 'Expense tracking',
+  },
+  {
+    id: 'finance',
+    name: 'Finance',
+    icon: Wallet,
+    description: 'Cash flow & withdrawals',
   },
   {
     id: 'reports',

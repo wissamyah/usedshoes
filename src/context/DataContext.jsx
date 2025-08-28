@@ -10,12 +10,18 @@ const initialState = {
       container: 1,
       sale: 1,
       expense: 1,
+      partner: 1,
+      withdrawal: 1,
+      cashFlow: 1,
     },
   },
   containers: [],
   products: [],
   sales: [],
   expenses: [],
+  partners: [],
+  withdrawals: [],
+  cashFlows: [],
   // UI state
   loading: false,
   error: null,
@@ -49,6 +55,21 @@ export const DATA_ACTIONS = {
   ADD_EXPENSE: 'ADD_EXPENSE',
   UPDATE_EXPENSE: 'UPDATE_EXPENSE',
   DELETE_EXPENSE: 'DELETE_EXPENSE',
+  
+  // Partner actions
+  ADD_PARTNER: 'ADD_PARTNER',
+  UPDATE_PARTNER: 'UPDATE_PARTNER',
+  DELETE_PARTNER: 'DELETE_PARTNER',
+  
+  // Withdrawal actions
+  ADD_WITHDRAWAL: 'ADD_WITHDRAWAL',
+  UPDATE_WITHDRAWAL: 'UPDATE_WITHDRAWAL',
+  DELETE_WITHDRAWAL: 'DELETE_WITHDRAWAL',
+  
+  // Cash Flow actions
+  ADD_CASH_FLOW: 'ADD_CASH_FLOW',
+  UPDATE_CASH_FLOW: 'UPDATE_CASH_FLOW',
+  DELETE_CASH_FLOW: 'DELETE_CASH_FLOW',
   
   // Utility actions
   MARK_SAVED: 'MARK_SAVED',
@@ -588,6 +609,191 @@ function dataReducer(state, action) {
         unsavedChanges: true,
       };
     
+    // Partner actions
+    case DATA_ACTIONS.ADD_PARTNER: {
+      const newPartner = {
+        ...action.payload,
+        id: `P${state.metadata.nextIds.partner}`,
+        capitalAccount: {
+          initialInvestment: action.payload.initialInvestment || 0,
+          additionalContributions: [],
+          totalWithdrawn: 0,
+          profitShare: 0
+        },
+        createdAt: new Date().toISOString()
+      };
+      
+      return {
+        ...state,
+        partners: [...state.partners, newPartner],
+        metadata: {
+          ...state.metadata,
+          nextIds: {
+            ...state.metadata.nextIds,
+            partner: state.metadata.nextIds.partner + 1,
+          },
+          lastUpdated: new Date().toISOString(),
+        },
+        unsavedChanges: true,
+      };
+    }
+    
+    case DATA_ACTIONS.UPDATE_PARTNER: {
+      return {
+        ...state,
+        partners: state.partners.map(p =>
+          p.id === action.payload.id
+            ? { ...p, ...action.payload.data }
+            : p
+        ),
+        metadata: {
+          ...state.metadata,
+          lastUpdated: new Date().toISOString(),
+        },
+        unsavedChanges: true,
+      };
+    }
+    
+    case DATA_ACTIONS.DELETE_PARTNER: {
+      // Check if partner has withdrawals
+      const hasWithdrawals = state.withdrawals.some(w => w.partnerId === action.payload);
+      if (hasWithdrawals) {
+        return {
+          ...state,
+          error: 'Cannot delete partner with withdrawal history',
+        };
+      }
+      
+      return {
+        ...state,
+        partners: state.partners.filter(p => p.id !== action.payload),
+        metadata: {
+          ...state.metadata,
+          lastUpdated: new Date().toISOString(),
+        },
+        unsavedChanges: true,
+      };
+    }
+    
+    // Withdrawal actions
+    case DATA_ACTIONS.ADD_WITHDRAWAL: {
+      const withdrawal = {
+        ...action.payload,
+        id: `W${state.metadata.nextIds.withdrawal}`,
+        createdAt: new Date().toISOString()
+      };
+      
+      // Update partner's capital account
+      const updatedPartners = state.partners.map(p => {
+        if (p.id === action.payload.partnerId) {
+          return {
+            ...p,
+            capitalAccount: {
+              ...p.capitalAccount,
+              totalWithdrawn: (p.capitalAccount.totalWithdrawn || 0) + action.payload.amount
+            }
+          };
+        }
+        return p;
+      });
+      
+      return {
+        ...state,
+        withdrawals: [...state.withdrawals, withdrawal],
+        partners: updatedPartners,
+        metadata: {
+          ...state.metadata,
+          nextIds: {
+            ...state.metadata.nextIds,
+            withdrawal: state.metadata.nextIds.withdrawal + 1,
+          },
+          lastUpdated: new Date().toISOString(),
+        },
+        unsavedChanges: true,
+      };
+    }
+    
+    case DATA_ACTIONS.DELETE_WITHDRAWAL: {
+      const withdrawal = state.withdrawals.find(w => w.id === action.payload);
+      if (!withdrawal) return state;
+      
+      // Revert partner's capital account
+      const updatedPartners = state.partners.map(p => {
+        if (p.id === withdrawal.partnerId) {
+          return {
+            ...p,
+            capitalAccount: {
+              ...p.capitalAccount,
+              totalWithdrawn: Math.max(0, (p.capitalAccount.totalWithdrawn || 0) - withdrawal.amount)
+            }
+          };
+        }
+        return p;
+      });
+      
+      return {
+        ...state,
+        withdrawals: state.withdrawals.filter(w => w.id !== action.payload),
+        partners: updatedPartners,
+        metadata: {
+          ...state.metadata,
+          lastUpdated: new Date().toISOString(),
+        },
+        unsavedChanges: true,
+      };
+    }
+    
+    // Cash Flow actions
+    case DATA_ACTIONS.ADD_CASH_FLOW: {
+      const cashFlow = {
+        ...action.payload,
+        id: `CF${state.metadata.nextIds.cashFlow}`,
+        reconciledAt: new Date().toISOString()
+      };
+      
+      return {
+        ...state,
+        cashFlows: [...state.cashFlows, cashFlow],
+        metadata: {
+          ...state.metadata,
+          nextIds: {
+            ...state.metadata.nextIds,
+            cashFlow: state.metadata.nextIds.cashFlow + 1,
+          },
+          lastUpdated: new Date().toISOString(),
+        },
+        unsavedChanges: true,
+      };
+    }
+    
+    case DATA_ACTIONS.UPDATE_CASH_FLOW: {
+      return {
+        ...state,
+        cashFlows: state.cashFlows.map(cf =>
+          cf.id === action.payload.id
+            ? { ...cf, ...action.payload.data }
+            : cf
+        ),
+        metadata: {
+          ...state.metadata,
+          lastUpdated: new Date().toISOString(),
+        },
+        unsavedChanges: true,
+      };
+    }
+    
+    case DATA_ACTIONS.DELETE_CASH_FLOW: {
+      return {
+        ...state,
+        cashFlows: state.cashFlows.filter(cf => cf.id !== action.payload),
+        metadata: {
+          ...state.metadata,
+          lastUpdated: new Date().toISOString(),
+        },
+        unsavedChanges: true,
+      };
+    }
+    
     case DATA_ACTIONS.MARK_SAVED:
       return { ...state, unsavedChanges: false };
     
@@ -658,6 +864,20 @@ export function DataProvider({ children }) {
     
     addExpense: (expenseData) => dispatch({ type: DATA_ACTIONS.ADD_EXPENSE, payload: expenseData }),
     deleteExpense: (expenseId) => dispatch({ type: DATA_ACTIONS.DELETE_EXPENSE, payload: expenseId }),
+    
+    // Partner operations
+    addPartner: (partnerData) => dispatch({ type: DATA_ACTIONS.ADD_PARTNER, payload: partnerData }),
+    updatePartner: (id, data) => dispatch({ type: DATA_ACTIONS.UPDATE_PARTNER, payload: { id, data } }),
+    deletePartner: (partnerId) => dispatch({ type: DATA_ACTIONS.DELETE_PARTNER, payload: partnerId }),
+    
+    // Withdrawal operations
+    addWithdrawal: (withdrawalData) => dispatch({ type: DATA_ACTIONS.ADD_WITHDRAWAL, payload: withdrawalData }),
+    deleteWithdrawal: (withdrawalId) => dispatch({ type: DATA_ACTIONS.DELETE_WITHDRAWAL, payload: withdrawalId }),
+    
+    // Cash Flow operations
+    addCashFlow: (cashFlowData) => dispatch({ type: DATA_ACTIONS.ADD_CASH_FLOW, payload: cashFlowData }),
+    updateCashFlow: (id, data) => dispatch({ type: DATA_ACTIONS.UPDATE_CASH_FLOW, payload: { id, data } }),
+    deleteCashFlow: (cashFlowId) => dispatch({ type: DATA_ACTIONS.DELETE_CASH_FLOW, payload: cashFlowId }),
     
     loadData: (data) => dispatch({ type: DATA_ACTIONS.LOAD_DATA, payload: data }),
     setLoading: (loading) => dispatch({ type: DATA_ACTIONS.SET_LOADING, payload: loading }),
