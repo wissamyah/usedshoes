@@ -612,14 +612,16 @@ function dataReducer(state, action) {
     
     // Partner actions
     case DATA_ACTIONS.ADD_PARTNER: {
+      const initialInvestment = action.payload.initialInvestment || 0;
       const newPartner = {
         ...action.payload,
         id: `P${state.metadata.nextIds.partner}`,
         capitalAccount: {
-          initialInvestment: action.payload.initialInvestment || 0,
+          initialInvestment: initialInvestment,
           additionalContributions: [],
           totalWithdrawn: 0,
-          profitShare: 0
+          profitShare: 0,
+          currentEquity: initialInvestment
         },
         createdAt: new Date().toISOString()
       };
@@ -640,13 +642,32 @@ function dataReducer(state, action) {
     }
     
     case DATA_ACTIONS.UPDATE_PARTNER: {
+      const updatedPartner = action.payload.data;
+      
       return {
         ...state,
-        partners: state.partners.map(p =>
-          p.id === action.payload.id
-            ? { ...p, ...action.payload.data }
-            : p
-        ),
+        partners: state.partners.map(p => {
+          if (p.id === action.payload.id) {
+            // Properly update the capital account with initial investment
+            const currentCapitalAccount = p.capitalAccount || {};
+            const newInitialInvestment = updatedPartner.initialInvestment !== undefined 
+              ? updatedPartner.initialInvestment 
+              : currentCapitalAccount.initialInvestment;
+            
+            return {
+              ...p,
+              ...updatedPartner,
+              capitalAccount: {
+                ...currentCapitalAccount,
+                initialInvestment: newInitialInvestment,
+                currentEquity: (newInitialInvestment || 0) + 
+                              (currentCapitalAccount.profitShare || 0) - 
+                              (currentCapitalAccount.totalWithdrawn || 0)
+              }
+            };
+          }
+          return p;
+        }),
         metadata: {
           ...state.metadata,
           lastUpdated: new Date().toISOString(),

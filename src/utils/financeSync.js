@@ -31,10 +31,11 @@ export function generateInitialCashFlow(containers, sales, expenses) {
   // Combine all transactions for cash flow history
   const transactions = [];
   
-  // Add container purchases as cash outflows
+  // Add container purchases as cash outflows (use a reasonable default date if not available)
   containers.forEach(container => {
+    const containerDate = container.arrivalDate || container.orderDate || container.createdAt || '2024-01-01';
     transactions.push({
-      date: container.arrivalDate || container.orderDate,
+      date: containerDate,
       type: 'expense',
       category: 'Container Purchase',
       description: `Container ${container.id} - ${container.name}`,
@@ -84,8 +85,10 @@ export function generateInitialCashFlow(containers, sales, expenses) {
     return acc;
   }, {});
   
-  // Create cash flow records for each date
-  Object.keys(groupedByDate).forEach(date => {
+  // Create cash flow records for each date (sorted chronologically)
+  const sortedDates = Object.keys(groupedByDate).sort((a, b) => new Date(a) - new Date(b));
+  
+  sortedDates.forEach(date => {
     const dayTransactions = groupedByDate[date];
     const dayInflows = dayTransactions
       .filter(t => t.amount > 0)
@@ -95,7 +98,8 @@ export function generateInitialCashFlow(containers, sales, expenses) {
       .reduce((sum, t) => sum + Math.abs(t.amount), 0);
     
     const openingBalance = runningBalance;
-    runningBalance = runningBalance + dayInflows - dayOutflows;
+    const closingBalance = runningBalance + dayInflows - dayOutflows;
+    runningBalance = closingBalance; // Update running balance for next day
     
     cashFlowRecords.push({
       id: `cf_${date}`,
@@ -103,8 +107,8 @@ export function generateInitialCashFlow(containers, sales, expenses) {
       openingBalance,
       cashIn: dayInflows,
       cashOut: dayOutflows,
-      theoreticalBalance: runningBalance,
-      actualBalance: runningBalance, // Initially assume no discrepancy
+      theoreticalBalance: closingBalance, // This is the closing balance for the day
+      actualBalance: closingBalance, // Initially assume no discrepancy
       discrepancy: 0,
       transactions: dayTransactions,
       reconciled: true,

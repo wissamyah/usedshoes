@@ -68,9 +68,20 @@ export default function FinancePage() {
   const todaysCashOut = todaysExpenses.reduce((sum, expense) => sum + expense.amount, 0) +
                         todaysWithdrawals.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
   
-  // Get latest cash flow record for opening balance
-  const latestCashFlow = cashFlows.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-  const openingBalance = latestCashFlow?.theoreticalBalance || 0;
+  // Get opening balance - check for yesterday's closing balance or use latest cash flow
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  
+  const yesterdayCashFlow = cashFlows.find(cf => cf.date === yesterdayStr);
+  const latestCashFlowBeforeToday = cashFlows
+    .filter(cf => cf.date < today)
+    .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+  
+  // Use yesterday's balance if available, otherwise latest cash flow before today
+  const openingBalance = yesterdayCashFlow?.theoreticalBalance || 
+                         latestCashFlowBeforeToday?.theoreticalBalance || 
+                         0;
   const currentCashPosition = openingBalance + todaysCashIn - todaysCashOut;
   
   // Calculate total partner equity
