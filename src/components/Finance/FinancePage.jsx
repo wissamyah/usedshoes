@@ -132,23 +132,6 @@ export default function FinancePage() {
             </button>
           </div>
           
-          {/* Initial Sync Notice */}
-          {cashFlows.length === 0 && !isSyncing && (
-            <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <RefreshCw className="h-5 w-5 text-blue-400" />
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-blue-800">No Financial Data Found</h3>
-                  <div className="mt-2 text-sm text-blue-700">
-                    <p>It looks like you haven't synced your financial data yet. Click the "Sync Data" button above to import your existing transactions (containers, sales, expenses) into the finance module.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {/* Today's Cash Position */}

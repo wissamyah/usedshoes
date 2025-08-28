@@ -242,7 +242,7 @@ export default function CashInjectionForm({ injection, onClose }) {
                   className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     errors.source ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
                   }`}
-                  placeholder={selectedType?.value === 'Loan' ? 'Bank/Lender name' : 'Source of funds'}
+                  placeholder="Source"
                 />
                 {errors.source && <p className="mt-1 text-sm text-red-600">{errors.source}</p>}
               </div>
@@ -279,7 +279,7 @@ export default function CashInjectionForm({ injection, onClose }) {
                 className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   errors.description ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
                 }`}
-                placeholder="Brief description of the cash injection..."
+                placeholder="Description"
               />
               {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
             </div>
@@ -296,7 +296,7 @@ export default function CashInjectionForm({ injection, onClose }) {
                 value={formData.reference}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Transaction ID, check number, etc."
+                placeholder="Reference number"
               />
               <p className="mt-1 text-xs text-gray-500">Optional reference for tracking</p>
             </div>
@@ -313,11 +313,7 @@ export default function CashInjectionForm({ injection, onClose }) {
                 onChange={handleInputChange}
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder={
-                  selectedType?.value === 'Loan' 
-                    ? 'Loan terms, interest rate, repayment schedule...'
-                    : 'Additional details about this cash injection...'
-                }
+                placeholder="Notes"
               />
             </div>
             

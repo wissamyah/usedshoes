@@ -122,7 +122,7 @@ export default function ProductForm({ product, containers, onSubmit, onCancel })
                   className={`mt-1 block w-full border rounded-md shadow-sm py-3 px-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     errors.name ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
                   }`}
-                  placeholder="e.g., Nike Air Max 90"
+                  placeholder="Product name"
                 />
                 {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
               </div>
@@ -213,9 +213,6 @@ export default function ProductForm({ product, containers, onSubmit, onCancel })
                   <option value="20">20 kg per bag</option>
                   <option value="25">25 kg per bag</option>
                 </select>
-                <p className="mt-1 text-sm text-gray-500">
-                  Standard weight per bag for this product type
-                </p>
               </div>
 
               {/* Description */}
@@ -230,7 +227,7 @@ export default function ProductForm({ product, containers, onSubmit, onCancel })
                   value={formData.description}
                   onChange={handleInputChange}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Additional details about the product..."
+                  placeholder="Description..."
                 />
               </div>
             </div>
@@ -255,28 +252,6 @@ export default function ProductForm({ product, containers, onSubmit, onCancel })
             </div>
           </form>
 
-          {/* Help Text */}
-          <div className="mt-4 p-4 bg-blue-50 rounded-md">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-blue-800">Product setup guide:</h3>
-                <div className="mt-2 text-sm text-blue-700">
-                  <ul className="list-disc list-inside space-y-1">
-                    <li>Create product types first (Shoes, Belts, Bags)</li>
-                    <li>Set cost per kg - this is your purchase cost from suppliers</li>
-                    <li>Choose bag weight (20kg or 25kg standard sizes)</li>
-                    <li>Stock is tracked in number of bags, not kilograms</li>
-                    <li>When importing containers, allocate bags to these product types</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </Modal>

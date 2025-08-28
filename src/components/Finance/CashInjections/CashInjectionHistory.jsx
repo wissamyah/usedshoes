@@ -212,23 +212,11 @@ export default function CashInjectionHistory() {
         <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
           <DollarSign className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No Cash Injections</h3>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600">
             {filterType === 'all' 
-              ? 'Start by adding your first cash injection'
+              ? 'No records found'
               : `No ${filterType.toLowerCase()} records found`}
           </p>
-          {filterType === 'all' && (
-            <button
-              onClick={() => {
-                setSelectedInjection(null);
-                setShowForm(true);
-              }}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Cash Injection
-            </button>
-          )}
         </div>
       ) : (
         <div className="bg-white shadow overflow-hidden sm:rounded-md">

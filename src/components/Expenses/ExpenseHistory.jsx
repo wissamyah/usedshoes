@@ -490,7 +490,7 @@ export default function ExpenseHistory({ onEditExpense }) {
           <p className="text-gray-600 mb-4">
             {searchTerm || categoryFilter || dateFromFilter || dateToFilter
               ? 'No expenses match your current filters.'
-              : 'No expenses have been recorded yet. Start by adding your first expense!'}
+              : 'No expenses recorded.'}
           </p>
           {(searchTerm || categoryFilter || dateFromFilter || dateToFilter) && (
             <button

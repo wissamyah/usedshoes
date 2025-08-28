@@ -463,7 +463,7 @@ export default function SalesHistory({ onEditSale }) {
           <p className="text-gray-600 mb-4">
             {searchTerm || dateFilter
               ? 'No sales match your current filters.'
-              : 'No sales have been recorded yet. Start by recording your first sale!'}
+              : 'No sales recorded.'}
           </p>
           {(searchTerm || dateFilter || startDate || endDate) && (
             <button

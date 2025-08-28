@@ -165,7 +165,7 @@ export default function PartnerForm({ partner, onClose }) {
                   className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     errors.name ? 'border-red-300' : 'border-gray-300'
                   }`}
-                  placeholder="John Doe"
+                  placeholder="Partner name"
                 />
                 {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
               </div>
@@ -212,7 +212,7 @@ export default function PartnerForm({ partner, onClose }) {
                   className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     errors.email ? 'border-red-300' : 'border-gray-300'
                   }`}
-                  placeholder="john@example.com"
+                  placeholder="Email address"
                 />
                 {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
               </div>
@@ -229,7 +229,7 @@ export default function PartnerForm({ partner, onClose }) {
                   value={formData.phoneNumber}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="+1 234 567 8900"
+                  placeholder="Phone number"
                 />
               </div>
             </div>
@@ -255,7 +255,7 @@ export default function PartnerForm({ partner, onClose }) {
                   className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     errors.initialInvestment ? 'border-red-300' : 'border-gray-300'
                   }`}
-                  placeholder="10000"
+                  placeholder="Initial investment"
                 />
                 {errors.initialInvestment && <p className="mt-1 text-sm text-red-600">{errors.initialInvestment}</p>}
               </div>
@@ -279,7 +279,7 @@ export default function PartnerForm({ partner, onClose }) {
                     value={formData.bankDetails.accountName}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="John Doe"
+                    placeholder="Partner name"
                   />
                 </div>
                 
@@ -295,7 +295,7 @@ export default function PartnerForm({ partner, onClose }) {
                     value={formData.bankDetails.bankName}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Bank of America"
+                    placeholder="Bank name"
                   />
                 </div>
               </div>
@@ -312,7 +312,7 @@ export default function PartnerForm({ partner, onClose }) {
                   value={formData.bankDetails.accountNumber}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="****1234"
+                  placeholder="Account number"
                 />
               </div>
             </div>
