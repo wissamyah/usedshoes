@@ -15,19 +15,15 @@ export default function FinancePage() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [hasInitialSync, setHasInitialSync] = useState(false);
   
-  // Auto-sync on first load if no finance data exists
+  // Auto-sync on page load to ensure finance data is always up-to-date
   useEffect(() => {
-    // Only auto-sync if we have transaction data but no cash flows
-    // Don't auto-sync if partners exist (user has already set them up)
-    if (!hasInitialSync && cashFlows.length === 0 && (containers.length > 0 || sales.length > 0 || expenses.length > 0)) {
-      // Only sync cash flows, not partners
-      if (partners.length === 0) {
-        // Only sync if truly no partners exist
-        handleSync(true);
-      }
+    // Always sync when the page loads to get latest transaction data
+    if (!hasInitialSync) {
+      // Perform sync to update cash flows from latest transactions
+      handleSync(true);
       setHasInitialSync(true);
     }
-  }, [hasInitialSync, cashFlows.length, containers.length, sales.length, expenses.length, partners.length]);
+  }, []); // Empty dependency array to run only once on mount
   
   const handleSync = async (isAutoSync = false) => {
     setIsSyncing(true);

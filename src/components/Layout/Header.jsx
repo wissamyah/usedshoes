@@ -65,7 +65,7 @@ function Header({ onSyncData, syncStatus, lastSyncTime }) {
               </h1>
             </div>
             <div className="hidden sm:block ml-4">
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                 v1.0.0
               </span>
             </div>
@@ -112,7 +112,7 @@ function Header({ onSyncData, syncStatus, lastSyncTime }) {
             <button
               onClick={onSyncData}
               disabled={syncStatus === 'syncing'}
-              className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <CloudUpload className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">
