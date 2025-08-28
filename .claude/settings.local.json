@@ -8,7 +8,9 @@
       "WebSearch",
       "Read(/c:\\Users\\wissa\\Pictures\\Screenshots/**)",
       "Bash(git add:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Read(C:\\Users\\wissa\\Downloads/**)",
+      "Read(C:\\Users\\wissa\\Downloads/**)"
     ],
     "deny": [],
     "ask": []
