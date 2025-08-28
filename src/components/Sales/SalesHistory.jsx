@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
 import { useUI } from '../../context/UIContext';
-import { Pencil, Trash2, Search, ClipboardX } from 'lucide-react';
+import { Pencil, Trash2, Search, ClipboardX, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
 export default function SalesHistory({ onEditSale }) {
   const { sales, deleteSale } = useData();
@@ -11,6 +11,8 @@ export default function SalesHistory({ onEditSale }) {
   const [dateFilter, setDateFilter] = useState('');
   const [sortBy, setSortBy] = useState('date'); // date, amount, profit
   const [sortOrder, setSortOrder] = useState('desc'); // desc, asc
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Filter and sort sales
   const filteredSales = sales
@@ -49,6 +51,66 @@ export default function SalesHistory({ onEditSale }) {
         return aValue > bValue ? 1 : -1;
       }
     });
+  
+  // Pagination logic
+  const totalItems = filteredSales.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedSales = filteredSales.slice(startIndex, endIndex);
+  
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const delta = 2; // Number of pages to show on each side of current page
+    const range = [];
+    const rangeWithDots = [];
+    let l;
+
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
+        range.push(i);
+      }
+    }
+
+    range.forEach((i) => {
+      if (l) {
+        if (i - l === 2) {
+          rangeWithDots.push(l + 1);
+        } else if (i - l !== 1) {
+          rangeWithDots.push('...');
+        }
+      }
+      rangeWithDots.push(i);
+      l = i;
+    });
+
+    return rangeWithDots;
+  };
+  
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      // Scroll to top of table
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+  
+  // Reset to page 1 when filters change
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+  
+  const handleDateFilterChange = (value) => {
+    setDateFilter(value);
+    setCurrentPage(1);
+  };
+  
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(Number(value));
+    setCurrentPage(1);
+  };
 
   const handleDeleteSale = async (sale) => {
     const confirmed = await showConfirmDialog(
@@ -89,6 +151,10 @@ export default function SalesHistory({ onEditSale }) {
   // Calculate totals for filtered sales
   const totalRevenue = filteredSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
   const totalProfit = filteredSales.reduce((sum, sale) => sum + (sale.profit || 0), 0);
+  
+  // Calculate totals for current page
+  const pageRevenue = paginatedSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
+  const pageProfit = paginatedSales.reduce((sum, sale) => sum + (sale.profit || 0), 0);
 
   return (
     <div className="p-6">
@@ -97,8 +163,13 @@ export default function SalesHistory({ onEditSale }) {
         <div>
           <h3 className="text-lg font-medium text-gray-900">Sales History</h3>
           <p className="text-sm text-gray-600 mt-1">
-            {filteredSales.length} sales • {formatCurrency(totalRevenue)} revenue • {formatCurrency(totalProfit)} profit
+            {filteredSales.length} total sales • {formatCurrency(totalRevenue)} total revenue • {formatCurrency(totalProfit)} total profit
           </p>
+          {totalPages > 1 && (
+            <p className="text-xs text-gray-500 mt-1">
+              Page {currentPage}: {paginatedSales.length} sales • {formatCurrency(pageRevenue)} revenue • {formatCurrency(pageProfit)} profit
+            </p>
+          )}
         </div>
       </div>
 
@@ -112,7 +183,7 @@ export default function SalesHistory({ onEditSale }) {
               type="text"
               placeholder="Search by product name or notes..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
             />
           </div>
@@ -123,7 +194,7 @@ export default function SalesHistory({ onEditSale }) {
           <input
             type="date"
             value={dateFilter}
-            onChange={(e) => setDateFilter(e.target.value)}
+            onChange={(e) => handleDateFilterChange(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
           />
         </div>
@@ -155,6 +226,7 @@ export default function SalesHistory({ onEditSale }) {
             onClick={() => {
               setSearchTerm('');
               setDateFilter('');
+              setCurrentPage(1);
             }}
             className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900"
           >
@@ -165,7 +237,8 @@ export default function SalesHistory({ onEditSale }) {
 
       {/* Sales Table */}
       {filteredSales.length > 0 ? (
-        <div className="overflow-x-auto">
+        <>
+          <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -193,7 +266,7 @@ export default function SalesHistory({ onEditSale }) {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredSales.map((sale) => (
+              {paginatedSales.map((sale) => (
                 <tr key={sale.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     <div>
@@ -245,7 +318,99 @@ export default function SalesHistory({ onEditSale }) {
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+          
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-3 bg-gray-50 border-t border-gray-200">
+            {/* Items per page selector */}
+            <div className="flex items-center space-x-2 mb-3 sm:mb-0">
+              <label className="text-sm text-gray-700">Show:</label>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => handleItemsPerPageChange(e.target.value)}
+                className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+              <span className="text-sm text-gray-700">per page</span>
+            </div>
+            
+            {/* Pagination info and controls */}
+            <div className="flex items-center space-x-1">
+              {/* First page */}
+              <button
+                onClick={() => handlePageChange(1)}
+                disabled={currentPage === 1}
+                className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="First page"
+              >
+                <ChevronsLeft className="h-4 w-4 text-gray-600" />
+              </button>
+              
+              {/* Previous page */}
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Previous page"
+              >
+                <ChevronLeft className="h-4 w-4 text-gray-600" />
+              </button>
+              
+              {/* Page numbers */}
+              <div className="flex items-center space-x-1 mx-2">
+                {getPageNumbers().map((pageNum, index) => (
+                  pageNum === '...' ? (
+                    <span key={`dots-${index}`} className="px-2 py-1 text-sm text-gray-500">...</span>
+                  ) : (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`px-3 py-1 text-sm rounded ${
+                        currentPage === pageNum
+                          ? 'bg-green-600 text-white'
+                          : 'hover:bg-gray-200 text-gray-700'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  )
+                ))}
+              </div>
+              
+              {/* Next page */}
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Next page"
+              >
+                <ChevronRight className="h-4 w-4 text-gray-600" />
+              </button>
+              
+              {/* Last page */}
+              <button
+                onClick={() => handlePageChange(totalPages)}
+                disabled={currentPage === totalPages}
+                className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Last page"
+              >
+                <ChevronsRight className="h-4 w-4 text-gray-600" />
+              </button>
+            </div>
+            
+            {/* Results info */}
+            <div className="text-sm text-gray-700 mt-3 sm:mt-0">
+              Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} results
+            </div>
+          </div>
+          )}
+        </>
       ) : (
         <div className="text-center py-12">
           <ClipboardX className="mx-auto h-12 w-12 text-gray-400 mb-4" />
@@ -260,6 +425,7 @@ export default function SalesHistory({ onEditSale }) {
               onClick={() => {
                 setSearchTerm('');
                 setDateFilter('');
+                setCurrentPage(1);
               }}
               className="text-green-600 hover:text-green-500"
             >
