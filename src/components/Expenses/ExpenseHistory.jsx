@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { useUI } from '../../context/UIContext';
 import { formatDate } from '../../utils/dateFormatter';
-import { Pencil, Trash2, Search, Filter, FileX } from 'lucide-react';
+import { Pencil, Trash2, Search, Filter, FileX, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
 export default function ExpenseHistory({ onEditExpense }) {
   const { expenses, deleteExpense } = useData();
@@ -14,6 +14,8 @@ export default function ExpenseHistory({ onEditExpense }) {
   const [dateToFilter, setDateToFilter] = useState('');
   const [sortBy, setSortBy] = useState('date'); // date, amount, category
   const [sortOrder, setSortOrder] = useState('desc'); // desc, asc
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Get unique categories from expenses
   const uniqueCategories = [...new Set(expenses.map(expense => expense.category))].sort();
@@ -59,6 +61,54 @@ export default function ExpenseHistory({ onEditExpense }) {
       }
     });
 
+  // Pagination logic
+  const totalItems = filteredExpenses.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedExpenses = filteredExpenses.slice(startIndex, endIndex);
+  
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const delta = 2; // Number of pages to show on each side of current page
+    const range = [];
+    const rangeWithDots = [];
+    let l;
+
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
+        range.push(i);
+      }
+    }
+
+    range.forEach((i) => {
+      if (l) {
+        if (i - l === 2) {
+          rangeWithDots.push(l + 1);
+        } else if (i - l !== 1) {
+          rangeWithDots.push('...');
+        }
+      }
+      rangeWithDots.push(i);
+      l = i;
+    });
+
+    return rangeWithDots;
+  };
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      // Scroll to top of the table
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(Number(value));
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
+
   const handleDeleteExpense = async (expense) => {
     const confirmed = await showConfirmDialog(
       'Delete Expense',
@@ -86,6 +136,9 @@ export default function ExpenseHistory({ onEditExpense }) {
 
   // Calculate totals for filtered expenses
   const totalAmount = filteredExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
+  
+  // Calculate totals for current page
+  const pageAmount = paginatedExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
 
   // Calculate date range for quick filters
   const today = new Date().toISOString().split('T')[0];
@@ -94,6 +147,7 @@ export default function ExpenseHistory({ onEditExpense }) {
   const lastMonthEnd = new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString().split('T')[0];
 
   const handleQuickFilter = (filter) => {
+    setCurrentPage(1); // Reset to first page when applying quick filters
     switch (filter) {
       case 'today':
         setDateFromFilter(today);
@@ -121,8 +175,13 @@ export default function ExpenseHistory({ onEditExpense }) {
         <div>
           <h3 className="text-lg font-medium text-gray-900">Expense History</h3>
           <p className="text-sm text-gray-600 mt-1">
-            {filteredExpenses.length} expenses • {formatCurrency(totalAmount)} total
+            {filteredExpenses.length} expense{filteredExpenses.length !== 1 ? 's' : ''} • {formatCurrency(totalAmount)} total
           </p>
+          {totalPages > 1 && (
+            <p className="text-xs text-gray-500 mt-1">
+              Page {currentPage}: {paginatedExpenses.length} expense{paginatedExpenses.length !== 1 ? 's' : ''} • {formatCurrency(pageAmount)}
+            </p>
+          )}
         </div>
       </div>
 
@@ -137,7 +196,10 @@ export default function ExpenseHistory({ onEditExpense }) {
                 type="text"
                 placeholder="Search description, notes, or container ID..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -147,7 +209,10 @@ export default function ExpenseHistory({ onEditExpense }) {
           <div>
             <select
               value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
+              onChange={(e) => {
+                setCategoryFilter(e.target.value);
+                setCurrentPage(1);
+              }}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">All Categories</option>
@@ -188,7 +253,10 @@ export default function ExpenseHistory({ onEditExpense }) {
             <input
               type="date"
               value={dateFromFilter}
-              onChange={(e) => setDateFromFilter(e.target.value)}
+              onChange={(e) => {
+                setDateFromFilter(e.target.value);
+                setCurrentPage(1);
+              }}
               className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
@@ -197,7 +265,10 @@ export default function ExpenseHistory({ onEditExpense }) {
             <input
               type="date"
               value={dateToFilter}
-              onChange={(e) => setDateToFilter(e.target.value)}
+              onChange={(e) => {
+                setDateToFilter(e.target.value);
+                setCurrentPage(1);
+              }}
               className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
@@ -249,7 +320,7 @@ export default function ExpenseHistory({ onEditExpense }) {
 
       {/* Expenses Table */}
       {filteredExpenses.length > 0 ? (
-        <div className="overflow-x-auto">
+        <div>
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -274,7 +345,7 @@ export default function ExpenseHistory({ onEditExpense }) {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredExpenses.map((expense) => (
+              {paginatedExpenses.map((expense) => (
                 <tr key={expense.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {formatDate(expense.date)}
@@ -320,6 +391,97 @@ export default function ExpenseHistory({ onEditExpense }) {
               ))}
             </tbody>
           </table>
+          
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex flex-col sm:flex-row justify-between items-center bg-gray-50 px-6 py-4 border-t">
+              {/* Items per page selector */}
+              <div className="flex items-center space-x-2 mb-4 sm:mb-0">
+                <label className="text-sm text-gray-700">Show:</label>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => handleItemsPerPageChange(e.target.value)}
+                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                  <option value={filteredExpenses.length}>All ({filteredExpenses.length})</option>
+                </select>
+                <span className="text-sm text-gray-700">per page</span>
+              </div>
+              
+              {/* Page navigation */}
+              <div className="flex items-center space-x-1">
+                {/* First page */}
+                <button
+                  onClick={() => handlePageChange(1)}
+                  disabled={currentPage === 1}
+                  className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="First page"
+                >
+                  <ChevronsLeft className="h-4 w-4 text-gray-600" />
+                </button>
+                
+                {/* Previous page */}
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Previous page"
+                >
+                  <ChevronLeft className="h-4 w-4 text-gray-600" />
+                </button>
+                
+                {/* Page numbers */}
+                <div className="flex items-center space-x-1 mx-2">
+                  {getPageNumbers().map((pageNum, index) => (
+                    pageNum === '...' ? (
+                      <span key={`dots-${index}`} className="px-2 py-1 text-sm text-gray-500">...</span>
+                    ) : (
+                      <button
+                        key={pageNum}
+                        onClick={() => handlePageChange(pageNum)}
+                        className={`px-3 py-1 text-sm rounded ${
+                          currentPage === pageNum
+                            ? 'bg-blue-600 text-white'
+                            : 'hover:bg-gray-200 text-gray-700'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    )
+                  ))}
+                </div>
+                
+                {/* Next page */}
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Next page"
+                >
+                  <ChevronRight className="h-4 w-4 text-gray-600" />
+                </button>
+                
+                {/* Last page */}
+                <button
+                  onClick={() => handlePageChange(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Last page"
+                >
+                  <ChevronsRight className="h-4 w-4 text-gray-600" />
+                </button>
+              </div>
+              
+              {/* Page info */}
+              <div className="text-sm text-gray-700 mt-4 sm:mt-0">
+                Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} expense{totalItems !== 1 ? 's' : ''}
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="text-center py-12">
