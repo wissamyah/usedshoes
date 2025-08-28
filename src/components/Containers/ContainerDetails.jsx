@@ -18,7 +18,8 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
   const totalKg = container.products?.reduce((sum, p) => sum + ((p.bagQuantity || 0) * (p.bagWeight || 25)), 0) || 0;
   const productsCost = container.products?.reduce((sum, p) => sum + ((p.bagQuantity || 0) * (p.costPerKg || 0) * (p.bagWeight || 25)), 0) || 0;
   const shippingCost = parseFloat(container.shippingCost) || 0;
-  const totalCost = productsCost + shippingCost;
+  const customsCost = parseFloat(container.customsCost) || 0;
+  const totalCost = productsCost + shippingCost + customsCost;
 
   return (
     <Modal isOpen={true} onClose={onClose} size="large">
@@ -127,7 +128,7 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
                               <p className="text-lg font-semibold text-gray-900">{formatCurrency(productTotalCost)}</p>
                             </div>
                             
-                            <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div className="mt-2 grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
                               <div>
                                 <span className="font-medium text-gray-500">Quantity:</span>
                                 <p className="text-gray-900">{product.bagQuantity} bags</p>
@@ -146,6 +147,16 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
                               <div>
                                 <span className="font-medium text-gray-500">Cost per Bag:</span>
                                 <p className="text-gray-900">{formatCurrency((product.costPerKg || 0) * (product.bagWeight || 25))}</p>
+                              </div>
+                              
+                              <div>
+                                <span className="font-medium text-gray-500">Landed Cost/Bag:</span>
+                                <p className="text-gray-900 font-semibold">
+                                  {formatCurrency(
+                                    ((product.costPerKg || 0) * (product.bagWeight || 25)) +
+                                    (totalBags > 0 ? (shippingCost + customsCost) / totalBags : 0)
+                                  )}
+                                </p>
                               </div>
                             </div>
                           </div>
@@ -177,6 +188,11 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
                 <span className="font-medium text-gray-900">{formatCurrency(shippingCost)}</span>
               </div>
               
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Customs/Clearing Cost:</span>
+                <span className="font-medium text-gray-900">{formatCurrency(customsCost)}</span>
+              </div>
+              
               <div className="border-t border-gray-200 pt-2">
                 <div className="flex justify-between text-lg font-semibold">
                   <span className="text-gray-900">Total Container Cost:</span>
@@ -188,9 +204,15 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
             {totalKg > 0 && (
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Average Cost per Kg (including shipping):</span>
+                  <span className="text-gray-600">Average Landed Cost per Kg:</span>
                   <span className="font-medium text-gray-900">{formatCurrency(totalCost / totalKg)}</span>
                 </div>
+                {totalBags > 0 && (
+                  <div className="flex justify-between text-sm mt-2">
+                    <span className="text-gray-600">Average Landed Cost per Bag:</span>
+                    <span className="font-medium text-gray-900">{formatCurrency(totalCost / totalBags)}</span>
+                  </div>
+                )}
               </div>
             )}
           </div>

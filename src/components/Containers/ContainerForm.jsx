@@ -14,6 +14,7 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
     invoiceNumber: '',
     purchaseDate: new Date().toISOString().split('T')[0],
     shippingCost: '0',
+    customsCost: '0',
     description: '',
     products: [] // Array of { productId, bagQuantity, costPerKg, bagWeight }
   });
@@ -35,6 +36,7 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
         invoiceNumber: container.invoiceNumber || '',
         purchaseDate: container.purchaseDate || new Date().toISOString().split('T')[0],
         shippingCost: container.shippingCost?.toString() || '0',
+        customsCost: container.customsCost?.toString() || '0',
         description: container.description || '',
         products: container.products || []
       });
@@ -177,10 +179,11 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
       return sum + (p.bagQuantity * p.costPerKg * p.bagWeight);
     }, 0);
     const shippingCost = parseFloat(formData.shippingCost) || 0;
-    return productsCost + shippingCost;
+    const customsCost = parseFloat(formData.customsCost) || 0;
+    return productsCost + shippingCost + customsCost;
   };
 
-  const calculateWeightedAverageCost = (currentStock, currentCostPerKg, newBags, newCostPerKg, bagWeight) => {
+  const calculateWeightedAverageCost = (currentStock, currentCostPerKg, newBags, newCostPerKg, bagWeight, allocatedCostPerBag = 0) => {
     const currentTotalKg = currentStock * bagWeight;
     const newTotalKg = newBags * bagWeight;
     const totalKg = currentTotalKg + newTotalKg;
@@ -188,7 +191,7 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
     if (totalKg === 0) return newCostPerKg;
     
     const currentTotalValue = currentTotalKg * currentCostPerKg;
-    const newTotalValue = newTotalKg * newCostPerKg;
+    const newTotalValue = (newTotalKg * newCostPerKg) + (newBags * allocatedCostPerBag);
     const totalValue = currentTotalValue + newTotalValue;
     
     return totalValue / totalKg;
@@ -226,6 +229,7 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
       const containerData = {
         ...formData,
         shippingCost: parseFloat(formData.shippingCost) || 0,
+        customsCost: parseFloat(formData.customsCost) || 0,
         totalCost
       };
 
@@ -241,19 +245,27 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
           console.log('Found product for update:', product);
           
           if (product) {
+            // Calculate allocated shipping and customs cost per bag
+            const totalBags = formData.products.reduce((sum, p) => sum + p.bagQuantity, 0);
+            const shippingCost = parseFloat(formData.shippingCost) || 0;
+            const customsCost = parseFloat(formData.customsCost) || 0;
+            const allocatedCostPerBag = totalBags > 0 ? (shippingCost + customsCost) / totalBags : 0;
+            
             let newCostPerKg;
             
             if (product.currentStock === 0) {
-              // If stock is 0, override with new cost
-              newCostPerKg = containerProduct.costPerKg;
+              // If stock is 0, override with new cost including allocated costs
+              const totalCostPerBag = (containerProduct.costPerKg * containerProduct.bagWeight) + allocatedCostPerBag;
+              newCostPerKg = totalCostPerBag / containerProduct.bagWeight;
             } else {
-              // Calculate weighted average cost
+              // Calculate weighted average cost including allocated costs
               newCostPerKg = calculateWeightedAverageCost(
                 product.currentStock,
                 product.costPerKg || product.costPerUnit || 0,
                 containerProduct.bagQuantity,
                 containerProduct.costPerKg,
-                containerProduct.bagWeight
+                containerProduct.bagWeight,
+                allocatedCostPerBag
               );
             }
 
@@ -398,6 +410,23 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                   id="shippingCost"
                   name="shippingCost"
                   value={formData.shippingCost}
+                  onChange={handleInputChange}
+                  min="0"
+                  step="0.01"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="0.00"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="customsCost" className="block text-sm font-medium text-gray-700">
+                  Customs/Clearing Cost ($)
+                </label>
+                <input
+                  type="number"
+                  id="customsCost"
+                  name="customsCost"
+                  value={formData.customsCost}
                   onChange={handleInputChange}
                   min="0"
                   step="0.01"
@@ -554,6 +583,10 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                         <span>Shipping Cost:</span>
                         <span>{formatCurrency(formData.shippingCost)}</span>
                       </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Customs/Clearing Cost:</span>
+                        <span>{formatCurrency(formData.customsCost)}</span>
+                      </div>
                       <div className="flex justify-between text-lg font-semibold border-t border-gray-300 pt-2">
                         <span>Total Container Cost:</span>
                         <span>{formatCurrency(calculateTotalCost())}</span>
@@ -608,7 +641,7 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                     <li>For products with 0 stock: new cost overrides existing cost</li>
                     <li>For products with existing stock: costs are averaged based on quantities</li>
                     <li>Each container purchase is tracked separately for cost history</li>
-                    <li>Shipping costs are added to the total container cost</li>
+                    <li>Shipping and customs costs are allocated proportionally to each product's actual cost</li>
                   </ul>
                 </div>
               </div>

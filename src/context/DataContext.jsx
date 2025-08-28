@@ -304,6 +304,14 @@ function dataReducer(state, action) {
           });
         }
 
+        // Calculate allocated shipping and customs cost per bag
+        const totalBags = newContainerData.products.reduce((sum, p) => sum + p.bagQuantity, 0);
+        const shippingCost = parseFloat(newContainerData.shippingCost) || 0;
+        const customsCost = parseFloat(newContainerData.customsCost) || 0;
+        const allocatedCostPerBag = totalBags > 0 ? (shippingCost + customsCost) / totalBags : 0;
+        
+        console.log(`Container overhead allocation: $${shippingCost + customsCost} / ${totalBags} bags = $${allocatedCostPerBag}/bag`);
+        
         // Then, apply the new stock and cost changes (add stock since container represents incoming stock)
         newContainerData.products.forEach(containerProduct => {
           const productIndex = updatedProducts.findIndex(p => 
@@ -323,29 +331,31 @@ function dataReducer(state, action) {
             let newCostPerKg;
             
             if (product.currentStock === 0) {
-              // If current stock is 0, use the new cost directly
-              newCostPerKg = containerProduct.costPerKg;
-              console.log(`Product ${product.name} has 0 stock, using new cost: ${newCostPerKg}`);
+              // If current stock is 0, use the new cost directly including allocated costs
+              const totalCostPerBag = (containerProduct.costPerKg * containerProduct.bagWeight) + allocatedCostPerBag;
+              newCostPerKg = totalCostPerBag / containerProduct.bagWeight;
+              console.log(`Product ${product.name} has 0 stock, using new landed cost: ${newCostPerKg}`);
             } else {
-              // Calculate weighted average cost
+              // Calculate weighted average cost including allocated costs
               const bagWeight = containerProduct.bagWeight || product.bagWeight || 25;
               const currentTotalKg = product.currentStock * bagWeight;
               const newTotalKg = containerProduct.bagQuantity * bagWeight;
               const totalKg = currentTotalKg + newTotalKg;
               
               if (totalKg === 0) {
-                newCostPerKg = containerProduct.costPerKg;
+                const totalCostPerBag = (containerProduct.costPerKg * bagWeight) + allocatedCostPerBag;
+                newCostPerKg = totalCostPerBag / bagWeight;
               } else {
                 const currentTotalValue = currentTotalKg * (product.costPerKg || product.costPerUnit || 0);
-                const newTotalValue = newTotalKg * containerProduct.costPerKg;
+                const newTotalValue = (newTotalKg * containerProduct.costPerKg) + (containerProduct.bagQuantity * allocatedCostPerBag);
                 const totalValue = currentTotalValue + newTotalValue;
                 newCostPerKg = totalValue / totalKg;
               }
               
               console.log(`Product ${product.name} weighted average cost calculation:
                 Current: ${product.currentStock} bags × ${bagWeight}kg × $${product.costPerKg || product.costPerUnit || 0}/kg = $${currentTotalKg * (product.costPerKg || product.costPerUnit || 0)}
-                New: ${containerProduct.bagQuantity} bags × ${bagWeight}kg × $${containerProduct.costPerKg}/kg = $${newTotalKg * containerProduct.costPerKg}
-                Average: $${newCostPerKg}/kg`);
+                New: ${containerProduct.bagQuantity} bags × ${bagWeight}kg × $${containerProduct.costPerKg}/kg + allocated costs = $${(newTotalKg * containerProduct.costPerKg) + (containerProduct.bagQuantity * allocatedCostPerBag)}
+                Average Landed Cost: $${newCostPerKg}/kg`);
             }
             
             updatedProducts[productIndex] = {
