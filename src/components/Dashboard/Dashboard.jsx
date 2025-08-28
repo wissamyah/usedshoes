@@ -1,4 +1,4 @@
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Wallet, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 import { formatDate } from '../../utils/dateFormatter';
 import KPICards from './KPICards';
@@ -81,36 +81,84 @@ export default function Dashboard() {
         monthlyRevenue={monthlyRevenue}
         inventoryValue={inventoryValue}
         netProfit={netProfit}
-        cashPosition={currentCashPosition}
       />
+
+      {/* Cash Position Card - Prominent Display */}
+      <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 mb-6 text-white">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <div className="flex items-center mb-2">
+              <Wallet className="h-6 w-6 mr-2" />
+              <h3 className="text-lg font-semibold">Current Cash Position</h3>
+            </div>
+            <div className="text-3xl font-bold mb-3">
+              {formatCurrency(currentCashPosition)}
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+              <div>
+                <div className="opacity-90">Sales Revenue</div>
+                <div className="font-semibold">{formatCurrency(totalRevenue)}</div>
+              </div>
+              <div>
+                <div className="opacity-90">Cash Injections</div>
+                <div className="font-semibold">{formatCurrency(totalInjections)}</div>
+              </div>
+              <div>
+                <div className="opacity-90">Expenses</div>
+                <div className="font-semibold">-{formatCurrency(totalExpenses)}</div>
+              </div>
+              <div>
+                <div className="opacity-90">Withdrawals</div>
+                <div className="font-semibold">-{formatCurrency(totalWithdrawals)}</div>
+              </div>
+            </div>
+          </div>
+          <div className="hidden lg:flex items-center justify-center ml-8">
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-3xl font-bold">
+                    {currentCashPosition >= 0 ? (
+                      <TrendingUp className="h-12 w-12 mx-auto mb-1" />
+                    ) : (
+                      <TrendingDown className="h-12 w-12 mx-auto mb-1" />
+                    )}
+                  </div>
+                  <div className="text-xs opacity-90">
+                    {currentCashPosition >= 0 ? 'Positive' : 'Negative'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Secondary Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Cash Flow Summary</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Business Overview</h3>
           <div className="space-y-3">
-            <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">Inflows</div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Sales Revenue:</span>
-              <span className="font-semibold text-green-600">+{formatCurrency(totalRevenue)}</span>
+              <span className="text-gray-600">Total Products:</span>
+              <span className="font-semibold">{products.length}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Cash Injections:</span>
-              <span className="font-semibold text-green-600">+{formatCurrency(totalInjections)}</span>
-            </div>
-            <div className="text-sm font-medium text-gray-500 uppercase tracking-wider mt-3">Outflows</div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Expenses:</span>
-              <span className="font-semibold text-red-600">-{formatCurrency(totalExpenses)}</span>
+              <span className="text-gray-600">Total Containers:</span>
+              <span className="font-semibold">{containers.length}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Withdrawals:</span>
-              <span className="font-semibold text-red-600">-{formatCurrency(totalWithdrawals)}</span>
+              <span className="text-gray-600">Total Sales:</span>
+              <span className="font-semibold">{sales.length}</span>
             </div>
-            <div className="flex justify-between border-t pt-2 mt-2">
-              <span className="text-gray-900 font-medium">Net Cash:</span>
-              <span className={`font-bold ${currentCashPosition >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
-                {formatCurrency(currentCashPosition)}
+            <div className="flex justify-between">
+              <span className="text-gray-600">Active Inventory:</span>
+              <span className="font-semibold">{products.filter(p => p.currentStock > 0).length} items</span>
+            </div>
+            <div className="flex justify-between border-t pt-2">
+              <span className="text-gray-600">Low Stock Items:</span>
+              <span className={`font-semibold ${lowStockProducts.length > 0 ? 'text-orange-600' : 'text-green-600'}`}>
+                {lowStockProducts.length}
               </span>
             </div>
           </div>

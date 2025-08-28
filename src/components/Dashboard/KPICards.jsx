@@ -1,6 +1,6 @@
-import { DollarSign, BarChart3, Package, TrendingUp, Wallet } from 'lucide-react';
+import { DollarSign, BarChart3, Package, TrendingUp } from 'lucide-react';
 
-export default function KPICards({ todaysRevenue, monthlyRevenue, inventoryValue, netProfit, cashPosition }) {
+export default function KPICards({ todaysRevenue, monthlyRevenue, inventoryValue, netProfit }) {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -51,35 +51,25 @@ export default function KPICards({ todaysRevenue, monthlyRevenue, inventoryValue
     }
   ];
 
-  // Add cash position card if provided
-  if (cashPosition !== undefined) {
-    kpiData.splice(2, 0, {
-      title: "Cash Position",
-      value: formatCurrency(cashPosition),
-      description: "Available cash",
-      icon: Wallet,
-      color: cashPosition >= 0 ? "blue" : "red",
-      bgColor: cashPosition >= 0 ? "bg-blue-50" : "bg-red-50",
-      textColor: cashPosition >= 0 ? "text-blue-600" : "text-red-600",
-      iconColor: cashPosition >= 0 ? "text-blue-600" : "text-red-600"
-    });
-  }
-
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-2 ${cashPosition !== undefined ? 'lg:grid-cols-5' : 'lg:grid-cols-4'} gap-6 mb-8`}>
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
       {kpiData.map((kpi, index) => {
         const Icon = kpi.icon;
         
         return (
-          <div key={index} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-            <div className="flex items-center">
-              <div className={`flex-shrink-0 p-3 rounded-lg ${kpi.bgColor}`}>
-                <Icon className={`h-8 w-8 ${kpi.iconColor}`} />
+          <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className={`p-2 rounded-lg ${kpi.bgColor}`}>
+                  <Icon className={`h-6 w-6 ${kpi.iconColor}`} />
+                </div>
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {kpi.description}
+                </span>
               </div>
-              <div className="ml-4 flex-1">
-                <p className="text-sm font-medium text-gray-500">{kpi.title}</p>
-                <p className="text-2xl font-bold text-gray-900">{kpi.value}</p>
-                <p className="text-sm text-gray-600">{kpi.description}</p>
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">{kpi.title}</p>
+                <p className="text-2xl font-bold text-gray-900 break-words">{kpi.value}</p>
               </div>
             </div>
           </div>
