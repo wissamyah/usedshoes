@@ -233,13 +233,15 @@ export class GitHubAPI {
     }
   }
 
-  async updateData(fileName = 'data.json', data, commitMessage = 'Update data') {
+  async updateData(fileName = 'data.json', data, commitMessage = 'Update data', providedSha = null) {
     try {
       console.log(`GitHub API: Attempting to update ${fileName} in ${this.owner}/${this.repo}`);
       
       const result = await this.withRetry(async () => {
-        // First get the current SHA if file exists
-        let sha = null;
+        // Use provided SHA or fetch the current one
+        let sha = providedSha;
+        
+        // Always fetch the latest SHA to avoid conflicts
         try {
           const currentFileResponse = await this.fetchWithTimeout(`${GITHUB_API_BASE}/repos/${this.owner}/${this.repo}/contents/${fileName}`, {
             method: 'GET',
@@ -252,7 +254,7 @@ export class GitHubAPI {
 
           if (currentFileResponse.ok) {
             const currentFile = await currentFileResponse.json();
-            sha = currentFile.sha;
+            sha = currentFile.sha; // Always use the latest SHA
             console.log(`GitHub API: Found existing file with SHA: ${sha}`);
           }
         } catch (error) {
@@ -260,6 +262,7 @@ export class GitHubAPI {
             throw error; // Re-throw non-404 errors
           }
           console.log(`GitHub API: File doesn't exist yet, creating new file`);
+          sha = null;
         }
 
         // Validate data before encoding
@@ -318,7 +321,8 @@ export class GitHubAPI {
         console.log('GitHub API: Successfully updated file');
         
         return {
-          sha: result.commit.sha,
+          sha: result.content.sha, // This is the new file SHA
+          commitSha: result.commit.sha,
           message: result.commit.message,
           url: result.commit.html_url
         };
@@ -433,7 +437,7 @@ export async function fetchGitHubData(owner, repo, token, fileName = 'data.json'
   return await api.fetchData(fileName);
 }
 
-export async function updateGitHubData(owner, repo, token, fileName = 'data.json', data, commitMessage) {
+export async function updateGitHubData(owner, repo, token, fileName = 'data.json', data, commitMessage, sha = null) {
   const api = new GitHubAPI(owner, repo, token);
-  return await api.updateData(fileName, data, commitMessage);
+  return await api.updateData(fileName, data, commitMessage, sha);
 }

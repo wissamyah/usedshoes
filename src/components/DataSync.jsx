@@ -28,11 +28,17 @@ export default function DataSync() {
     syncStatus,
     owner,
     repo,
-    api
+    api,
+    currentDataFile
   } = useGitHub();
 
   const dataLoadedRef = useRef(false);
   const lastSaveRef = useRef(null);
+
+  // Reset dataLoadedRef when currentDataFile changes
+  useEffect(() => {
+    dataLoadedRef.current = false;
+  }, [currentDataFile]);
 
   // Load data on mount if connected to GitHub
   useEffect(() => {
@@ -74,14 +80,14 @@ export default function DataSync() {
             }
           });
           
-          console.log('Data loaded from GitHub successfully');
+          console.log(`Data loaded from GitHub (${currentDataFile}) successfully`);
         }
       } catch (error) {
         console.error('Failed to load data from GitHub:', error);
         
         // If 404, initialize the repository with empty data and save it to GitHub
         if (error.message.includes('404') || error.message.includes('Not Found')) {
-          console.log('No existing data file found, creating initial data.json in repository...');
+          console.log(`No existing data file found, creating initial ${currentDataFile} in repository...`);
           
           // Create empty data structure
           const initialData = {
@@ -114,16 +120,16 @@ export default function DataSync() {
           
           // Try to create the file in GitHub
           try {
-            console.log('Attempting to create data.json in GitHub repository...');
-            const result = await saveData(initialData, 'Initialize repository with empty data structure');
+            console.log(`Attempting to create ${currentDataFile} in GitHub repository...`);
+            const result = await saveData(initialData, `Initialize repository with empty data structure (${currentDataFile})`);
             if (result.success) {
-              console.log('Successfully created data.json in GitHub repository');
+              console.log(`Successfully created ${currentDataFile} in GitHub repository`);
             } else {
-              console.error('Failed to create data.json - GitHub API returned:', result);
-              setError(`Failed to create data.json: ${result.error}`);
+              console.error(`Failed to create ${currentDataFile} - GitHub API returned:`, result);
+              setError(`Failed to create ${currentDataFile}: ${result.error}`);
             }
           } catch (initError) {
-            console.error('Failed to create initial data.json:', initError);
+            console.error(`Failed to create initial ${currentDataFile}:`, initError);
             setError(`Failed to initialize repository: ${initError.message}`);
           }
         } else {
@@ -162,7 +168,7 @@ export default function DataSync() {
     };
 
     loadDataFromGitHub();
-  }, [isConnected]); // Remove other dependencies to prevent infinite loop
+  }, [isConnected, currentDataFile]); // Re-load when data file changes
 
   // Auto-save when data changes
   useEffect(() => {

@@ -7,13 +7,14 @@ import {
 } from '../utils/encryption';
 
 // GitHub API configuration
-const DATA_FILE_NAME = 'data.json';
+const DEFAULT_DATA_FILE = 'data.json';
 
 // Initial GitHub state
 const initialState = {
   isConnected: false,
   owner: '',
   repo: '',
+  currentDataFile: DEFAULT_DATA_FILE,
   connectionStatus: null, // null, 'connecting', 'connected', 'error'
   lastSync: null,
   syncStatus: null, // null, 'syncing', 'success', 'error'
@@ -25,6 +26,8 @@ const GitHubContext = createContext(null);
 
 export function GitHubProvider({ children }) {
   const [state, setState] = useState(initialState);
+  const [currentDataFile, setCurrentDataFile] = useState(DEFAULT_DATA_FILE);
+  const [fileShas, setFileShas] = useState({}); // Track SHA for each file
 
   // Load GitHub settings from localStorage on mount
   useEffect(() => {
@@ -34,6 +37,7 @@ export function GitHubProvider({ children }) {
         const repo = localStorage.getItem('github_repo');
         const encryptedToken = getEncryptedToken('default');
         const lastSync = localStorage.getItem('github_last_sync');
+        const savedDataFile = localStorage.getItem('github_data_file') || DEFAULT_DATA_FILE;
 
         if (owner && repo && encryptedToken) {
           try {
@@ -45,9 +49,11 @@ export function GitHubProvider({ children }) {
               owner,
               repo,
               isConnected: true,
+              currentDataFile: savedDataFile,
               lastSync: lastSync || null,
               api,
             }));
+            setCurrentDataFile(savedDataFile);
           } catch (error) {
             console.warn('Failed to decrypt stored token, clearing stored credentials:', error.message);
             // Clear invalid stored data - this is normal after the encryption method change
@@ -148,7 +154,7 @@ export function GitHubProvider({ children }) {
     setState(prev => ({ ...prev, syncStatus: 'syncing', error: null }));
 
     try {
-      const result = await state.api.fetchData(DATA_FILE_NAME);
+      const result = await state.api.fetchData(currentDataFile);
       
       if (result.success) {
         const lastSync = new Date().toISOString();
@@ -160,6 +166,11 @@ export function GitHubProvider({ children }) {
         }));
         
         localStorage.setItem('github_last_sync', lastSync);
+        
+        // Store the SHA for this file
+        if (result.sha) {
+          setFileShas(prev => ({ ...prev, [currentDataFile]: result.sha }));
+        }
         
         return { data: result.data, sha: result.sha };
       } else {
@@ -184,10 +195,28 @@ export function GitHubProvider({ children }) {
     setState(prev => ({ ...prev, syncStatus: 'syncing', error: null }));
 
     try {
+      // First, get the latest SHA for this file to avoid conflicts
+      let currentSha = fileShas[currentDataFile];
+      
+      // If we don't have a SHA, fetch the current file to get it
+      if (!currentSha) {
+        try {
+          const currentFile = await state.api.fetchData(currentDataFile);
+          if (currentFile.success && currentFile.sha) {
+            currentSha = currentFile.sha;
+            setFileShas(prev => ({ ...prev, [currentDataFile]: currentSha }));
+          }
+        } catch (error) {
+          // File might not exist yet, that's ok
+          console.log('File might not exist yet, will create new');
+        }
+      }
+      
       const result = await state.api.updateData(
-        DATA_FILE_NAME, 
+        currentDataFile, 
         data, 
-        `${commitMessage}\n\n🤖 Generated with Used Shoes Tracker`
+        `${commitMessage}\n\n🤖 Generated with Used Shoes Tracker`,
+        currentSha
       );
       
       if (result.success) {
@@ -200,6 +229,11 @@ export function GitHubProvider({ children }) {
         }));
         
         localStorage.setItem('github_last_sync', lastSync);
+        
+        // Update the SHA for this file after successful save
+        if (result.commit && result.commit.sha) {
+          setFileShas(prev => ({ ...prev, [currentDataFile]: result.commit.sha }));
+        }
         
         return result;
       } else {
@@ -215,22 +249,76 @@ export function GitHubProvider({ children }) {
     }
   };
 
+  // Set data file
+  const setDataFile = async (fileName) => {
+    setCurrentDataFile(fileName);
+    setState(prev => ({ ...prev, currentDataFile: fileName }));
+    localStorage.setItem('github_data_file', fileName);
+    // Clear the SHA for the new file to force a fresh fetch
+    setFileShas(prev => ({ ...prev, [fileName]: null }));
+  };
+
+  // List available data files
+  const listDataFiles = async () => {
+    if (!state.isConnected || !state.api) {
+      throw new Error('GitHub not configured');
+    }
+
+    try {
+      const response = await fetch(
+        `https://api.github.com/repos/${state.owner}/${state.repo}/contents/`,
+        {
+          headers: {
+            Authorization: `Bearer ${await decryptToken(getEncryptedToken('default'))}`,
+            Accept: 'application/vnd.github.v3+json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to list files');
+      }
+
+      const files = await response.json();
+      return files
+        .filter(file => file.name.endsWith('.json') && file.name.includes('data'))
+        .map(file => file.name);
+    } catch (error) {
+      console.error('Error listing data files:', error);
+      return [DEFAULT_DATA_FILE];
+    }
+  };
+
+  // Create new data file
+  const createDataFile = async (fileName) => {
+    if (!state.isConnected || !state.api) {
+      throw new Error('GitHub not configured');
+    }
+
+    return await state.api.createFile(fileName, {}, `Create new data file: ${fileName}`);
+  };
+
   // Disconnect GitHub
   const disconnect = () => {
     removeEncryptedToken('default');
     localStorage.removeItem('github_owner');
     localStorage.removeItem('github_repo');
     localStorage.removeItem('github_last_sync');
+    localStorage.removeItem('github_data_file');
     setState(initialState);
   };
 
   const value = {
     ...state,
+    currentDataFile,
     connect,
     testConnection,
     fetchData,
     saveData,
     disconnect,
+    setDataFile,
+    listDataFiles,
+    createDataFile,
     
     // Helper to clear sync status after a delay
     clearSyncStatus: () => {

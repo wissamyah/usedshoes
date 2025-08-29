@@ -1056,6 +1056,7 @@ export function DataProvider({ children }) {
     },
     
     loadData: (data) => dispatch({ type: DATA_ACTIONS.LOAD_DATA, payload: data }),
+    clearData: () => dispatch({ type: DATA_ACTIONS.LOAD_DATA, payload: initialState }),
     setLoading: (loading) => dispatch({ type: DATA_ACTIONS.SET_LOADING, payload: loading }),
     setError: (error) => dispatch({ type: DATA_ACTIONS.SET_ERROR, payload: error }),
     
