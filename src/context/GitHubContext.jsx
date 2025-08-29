@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { GitHubAPI } from '../services/githubApi';
 import { 
   decryptToken, 
@@ -28,6 +28,7 @@ export function GitHubProvider({ children }) {
   const [state, setState] = useState(initialState);
   const [currentDataFile, setCurrentDataFile] = useState(DEFAULT_DATA_FILE);
   const [fileShas, setFileShas] = useState({}); // Track SHA for each file
+  const [disconnectCallbacks, setDisconnectCallbacks] = useState([]); // Track disconnect callbacks
 
   // Load GitHub settings from localStorage on mount
   useEffect(() => {
@@ -298,14 +299,33 @@ export function GitHubProvider({ children }) {
     return await state.api.createFile(fileName, {}, `Create new data file: ${fileName}`);
   };
 
+  // Register a callback to be called on disconnect
+  const onDisconnect = useCallback((callback) => {
+    setDisconnectCallbacks(prev => [...prev, callback]);
+    // Return cleanup function
+    return () => {
+      setDisconnectCallbacks(prev => prev.filter(cb => cb !== callback));
+    };
+  }, []);
+
   // Disconnect GitHub
   const disconnect = () => {
+    // Execute all disconnect callbacks
+    disconnectCallbacks.forEach(callback => {
+      try {
+        callback();
+      } catch (error) {
+        console.error('Error executing disconnect callback:', error);
+      }
+    });
+    
     removeEncryptedToken('default');
     localStorage.removeItem('github_owner');
     localStorage.removeItem('github_repo');
     localStorage.removeItem('github_last_sync');
     localStorage.removeItem('github_data_file');
     setState(initialState);
+    setFileShas({});
   };
 
   const value = {
@@ -316,6 +336,7 @@ export function GitHubProvider({ children }) {
     fetchData,
     saveData,
     disconnect,
+    onDisconnect,
     setDataFile,
     listDataFiles,
     createDataFile,

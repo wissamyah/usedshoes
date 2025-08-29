@@ -14,6 +14,7 @@ export default function DataSync() {
     cashInjections, 
     metadata,
     loadData, 
+    clearData,
     setLoading, 
     setError,
     unsavedChanges,
@@ -29,7 +30,8 @@ export default function DataSync() {
     owner,
     repo,
     api,
-    currentDataFile
+    currentDataFile,
+    onDisconnect
   } = useGitHub();
 
   const dataLoadedRef = useRef(false);
@@ -39,6 +41,28 @@ export default function DataSync() {
   useEffect(() => {
     dataLoadedRef.current = false;
   }, [currentDataFile]);
+
+  // Register callback to clear data when GitHub disconnects
+  useEffect(() => {
+    if (onDisconnect) {
+      const cleanup = onDisconnect(() => {
+        console.log('GitHub disconnected, clearing local data...');
+        clearData();
+        dataLoadedRef.current = false;
+      });
+      
+      return cleanup;
+    }
+  }, [onDisconnect, clearData]);
+
+  // Clear data when disconnected
+  useEffect(() => {
+    if (!isConnected && dataLoadedRef.current) {
+      console.log('GitHub disconnected, clearing data...');
+      clearData();
+      dataLoadedRef.current = false;
+    }
+  }, [isConnected, clearData]);
 
   // Load data on mount if connected to GitHub
   useEffect(() => {

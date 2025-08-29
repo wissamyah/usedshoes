@@ -154,7 +154,7 @@ export default function GitHubSettings() {
     disconnect();
     setHasStoredToken(false);
     setFormData({ owner: '', repo: '', token: '' });
-    showInfoMessage('Disconnected', 'Disconnected from GitHub');
+    showInfoMessage('Disconnected', 'Disconnected from GitHub and cleared local data');
   };
 
   const getConnectionStatusColor = () => {
