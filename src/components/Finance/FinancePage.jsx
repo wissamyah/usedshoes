@@ -5,7 +5,6 @@ import { Wallet, Users, TrendingUp, DollarSign, Plus, Calculator, ClipboardCheck
 import CashFlowDashboard from './CashFlow/CashFlowDashboard';
 import WithdrawalHistory from './Withdrawals/WithdrawalHistory';
 import PartnerList from './Partners/PartnerList';
-import DistributionCalculator from './Distribution/DistributionCalculator';
 import CashInjectionHistory from './CashInjections/CashInjectionHistory';
 import { syncFinanceData } from '../../utils/financeSync';
 
@@ -106,7 +105,6 @@ export default function FinancePage() {
     { id: 'injections', name: 'Cash Injections', icon: Plus },
     { id: 'withdrawals', name: 'Withdrawals', icon: Wallet },
     { id: 'partners', name: 'Partners', icon: Users },
-    { id: 'distribution', name: 'Distribution', icon: Calculator },
   ];
   
   return (
@@ -260,13 +258,6 @@ export default function FinancePage() {
               <ClipboardCheck className="h-4 w-4 mr-2" />
               Reconcile Cash
             </button>
-            <button
-              onClick={() => setActiveTab('distribution')}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-            >
-              <Calculator className="h-4 w-4 mr-2" />
-              Calculate Distribution
-            </button>
           </div>
           
           {/* Tabs */}
@@ -280,15 +271,16 @@ export default function FinancePage() {
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
                       className={`
-                        whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center
+                        whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center justify-center sm:justify-start
                         ${activeTab === tab.id
                           ? 'border-blue-500 text-blue-600'
                           : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                         }
                       `}
+                      title={tab.name}
                     >
-                      <Icon className="h-5 w-5 mr-2" />
-                      {tab.name}
+                      <Icon className="h-5 w-5 sm:mr-2" />
+                      <span className="hidden sm:inline">{tab.name}</span>
                     </button>
                   );
                 })}
@@ -313,12 +305,6 @@ export default function FinancePage() {
               )}
               {activeTab === 'partners' && (
                 <PartnerList />
-              )}
-              {activeTab === 'distribution' && (
-                <DistributionCalculator 
-                  availableCash={availableForDistribution}
-                  currentCashPosition={currentCashPosition}
-                />
               )}
             </div>
           </div>

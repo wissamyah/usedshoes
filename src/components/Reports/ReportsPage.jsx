@@ -40,20 +40,21 @@ export default function ReportsPage() {
       {/* Report Type Selector */}
       <div className="mb-6">
         <div className="border-b border-gray-200">
-          <nav className="flex space-x-8">
+          <nav className="flex space-x-4 sm:space-x-8">
             {reports.map((report) => (
               <button
                 key={report.id}
                 onClick={() => setActiveReport(report.id)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm flex-1 sm:flex-none ${
                   activeReport === report.id
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
+                title={`${report.name}: ${report.description}`}
               >
-                <div>
-                  <div>{report.name}</div>
-                  <div className="text-xs font-normal">{report.description}</div>
+                <div className="text-center sm:text-left">
+                  <div className="text-xs sm:text-sm">{report.name.replace(' & ', '/')}</div>
+                  <div className="hidden sm:block text-xs font-normal mt-1">{report.description}</div>
                 </div>
               </button>
             ))}
