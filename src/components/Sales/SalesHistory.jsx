@@ -367,91 +367,157 @@ export default function SalesHistory({ onEditSale }) {
           
           {/* Pagination Controls */}
           {totalPages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-3 bg-gray-50 border-t border-gray-200">
-            {/* Items per page selector */}
-            <div className="flex items-center space-x-2 mb-3 sm:mb-0">
-              <label className="text-sm text-gray-700">Show:</label>
-              <select
-                value={itemsPerPage}
-                onChange={(e) => handleItemsPerPageChange(e.target.value)}
-                className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-              >
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-              <span className="text-sm text-gray-700">per page</span>
-            </div>
-            
-            {/* Pagination info and controls */}
-            <div className="flex items-center space-x-1">
-              {/* First page */}
-              <button
-                onClick={() => handlePageChange(1)}
-                disabled={currentPage === 1}
-                className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                title="First page"
-              >
-                <ChevronsLeft className="h-4 w-4 text-gray-600" />
-              </button>
-              
-              {/* Previous page */}
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Previous page"
-              >
-                <ChevronLeft className="h-4 w-4 text-gray-600" />
-              </button>
-              
-              {/* Page numbers */}
-              <div className="flex items-center space-x-1 mx-2">
-                {getPageNumbers().map((pageNum, index) => (
-                  pageNum === '...' ? (
-                    <span key={`dots-${index}`} className="px-2 py-1 text-sm text-gray-500">...</span>
-                  ) : (
+          <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
+            {/* Mobile Pagination */}
+            <div className="sm:hidden">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-sm text-gray-700">
+                  Page {currentPage} of {totalPages}
+                </div>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => handleItemsPerPageChange(e.target.value)}
+                  className="px-2 py-1 text-sm border border-gray-300 rounded"
+                >
+                  <option value="5">5/page</option>
+                  <option value="10">10/page</option>
+                  <option value="20">20/page</option>
+                </select>
+              </div>
+              <div className="flex justify-between items-center">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <div className="flex space-x-1">
+                  <button
+                    onClick={() => handlePageChange(1)}
+                    className={`px-2 py-1 text-sm rounded ${currentPage === 1 ? 'bg-green-600 text-white' : 'text-gray-700'}`}
+                  >
+                    1
+                  </button>
+                  {currentPage > 3 && <span className="px-1 text-gray-500">...</span>}
+                  {currentPage > 2 && currentPage < totalPages - 1 && (
                     <button
-                      key={pageNum}
-                      onClick={() => handlePageChange(pageNum)}
-                      className={`px-3 py-1 text-sm rounded ${
-                        currentPage === pageNum
-                          ? 'bg-green-600 text-white'
-                          : 'hover:bg-gray-200 text-gray-700'
-                      }`}
+                      onClick={() => handlePageChange(currentPage)}
+                      className="px-2 py-1 text-sm bg-green-600 text-white rounded"
                     >
-                      {pageNum}
+                      {currentPage}
                     </button>
-                  )
-                ))}
+                  )}
+                  {currentPage < totalPages - 2 && <span className="px-1 text-gray-500">...</span>}
+                  {totalPages > 1 && (
+                    <button
+                      onClick={() => handlePageChange(totalPages)}
+                      className={`px-2 py-1 text-sm rounded ${currentPage === totalPages ? 'bg-green-600 text-white' : 'text-gray-700'}`}
+                    >
+                      {totalPages}
+                    </button>
+                  )}
+                </div>
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+              <div className="text-center text-xs text-gray-500 mt-2">
+                {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems}
+              </div>
+            </div>
+
+            {/* Desktop Pagination */}
+            <div className="hidden sm:flex sm:items-center sm:justify-between">
+              {/* Items per page selector */}
+              <div className="flex items-center space-x-2">
+                <label className="text-sm text-gray-700">Show:</label>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => handleItemsPerPageChange(e.target.value)}
+                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                <span className="text-sm text-gray-700">per page</span>
               </div>
               
-              {/* Next page */}
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Next page"
-              >
-                <ChevronRight className="h-4 w-4 text-gray-600" />
-              </button>
+              {/* Pagination info and controls */}
+              <div className="flex items-center space-x-1">
+                {/* First page */}
+                <button
+                  onClick={() => handlePageChange(1)}
+                  disabled={currentPage === 1}
+                  className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="First page"
+                >
+                  <ChevronsLeft className="h-4 w-4 text-gray-600" />
+                </button>
+                
+                {/* Previous page */}
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Previous page"
+                >
+                  <ChevronLeft className="h-4 w-4 text-gray-600" />
+                </button>
+                
+                {/* Page numbers */}
+                <div className="flex items-center space-x-1 mx-2">
+                  {getPageNumbers().map((pageNum, index) => (
+                    pageNum === '...' ? (
+                      <span key={`dots-${index}`} className="px-2 py-1 text-sm text-gray-500">...</span>
+                    ) : (
+                      <button
+                        key={pageNum}
+                        onClick={() => handlePageChange(pageNum)}
+                        className={`px-3 py-1 text-sm rounded ${
+                          currentPage === pageNum
+                            ? 'bg-green-600 text-white'
+                            : 'hover:bg-gray-200 text-gray-700'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    )
+                  ))}
+                </div>
+                
+                {/* Next page */}
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Next page"
+                >
+                  <ChevronRight className="h-4 w-4 text-gray-600" />
+                </button>
+                
+                {/* Last page */}
+                <button
+                  onClick={() => handlePageChange(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Last page"
+                >
+                  <ChevronsRight className="h-4 w-4 text-gray-600" />
+                </button>
+              </div>
               
-              {/* Last page */}
-              <button
-                onClick={() => handlePageChange(totalPages)}
-                disabled={currentPage === totalPages}
-                className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Last page"
-              >
-                <ChevronsRight className="h-4 w-4 text-gray-600" />
-              </button>
-            </div>
-            
-            {/* Results info */}
-            <div className="text-sm text-gray-700 mt-3 sm:mt-0">
-              Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} results
+              {/* Results info */}
+              <div className="text-sm text-gray-700">
+                Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} results
+              </div>
             </div>
           </div>
           )}
