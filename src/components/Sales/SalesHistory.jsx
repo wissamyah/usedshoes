@@ -198,86 +198,97 @@ export default function SalesHistory({ onEditSale }) {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        {/* Search */}
-        <div className="flex-1">
-          <div className="relative">
-            <Search className="h-5 w-5 absolute left-3 top-3 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search by product name or notes..."
-              value={searchTerm}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-            />
+      <div className="bg-gray-50 rounded-lg p-4 mb-6">
+        {/* Main filters grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          {/* Search - full width */}
+          <div className="col-span-1 sm:col-span-2">
+            <div className="relative">
+              <Search className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search products or notes..."
+                value={searchTerm}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+              />
+            </div>
+          </div>
+
+          {/* Sort Options */}
+          <div className="col-span-1 flex gap-2">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+            >
+              <option value="date">Date</option>
+              <option value="amount">Amount</option>
+              <option value="profit">Profit</option>
+            </select>
+            
+            <button
+              onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
+              className="px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              title={`Sort ${sortOrder === 'desc' ? 'ascending' : 'descending'}`}
+            >
+              {sortOrder === 'desc' ? '↓' : '↑'}
+            </button>
           </div>
         </div>
 
-        {/* Date Range Filter */}
-        <div className="flex gap-2 items-center">
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => {
-              setStartDate(e.target.value);
-              setDateFilter(''); // Clear single date when using range
-              setCurrentPage(1);
-            }}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-            placeholder="Start date"
-            title="Start date"
-          />
-          <span className="text-gray-500">to</span>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => {
-              setEndDate(e.target.value);
-              setDateFilter(''); // Clear single date when using range
-              setCurrentPage(1);
-            }}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-            placeholder="End date"
-            title="End date"
-          />
-        </div>
+        {/* Date Range Section */}
+        <div className="space-y-3">
+          {/* Date inputs - stack on mobile */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1 flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700 whitespace-nowrap">From:</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => {
+                  setStartDate(e.target.value);
+                  setDateFilter(''); // Clear single date when using range
+                  setCurrentPage(1);
+                }}
+                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                title="Start date"
+              />
+            </div>
+            <div className="flex-1 flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700 whitespace-nowrap">To:</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => {
+                  setEndDate(e.target.value);
+                  setDateFilter(''); // Clear single date when using range
+                  setCurrentPage(1);
+                }}
+                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                title="End date"
+              />
+            </div>
+          </div>
 
-        {/* Sort Options */}
-        <div className="flex gap-2">
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-          >
-            <option value="date">Sort by Date</option>
-            <option value="amount">Sort by Amount</option>
-            <option value="profit">Sort by Profit</option>
-          </select>
-          
-          <button
-            onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-            className="px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:ring-2 focus:ring-green-500 focus:border-green-500"
-            title={`Sort ${sortOrder === 'desc' ? 'ascending' : 'descending'}`}
-          >
-            {sortOrder === 'desc' ? '↓' : '↑'}
-          </button>
+          {/* Clear Filters */}
+          {(searchTerm || dateFilter || startDate || endDate) && (
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setDateFilter('');
+                  setStartDate('');
+                  setEndDate('');
+                  setCurrentPage(1);
+                }}
+                className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 underline"
+              >
+                Clear All
+              </button>
+            </div>
+          )}
         </div>
-
-        {/* Clear Filters */}
-        {(searchTerm || dateFilter || startDate || endDate) && (
-          <button
-            onClick={() => {
-              setSearchTerm('');
-              setDateFilter('');
-              setStartDate('');
-              setEndDate('');
-              setCurrentPage(1);
-            }}
-            className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900"
-          >
-            Clear
-          </button>
-        )}
       </div>
 
       {/* Sales Table */}

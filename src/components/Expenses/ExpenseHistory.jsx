@@ -187,33 +187,34 @@ export default function ExpenseHistory({ onEditExpense }) {
 
       {/* Filters */}
       <div className="bg-gray-50 rounded-lg p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-          {/* Search */}
-          <div className="lg:col-span-2">
+        {/* Main filters grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+          {/* Search - full width on mobile */}
+          <div className="col-span-1 sm:col-span-2 lg:col-span-2">
             <div className="relative">
-              <Search className="h-5 w-5 absolute left-3 top-3 text-gray-400" />
+              <Search className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search description, notes, or container ID..."
+                placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               />
             </div>
           </div>
 
           {/* Category Filter */}
-          <div>
+          <div className="col-span-1">
             <select
               value={categoryFilter}
               onChange={(e) => {
                 setCategoryFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
             >
               <option value="">All Categories</option>
               {uniqueCategories.map(category => (
@@ -225,15 +226,15 @@ export default function ExpenseHistory({ onEditExpense }) {
           </div>
 
           {/* Sort Options */}
-          <div className="flex gap-2">
+          <div className="col-span-1 flex gap-2">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
             >
-              <option value="date">Sort by Date</option>
-              <option value="amount">Sort by Amount</option>
-              <option value="category">Sort by Category</option>
+              <option value="date">Date</option>
+              <option value="amount">Amount</option>
+              <option value="category">Category</option>
             </select>
             
             <button
@@ -246,75 +247,81 @@ export default function ExpenseHistory({ onEditExpense }) {
           </div>
         </div>
 
-        {/* Date Range Filters */}
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex gap-2">
-            <label className="text-sm font-medium text-gray-700">From:</label>
-            <input
-              type="date"
-              value={dateFromFilter}
-              onChange={(e) => {
-                setDateFromFilter(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          <div className="flex gap-2">
-            <label className="text-sm font-medium text-gray-700">To:</label>
-            <input
-              type="date"
-              value={dateToFilter}
-              onChange={(e) => {
-                setDateToFilter(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
+        {/* Date Range Section */}
+        <div className="space-y-3">
+          {/* Date inputs - stack on mobile */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1 flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700 whitespace-nowrap">From:</label>
+              <input
+                type="date"
+                value={dateFromFilter}
+                onChange={(e) => {
+                  setDateFromFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div className="flex-1 flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700 whitespace-nowrap">To:</label>
+              <input
+                type="date"
+                value={dateToFilter}
+                onChange={(e) => {
+                  setDateToFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
           </div>
           
-          {/* Quick Filter Buttons */}
-          <div className="flex gap-2 ml-4">
-            <button
-              onClick={() => handleQuickFilter('today')}
-              className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
-            >
-              Today
-            </button>
-            <button
-              onClick={() => handleQuickFilter('thisMonth')}
-              className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
-            >
-              This Month
-            </button>
-            <button
-              onClick={() => handleQuickFilter('lastMonth')}
-              className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
-            >
-              Last Month
-            </button>
-            <button
-              onClick={() => handleQuickFilter('clear')}
-              className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
-            >
-              Clear Dates
-            </button>
-          </div>
+          {/* Quick filters and clear button */}
+          <div className="flex flex-wrap gap-2 items-center">
+            {/* Quick Filter Buttons */}
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => handleQuickFilter('today')}
+                className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+              >
+                Today
+              </button>
+              <button
+                onClick={() => handleQuickFilter('thisMonth')}
+                className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+              >
+                This Month
+              </button>
+              <button
+                onClick={() => handleQuickFilter('lastMonth')}
+                className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+              >
+                Last Month
+              </button>
+              <button
+                onClick={() => handleQuickFilter('clear')}
+                className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+              >
+                Clear Dates
+              </button>
+            </div>
 
-          {/* Clear All Filters */}
-          {(searchTerm || categoryFilter || dateFromFilter || dateToFilter) && (
-            <button
-              onClick={() => {
-                setSearchTerm('');
-                setCategoryFilter('');
-                setDateFromFilter('');
-                setDateToFilter('');
-              }}
-              className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 underline ml-auto"
-            >
-              Clear All Filters
-            </button>
-          )}
+            {/* Clear All Filters - moves to new line on mobile if needed */}
+            {(searchTerm || categoryFilter || dateFromFilter || dateToFilter) && (
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setCategoryFilter('');
+                  setDateFromFilter('');
+                  setDateToFilter('');
+                }}
+                className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 underline sm:ml-auto"
+              >
+                Clear All
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
