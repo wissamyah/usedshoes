@@ -5,6 +5,7 @@ import {
   AlertTriangle,
   CheckCircle2,
 } from 'lucide-react';
+import GitHubDropdown from './GitHubDropdown';
 
 function Header({ onSyncData, syncStatus, lastSyncTime }) {
   const [showSyncDetails, setShowSyncDetails] = useState(false);
@@ -72,7 +73,10 @@ function Header({ onSyncData, syncStatus, lastSyncTime }) {
           </div>
 
           {/* Sync status and actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* GitHub Dropdown */}
+            <GitHubDropdown />
+
             {/* Sync status indicator */}
             <div className="relative">
               <button

@@ -309,10 +309,12 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
     onCancel();
   };
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = (amount, decimals = 2) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
     }).format(amount || 0);
   };
 
@@ -504,9 +506,9 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                     value={productPurchase.costPerKg}
                     onChange={handleProductPurchaseChange}
                     min="0"
-                    step="0.01"
+                    step="0.0001"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="0.00"
+                    placeholder="0.0000"
                   />
                 </div>
 
@@ -556,7 +558,7 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                         <div className="flex-1">
                           <p className="font-medium text-gray-900">{product.productName}</p>
                           <p className="text-sm text-gray-600">
-                            {product.bagQuantity} bags × {product.bagWeight}kg × {formatCurrency(product.costPerKg)}/kg = 
+                            {product.bagQuantity} bags × {product.bagWeight}kg × {formatCurrency(product.costPerKg, 4)}/kg =
                             <span className="font-semibold text-gray-900 ml-1">
                               {formatCurrency(product.bagQuantity * product.costPerKg * product.bagWeight)}
                             </span>
