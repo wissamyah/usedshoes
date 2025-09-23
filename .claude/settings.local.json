@@ -17,7 +17,8 @@
       "Read(c:\\Users\\wissa\\Pictures\\Screenshots/**)",
       "Bash(npm run build:*)",
       "Bash(npm run deploy:*)",
-      "Bash(git subtree push:*)"
+      "Bash(git subtree push:*)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []
