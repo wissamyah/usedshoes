@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useData } from '../../context/DataContext';
 import { useUI } from '../../context/UIContext';
-import { Download, Upload, Database, Shield, AlertTriangle, CheckCircle, FileJson } from 'lucide-react';
+import { Download, Upload, Database, Shield, AlertTriangle, CheckCircle, FileJson, Wrench } from 'lucide-react';
 
 export default function SettingsPage() {
   const {
@@ -14,10 +14,12 @@ export default function SettingsPage() {
     cashInjections,
     metadata,
     loadData,
+    fixMalformedIds,
     dispatch
   } = useData();
   const { showSuccessMessage, showErrorMessage, showConfirmDialog } = useUI();
   const [isImporting, setIsImporting] = useState(false);
+  const [isFixingIds, setIsFixingIds] = useState(false);
   const fileInputRef = useRef(null);
 
   // Backup functionality
@@ -60,6 +62,52 @@ export default function SettingsPage() {
     } catch (error) {
       console.error('Backup failed:', error);
       showErrorMessage('Backup Failed', 'Failed to create backup. Please try again.');
+    }
+  };
+
+  // Fix malformed IDs functionality
+  const handleFixIds = async () => {
+    // Check if there are any malformed IDs
+    const malformedPartners = partners?.filter(p =>
+      p.id && (p.id.includes('undefined') || p.id.includes('NaN') || p.id.includes('null'))
+    ) || [];
+
+    const malformedWithdrawals = withdrawals?.filter(w =>
+      w.id && (w.id.includes('undefined') || w.id.includes('NaN') || w.id.includes('null'))
+    ) || [];
+
+    const malformedInjections = cashInjections?.filter(ci =>
+      ci.id && (ci.id.includes('undefined') || ci.id.includes('NaN') || ci.id.includes('null'))
+    ) || [];
+
+    const totalMalformed = malformedPartners.length + malformedWithdrawals.length + malformedInjections.length;
+
+    if (totalMalformed === 0) {
+      showSuccessMessage('No Issues Found', 'All IDs are properly formatted. No fixes needed.');
+      return;
+    }
+
+    const confirmed = await showConfirmDialog(
+      'Fix Malformed IDs',
+      `Found ${totalMalformed} malformed IDs:\n• ${malformedPartners.length} partners\n• ${malformedWithdrawals.length} withdrawals\n• ${malformedInjections.length} cash injections\n\nDo you want to fix them?`,
+      'warning'
+    );
+
+    if (!confirmed) return;
+
+    setIsFixingIds(true);
+
+    try {
+      fixMalformedIds();
+      showSuccessMessage(
+        'IDs Fixed Successfully',
+        `Fixed ${totalMalformed} malformed IDs. Please save your data to persist the changes.`
+      );
+    } catch (error) {
+      console.error('Failed to fix IDs:', error);
+      showErrorMessage('Fix Failed', 'Failed to fix malformed IDs. Please try again.');
+    } finally {
+      setIsFixingIds(false);
     }
   };
 
@@ -278,6 +326,49 @@ export default function SettingsPage() {
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Backup Now
+                  </button>
+                </div>
+
+                {/* Fix IDs Section */}
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between pb-6 border-b border-gray-200">
+                  <div className="mb-4 sm:mb-0">
+                    <div className="flex items-center mb-2">
+                      <Wrench className="h-5 w-5 text-orange-500 mr-2" />
+                      <h4 className="text-base font-medium text-gray-900">Fix Malformed IDs</h4>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Repair partner, withdrawal, and cash injection IDs that contain undefined or NaN
+                    </p>
+                    <div className="mt-2 bg-blue-50 border border-blue-200 rounded-md p-3">
+                      <div className="flex">
+                        <CheckCircle className="h-4 w-4 text-blue-400 mt-0.5" />
+                        <div className="ml-2">
+                          <p className="text-xs text-blue-700">
+                            This will automatically fix IDs like "Pundefined", "WNaN", etc.
+                          </p>
+                          <p className="text-xs text-blue-700">
+                            All relationships between entities will be preserved.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleFixIds}
+                    disabled={isFixingIds}
+                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isFixingIds ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Fixing...
+                      </>
+                    ) : (
+                      <>
+                        <Wrench className="h-4 w-4 mr-2" />
+                        Fix IDs
+                      </>
+                    )}
                   </button>
                 </div>
 

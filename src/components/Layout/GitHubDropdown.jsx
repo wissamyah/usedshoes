@@ -10,9 +10,9 @@ import {
   removeEncryptedToken,
   isValidGitHubToken
 } from '../../utils/encryption';
-import { Github, Check, X, AlertCircle, Settings, Link2, Unlink, ChevronDown, Eye, EyeOff } from 'lucide-react';
+import { Github, Check, X, AlertCircle, Settings, Link2, Unlink, ChevronDown, Eye, EyeOff, CloudUpload, CloudDownload, CheckCircle2, Clock, RefreshCw } from 'lucide-react';
 
-export default function GitHubDropdown() {
+export default function GitHubDropdown({ onSyncData, syncStatus, lastSyncTime }) {
   const {
     isConnected,
     connectionStatus,
@@ -144,6 +144,50 @@ export default function GitHubDropdown() {
     return <Unlink className="h-4 w-4" />;
   };
 
+  const formatLastSync = (timestamp) => {
+    if (!timestamp) return 'Never';
+
+    const now = new Date();
+    const sync = new Date(timestamp);
+    const diffMs = now - sync;
+    const diffMins = Math.floor(diffMs / 60000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours}h ago`;
+
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays}d ago`;
+  };
+
+  const getSyncStatusColor = () => {
+    switch (syncStatus) {
+      case 'syncing':
+        return 'text-blue-600';
+      case 'success':
+        return 'text-green-600';
+      case 'error':
+        return 'text-red-600';
+      default:
+        return 'text-gray-500';
+    }
+  };
+
+  const getSyncStatusIcon = () => {
+    switch (syncStatus) {
+      case 'syncing':
+        return <RefreshCw className="h-4 w-4 animate-spin" />;
+      case 'success':
+        return <CheckCircle2 className="h-4 w-4" />;
+      case 'error':
+        return <AlertCircle className="h-4 w-4" />;
+      default:
+        return <CloudDownload className="h-4 w-4" />;
+    }
+  };
+
   const getButtonColor = () => {
     if (isConnected) return 'bg-green-600 hover:bg-green-700';
     if (connectionStatus === 'error') return 'bg-red-600 hover:bg-red-700';
@@ -169,7 +213,9 @@ export default function GitHubDropdown() {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="fixed right-2 mt-2 w-[calc(100vw-1rem)] max-w-sm sm:absolute sm:right-0 sm:w-80 md:w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-50" style={{ top: '60px' }}>
+        <div className="fixed right-2 top-[60px] w-[calc(100vw-1rem)] max-w-sm
+                        sm:absolute sm:right-0 sm:top-full sm:mt-2 sm:w-80 md:w-96
+                        bg-white rounded-lg shadow-xl border border-gray-200 z-50">
           <div className="p-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center">
@@ -193,6 +239,38 @@ export default function GitHubDropdown() {
                   <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                     <p className="text-sm font-medium text-green-800 mb-1">Connected Repository</p>
                     <p className="text-sm text-green-700 font-mono">{owner}/{repo}</p>
+                  </div>
+
+                  {/* Sync Status Section */}
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm font-medium text-gray-800">Sync Status</p>
+                      <div className={`flex items-center gap-1 ${getSyncStatusColor()}`}>
+                        {getSyncStatusIcon()}
+                        <span className="text-xs font-medium">
+                          {syncStatus === 'syncing' ? 'Syncing...' :
+                           syncStatus === 'success' ? 'Synced' :
+                           syncStatus === 'error' ? 'Error' : 'Ready'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        <span>Last sync: {formatLastSync(lastSyncTime)}</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onSyncData();
+                      }}
+                      disabled={syncStatus === 'syncing'}
+                      className="mt-3 w-full inline-flex justify-center items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <CloudUpload className="h-4 w-4 mr-1.5" />
+                      {syncStatus === 'syncing' ? 'Syncing...' : 'Sync Now'}
+                    </button>
                   </div>
 
                   <div className="border-t pt-4">

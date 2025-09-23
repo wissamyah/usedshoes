@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useData } from '../../context/DataContext';
 import { useUI } from '../../context/UIContext';
-import { Wallet, Users, TrendingUp, DollarSign, Plus, Calculator, ClipboardCheck, RefreshCw } from 'lucide-react';
+import { Wallet, Users, TrendingUp, DollarSign, Plus, Calculator, ClipboardCheck, RefreshCw, PiggyBank } from 'lucide-react';
 import CashFlowDashboard from './CashFlow/CashFlowDashboard';
 import WithdrawalHistory from './Withdrawals/WithdrawalHistory';
 import PartnerList from './Partners/PartnerList';
 import CashInjectionHistory from './CashInjections/CashInjectionHistory';
 import { syncFinanceData } from '../../utils/financeSync';
+import StatCard from '../UI/StatCard';
 
 export default function FinancePage() {
   const { partners, withdrawals, cashFlows, cashInjections = [], sales, expenses, containers, syncFinanceData: syncData } = useData();
@@ -131,133 +132,43 @@ export default function FinancePage() {
           </div>
           
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {/* Today's Cash Position */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <DollarSign className="h-8 w-8 text-green-600" />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        Cash Position
-                      </dt>
-                      <dd>
-                        <div className="text-lg font-medium text-gray-900">
-                          {formatCurrency(currentCashPosition)}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {todaysCashIn > 0 && (
-                            <span className="text-green-600">+{formatCurrency(todaysCashIn)} in</span>
-                          )}
-                          {todaysCashOut > 0 && (
-                            <span className="text-red-600 ml-2">-{formatCurrency(todaysCashOut)} out</span>
-                          )}
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Available for Distribution */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <Calculator className="h-8 w-8 text-blue-600" />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        Available Distribution
-                      </dt>
-                      <dd>
-                        <div className="text-lg font-medium text-gray-900">
-                          {formatCurrency(availableForDistribution)}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          Reserve: {formatCurrency(minReserve)}
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Partners Equity */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <Users className="h-8 w-8 text-purple-600" />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        Total Equity
-                      </dt>
-                      <dd>
-                        <div className="text-lg font-medium text-gray-900">
-                          {formatCurrency(totalEquity)}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {partners.length} partner{partners.length !== 1 ? 's' : ''}
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Today's Withdrawals */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <Wallet className="h-8 w-8 text-orange-600" />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        Today's Withdrawals
-                      </dt>
-                      <dd>
-                        <div className="text-lg font-medium text-gray-900">
-                          {formatCurrency(todaysWithdrawals.reduce((sum, w) => sum + w.amount, 0))}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {todaysWithdrawals.length} transaction{todaysWithdrawals.length !== 1 ? 's' : ''}
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Quick Actions */}
-          <div className="flex flex-wrap gap-3 mb-6">
-            <button
-              onClick={() => setActiveTab('withdrawals')}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Record Withdrawal
-            </button>
-            <button
-              onClick={() => setActiveTab('dashboard')}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              <ClipboardCheck className="h-4 w-4 mr-2" />
-              Reconcile Cash
-            </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <StatCard
+              title="Cash Position"
+              value={formatCurrency(currentCashPosition)}
+              subtitle={`${todaysCashIn > 0 ? `+${formatCurrency(todaysCashIn)} in` : ''}${todaysCashIn > 0 && todaysCashOut > 0 ? ' • ' : ''}${todaysCashOut > 0 ? `-${formatCurrency(todaysCashOut)} out` : ''}`.trim() || 'Current balance'}
+              icon={DollarSign}
+              iconBgColor="bg-green-100"
+              iconColor="text-green-600"
+              trend={todaysCashIn - todaysCashOut > 0 ? 'up' : todaysCashIn - todaysCashOut < 0 ? 'down' : null}
+            />
+
+            <StatCard
+              title="Available Distribution"
+              value={formatCurrency(availableForDistribution)}
+              subtitle={`Reserve: ${formatCurrency(minReserve)}`}
+              icon={PiggyBank}
+              iconBgColor="bg-blue-100"
+              iconColor="text-blue-600"
+            />
+
+            <StatCard
+              title="Total Equity"
+              value={formatCurrency(totalEquity)}
+              subtitle={`${partners.length} partner${partners.length !== 1 ? 's' : ''}`}
+              icon={Users}
+              iconBgColor="bg-purple-100"
+              iconColor="text-purple-600"
+            />
+
+            <StatCard
+              title="Today's Withdrawals"
+              value={formatCurrency(todaysWithdrawals.reduce((sum, w) => sum + w.amount, 0))}
+              subtitle={`${todaysWithdrawals.length} transaction${todaysWithdrawals.length !== 1 ? 's' : ''}`}
+              icon={Wallet}
+              iconBgColor={todaysWithdrawals.length > 0 ? "bg-orange-100" : "bg-gray-100"}
+              iconColor={todaysWithdrawals.length > 0 ? "text-orange-600" : "text-gray-600"}
+            />
           </div>
           
           {/* Tabs */}

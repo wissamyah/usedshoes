@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, memo } from 'react';
 import { useData } from '../context/DataContext';
 import { useGitHub } from '../context/GitHubContext';
 
-export default function DataSync() {
+// Memoize DataSync to prevent unnecessary re-renders
+const DataSync = memo(function DataSync() {
   const { 
     products, 
     containers, 
@@ -194,18 +195,12 @@ export default function DataSync() {
     loadDataFromGitHub();
   }, [isConnected, currentDataFile]); // Re-load when data file changes
 
-  // Auto-save when data changes
+  // Auto-save when data changes (with proper debouncing)
   useEffect(() => {
     if (!isConnected || !unsavedChanges || !dataLoadedRef.current) return;
-    
-    // Prevent frequent saves - wait 3 seconds after last change
-    const currentTime = Date.now();
-    lastSaveRef.current = currentTime;
-    
+
+    // Increase delay to 10 seconds to reduce API calls and improve performance
     const saveTimer = setTimeout(async () => {
-      // Only save if this is still the latest change
-      if (lastSaveRef.current !== currentTime) return;
-      
       try {
         const dataToSave = {
           products,
@@ -234,7 +229,7 @@ export default function DataSync() {
         console.error('Failed to auto-save data to GitHub:', error);
         setError(`Auto-save failed: ${error.message}`);
       }
-    }, 3000); // 3 second delay
+    }, 10000); // 10 second delay (increased from 3 seconds)
     
     return () => clearTimeout(saveTimer);
   }, [isConnected, unsavedChanges, products, containers, sales, expenses, partners, withdrawals, cashFlows, cashInjections]); // Remove metadata and function dependencies
@@ -283,4 +278,6 @@ export default function DataSync() {
   }, [forceSave, registerSaveCallback]);
 
   return null; // This component doesn't render anything
-}
+});
+
+export default DataSync;

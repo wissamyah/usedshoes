@@ -3,12 +3,18 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { onNetworkStatusChange } from './utils/serviceWorker'
+import { performanceConfig } from './config/performance'
 
-createRoot(document.getElementById('root')).render(
+// Conditionally wrap in StrictMode based on config
+const AppWrapper = performanceConfig.strictMode ? (
   <StrictMode>
     <App />
-  </StrictMode>,
-)
+  </StrictMode>
+) : (
+  <App />
+);
+
+createRoot(document.getElementById('root')).render(AppWrapper)
 
 // Temporarily disable service worker to fix caching issues
 // Will re-enable after fixing the deployment
@@ -23,8 +29,8 @@ onNetworkStatusChange((status) => {
   }));
 });
 
-// Performance monitoring in development
-if (import.meta.env.DEV) {
+// Performance monitoring based on config
+if (performanceConfig.enableMonitoring) {
   // Monitor bundle size and performance
   import('./utils/performanceMonitor').then(({ startPerformanceMonitoring }) => {
     startPerformanceMonitoring();

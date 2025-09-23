@@ -1,6 +1,7 @@
-import { X, Pencil } from 'lucide-react';
+import { X, Pencil, Package, Weight, DollarSign, Calculator } from 'lucide-react';
 import { formatDate } from '../../utils/dateFormatter';
 import Modal from '../UI/Modal';
+import StatCard from '../UI/StatCard';
 
 export default function ContainerDetails({ container, onClose, onEdit }) {
   const formatCurrency = (amount) => {
@@ -77,33 +78,41 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
 
           {/* Container Summary */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white border rounded-lg p-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-blue-600">{totalBags}</p>
-                <p className="text-sm text-gray-500">Total Bags</p>
-              </div>
-            </div>
-            
-            <div className="bg-white border rounded-lg p-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-green-600">{totalKg.toLocaleString()}</p>
-                <p className="text-sm text-gray-500">Total Kg</p>
-              </div>
-            </div>
-            
-            <div className="bg-white border rounded-lg p-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-purple-600">{formatCurrency(productsCost)}</p>
-                <p className="text-sm text-gray-500">Products Cost</p>
-              </div>
-            </div>
-            
-            <div className="bg-white border rounded-lg p-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-gray-900">{formatCurrency(totalCost)}</p>
-                <p className="text-sm text-gray-500">Total Investment</p>
-              </div>
-            </div>
+            <StatCard
+              title="Total Bags"
+              value={`${totalBags}`}
+              subtitle="Quantity imported"
+              icon={Package}
+              iconBgColor="bg-blue-100"
+              iconColor="text-blue-600"
+            />
+
+            <StatCard
+              title="Total Weight"
+              value={`${totalKg.toLocaleString()} kg`}
+              subtitle="Product weight"
+              icon={Weight}
+              iconBgColor="bg-green-100"
+              iconColor="text-green-600"
+            />
+
+            <StatCard
+              title="Products Cost"
+              value={formatCurrency(productsCost)}
+              subtitle="Base cost"
+              icon={Calculator}
+              iconBgColor="bg-purple-100"
+              iconColor="text-purple-600"
+            />
+
+            <StatCard
+              title="Total Investment"
+              value={formatCurrency(totalCost)}
+              subtitle="All costs included"
+              icon={DollarSign}
+              iconBgColor="bg-gray-100"
+              iconColor="text-gray-600"
+            />
           </div>
 
           {/* Products in Container */}

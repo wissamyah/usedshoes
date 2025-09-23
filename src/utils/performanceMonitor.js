@@ -101,16 +101,32 @@ function monitorMemoryUsage() {
 function monitorLongTasks() {
   try {
     if ('PerformanceObserver' in window) {
+      // Debounce to prevent duplicate logs
+      const reportedTasks = new Set();
+
       const longTaskObserver = new PerformanceObserver((entryList) => {
         for (const entry of entryList.getEntries()) {
-          console.warn(`🐌 Long task detected: ${entry.duration.toFixed(2)}ms (blocked main thread)`);
-          
-          // Log the attribution if available
-          if (entry.attribution) {
-            entry.attribution.forEach(attr => {
-              console.log(`  - ${attr.name}: ${attr.containerType} ${attr.containerSrc || attr.containerId}`);
-            });
+          // Create a unique key for this task
+          const taskKey = `${entry.startTime}-${entry.duration}`;
+
+          // Skip if we've already reported this task (prevents duplicates)
+          if (reportedTasks.has(taskKey)) continue;
+          reportedTasks.add(taskKey);
+
+          // Only log tasks over 100ms (ignore smaller ones)
+          if (entry.duration > 100) {
+            console.warn(`🐌 Long task detected: ${entry.duration.toFixed(2)}ms (blocked main thread)`);
+
+            // Log the attribution if available
+            if (entry.attribution) {
+              entry.attribution.forEach(attr => {
+                console.log(`  - ${attr.name}: ${attr.containerType} ${attr.containerSrc || attr.containerId}`);
+              });
+            }
           }
+
+          // Clean up old entries after 5 seconds
+          setTimeout(() => reportedTasks.delete(taskKey), 5000);
         }
       });
       longTaskObserver.observe({ entryTypes: ['longtask'] });

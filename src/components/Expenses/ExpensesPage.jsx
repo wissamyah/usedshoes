@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import ExpenseForm from './ExpenseForm';
 import ExpenseHistory from './ExpenseHistory';
-import { Plus, DollarSign, PieChart, Receipt } from 'lucide-react';
+import StatCard from '../UI/StatCard';
+import { Plus, DollarSign, PieChart, Receipt, CreditCard } from 'lucide-react';
 
 export default function ExpensesPage() {
   const { expenses } = useData();
@@ -89,58 +90,43 @@ export default function ExpensesPage() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <DollarSign className="h-8 w-8 text-red-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Today's Expenses</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(todaysTotal || 0)}</p>
-              <p className="text-sm text-gray-600">{todaysExpenses.length || 0} transaction{todaysExpenses.length !== 1 ? 's' : ''}</p>
-            </div>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <StatCard
+          title="Today's Expenses"
+          value={formatCurrency(todaysTotal || 0)}
+          subtitle={`${todaysExpenses.length || 0} transaction${todaysExpenses.length !== 1 ? 's' : ''}`}
+          icon={CreditCard}
+          iconBgColor="bg-red-100"
+          iconColor="text-red-600"
+          trend={todaysTotal > 0 ? 'up' : null}
+        />
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <Receipt className="h-8 w-8 text-orange-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Monthly Expenses</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(monthlyTotal || 0)}</p>
-              <p className="text-sm text-gray-600">{thisMonthsExpenses.length || 0} transaction{thisMonthsExpenses.length !== 1 ? 's' : ''}</p>
-            </div>
-          </div>
-        </div>
+        <StatCard
+          title="Monthly Expenses"
+          value={formatCurrency(monthlyTotal || 0)}
+          subtitle={`${thisMonthsExpenses.length || 0} transaction${thisMonthsExpenses.length !== 1 ? 's' : ''}`}
+          icon={Receipt}
+          iconBgColor="bg-orange-100"
+          iconColor="text-orange-600"
+        />
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <PieChart className="h-8 w-8 text-purple-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Top Category</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(topCategory[1] || 0)}</p>
-              <p className="text-sm text-gray-600">{topCategory[0] || 'No expenses'}</p>
-            </div>
-          </div>
-        </div>
+        <StatCard
+          title="Top Category"
+          value={formatCurrency(topCategory[1] || 0)}
+          subtitle={topCategory[0] || 'No expenses'}
+          icon={PieChart}
+          iconBgColor="bg-purple-100"
+          iconColor="text-purple-600"
+        />
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <DollarSign className="h-8 w-8 text-gray-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Total Expenses</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(totalExpenses || 0)}</p>
-              <p className="text-sm text-gray-600">{expenses.length || 0} all time</p>
-            </div>
-          </div>
-        </div>
+        <StatCard
+          title="Total Expenses"
+          value={formatCurrency(totalExpenses || 0)}
+          subtitle={`${expenses.length || 0} all time`}
+          icon={DollarSign}
+          iconBgColor="bg-gray-100"
+          iconColor="text-gray-600"
+        />
       </div>
 
       {/* Category Breakdown */}

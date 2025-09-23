@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useData } from '../../context/DataContext';
 import { formatDate } from '../../utils/dateFormatter';
 import { DollarSign, TrendingDown, Calendar, Tag, FileText, AlertCircle } from 'lucide-react';
+import StatCard from '../UI/StatCard';
 
 export default function ExpenseReport({ startDate, endDate }) {
   const { expenses } = useData();
@@ -187,44 +188,41 @@ export default function ExpenseReport({ startDate, endDate }) {
         
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <DollarSign className="h-5 w-5 text-red-600" />
-            </div>
-            <p className="text-xs text-gray-600">Total Expenses</p>
-            <p className="text-lg font-bold text-gray-900">{formatCurrency(metrics.totalExpenses)}</p>
-          </div>
-          
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <FileText className="h-5 w-5 text-blue-600" />
-            </div>
-            <p className="text-xs text-gray-600">Transactions</p>
-            <p className="text-lg font-bold text-gray-900">{metrics.totalTransactions}</p>
-          </div>
-          
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <Calendar className="h-5 w-5 text-purple-600" />
-            </div>
-            <p className="text-xs text-gray-600">Average Expense</p>
-            <p className="text-lg font-bold text-gray-900">{formatCurrency(metrics.averageExpense)}</p>
-          </div>
-          
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <AlertCircle className="h-5 w-5 text-orange-600" />
-            </div>
-            <p className="text-xs text-gray-600">Largest Expense</p>
-            <p className="text-lg font-bold text-gray-900">
-              {formatCurrency(metrics.largestExpense?.amount || 0)}
-            </p>
-            {metrics.largestExpense?.description && (
-              <p className="text-xs text-gray-500 truncate mt-1" title={metrics.largestExpense.description}>
-                {metrics.largestExpense.description}
-              </p>
-            )}
-          </div>
+          <StatCard
+            title="Total Expenses"
+            value={formatCurrency(metrics.totalExpenses)}
+            subtitle="Period total"
+            icon={DollarSign}
+            iconBgColor="bg-red-100"
+            iconColor="text-red-600"
+          />
+
+          <StatCard
+            title="Transactions"
+            value={`${metrics.totalTransactions}`}
+            subtitle="Expense entries"
+            icon={FileText}
+            iconBgColor="bg-blue-100"
+            iconColor="text-blue-600"
+          />
+
+          <StatCard
+            title="Average Expense"
+            value={formatCurrency(metrics.averageExpense)}
+            subtitle="Per transaction"
+            icon={Calendar}
+            iconBgColor="bg-purple-100"
+            iconColor="text-purple-600"
+          />
+
+          <StatCard
+            title="Largest Expense"
+            value={formatCurrency(metrics.largestExpense?.amount || 0)}
+            subtitle={metrics.largestExpense?.description ? metrics.largestExpense.description.slice(0, 30) + (metrics.largestExpense.description.length > 30 ? '...' : '') : 'No expenses'}
+            icon={AlertCircle}
+            iconBgColor="bg-orange-100"
+            iconColor="text-orange-600"
+          />
         </div>
       </div>
 

@@ -216,7 +216,7 @@ export function GitHubProvider({ children }) {
       const result = await state.api.updateData(
         currentDataFile, 
         data, 
-        `${commitMessage}\n\n🤖 Generated with Used Shoes Tracker`,
+        `${commitMessage}\n\n🤖 Generated with Friperie`,
         currentSha
       );
       
@@ -266,11 +266,18 @@ export function GitHubProvider({ children }) {
     }
 
     try {
+      const encryptedToken = getEncryptedToken('default');
+      if (!encryptedToken) {
+        console.error('No GitHub token found');
+        return [DEFAULT_DATA_FILE];
+      }
+
+      const token = await decryptToken(encryptedToken);
       const response = await fetch(
         `https://api.github.com/repos/${state.owner}/${state.repo}/contents/`,
         {
           headers: {
-            Authorization: `Bearer ${await decryptToken(getEncryptedToken('default'))}`,
+            Authorization: `Bearer ${token}`,
             Accept: 'application/vnd.github.v3+json',
           },
         }

@@ -94,16 +94,15 @@ function Layout() {
         onSyncData={handleSyncData}
         syncStatus={syncStatus}
         lastSyncTime={lastSync}
+        onTitleClick={() => setActiveTab('dashboard')}
       />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="py-6">
-          <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
-          
-          <main className="mt-6">
-            <ActiveComponent />
-          </main>
-        </div>
+        <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
+
+        <main className="mt-6">
+          <ActiveComponent />
+        </main>
       </div>
       
       <Notifications />

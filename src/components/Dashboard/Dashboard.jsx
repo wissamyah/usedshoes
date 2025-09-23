@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { AlertTriangle, Wallet, TrendingUp, TrendingDown, DollarSign, ChevronDown, ChevronUp } from 'lucide-react';
+import { AlertTriangle, Wallet, TrendingUp, TrendingDown, DollarSign, ChevronDown, ChevronUp, Activity, ArrowUpRight, ArrowDownRight, Info } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 import { formatDate } from '../../utils/dateFormatter';
 import KPICards from './KPICards';
@@ -52,14 +52,37 @@ export default function Dashboard() {
   const totalWithdrawals = withdrawals.reduce((sum, withdrawal) => sum + (withdrawal.amount || 0), 0);
   const currentCashPosition = totalRevenue + totalInjections - totalExpenses - totalWithdrawals;
 
-  // Recent activity (last 5 transactions)
-  const recentSales = sales
-    .sort((a, b) => new Date(`${b.date}T${b.time || '00:00'}`) - new Date(`${a.date}T${a.time || '00:00'}`))
-    .slice(0, 5);
+  // Recent activity by day (last 7 days)
+  const recentSalesByDay = (() => {
+    const salesByDate = {};
+    sales.forEach(sale => {
+      if (!salesByDate[sale.date]) {
+        salesByDate[sale.date] = { amount: 0, count: 0, profit: 0 };
+      }
+      salesByDate[sale.date].amount += sale.totalAmount || 0;
+      salesByDate[sale.date].count += 1;
+      salesByDate[sale.date].profit += sale.profit || 0;
+    });
+    return Object.entries(salesByDate)
+      .sort(([a], [b]) => b.localeCompare(a))
+      .slice(0, 7)
+      .map(([date, data]) => ({ date, ...data }));
+  })();
 
-  const recentExpenses = expenses
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 5);
+  const recentExpensesByDay = (() => {
+    const expensesByDate = {};
+    expenses.forEach(expense => {
+      if (!expensesByDate[expense.date]) {
+        expensesByDate[expense.date] = { amount: 0, count: 0 };
+      }
+      expensesByDate[expense.date].amount += expense.amount || 0;
+      expensesByDate[expense.date].count += 1;
+    });
+    return Object.entries(expensesByDate)
+      .sort(([a], [b]) => b.localeCompare(a))
+      .slice(0, 7)
+      .map(([date, data]) => ({ date, ...data }));
+  })();
 
   // Low stock alerts (products with less than 10 bags)
   const lowStockProducts = products.filter(product => product.currentStock < 10);
@@ -80,11 +103,11 @@ export default function Dashboard() {
 
 
   return (
-    <div className="p-4 sm:p-6">
+    <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">
       {/* Header */}
-      <div className="mb-6 sm:mb-8">
+      <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
-        <p className="text-sm text-gray-600 mt-1">Overview of your used shoes business performance</p>
+        <p className="text-sm text-gray-600 mt-1">Overview of your business performance</p>
       </div>
 
       {/* KPI Cards */}
@@ -95,123 +118,185 @@ export default function Dashboard() {
         netProfit={netProfit}
       />
 
-      {/* Cash Position Card - Prominent Display */}
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 mb-6 text-white">
-        <div className="flex items-center mb-2">
-          <Wallet className="h-6 w-6 mr-2" />
-          <h3 className="text-lg font-semibold">Current Cash Position</h3>
-          {currentCashPosition >= 0 ? (
-            <TrendingUp className="h-5 w-5 ml-auto opacity-90" />
-          ) : (
-            <TrendingDown className="h-5 w-5 ml-auto opacity-90" />
-          )}
+      {/* Cash Position Card - Professional Display */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-50/0 via-blue-50/50 to-blue-50/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="p-2 bg-blue-50 rounded-lg">
+                <Wallet className="h-5 w-5 text-blue-600" />
+              </div>
+              <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Cash Position</h3>
+            </div>
+            <div className="flex items-baseline gap-2 mt-3">
+              <span className="text-3xl font-light text-gray-900 transition-all duration-500">
+                {formatCurrency(currentCashPosition)}
+              </span>
+              {currentCashPosition >= 0 ? (
+                <span className="flex items-center text-sm text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                  <ArrowUpRight className="h-3 w-3 mr-1" />
+                  Positive
+                </span>
+              ) : (
+                <span className="flex items-center text-sm text-red-600 bg-red-50 px-2 py-1 rounded-full">
+                  <ArrowDownRight className="h-3 w-3 mr-1" />
+                  Negative
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center text-xs text-gray-400">
+            <span className="relative flex h-3 w-3 mr-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+            </span>
+            <span className="text-gray-500">Live</span>
+          </div>
         </div>
-        <div className="text-3xl font-bold mb-3">
-          {formatCurrency(currentCashPosition)}
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-          <div>
-            <div className="opacity-90">Sales Revenue</div>
-            <div className="font-semibold">{formatCurrency(totalRevenue)}</div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-gray-100">
+          <div className="group">
+            <div className="text-xs text-gray-500 mb-1">Revenue</div>
+            <div className="text-lg font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+              {formatCurrency(totalRevenue)}
+            </div>
           </div>
-          <div>
-            <div className="opacity-90">Total Purchases</div>
-            <div className="font-semibold">{formatCurrency(totalPurchases)}</div>
+          <div className="group">
+            <div className="text-xs text-gray-500 mb-1">Investments</div>
+            <div className="text-lg font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+              {formatCurrency(totalPurchases)}
+            </div>
           </div>
-          <div>
-            <div className="opacity-90">Expenses</div>
-            <div className="font-semibold">{formatCurrency(totalExpenses)}</div>
+          <div className="group">
+            <div className="text-xs text-gray-500 mb-1">Expenses</div>
+            <div className="text-lg font-medium text-gray-900 group-hover:text-red-600 transition-colors">
+              {formatCurrency(totalExpenses)}
+            </div>
           </div>
-          <div>
-            <div className="opacity-90">Withdrawals</div>
-            <div className="font-semibold">{formatCurrency(totalWithdrawals)}</div>
+          <div className="group">
+            <div className="text-xs text-gray-500 mb-1">Withdrawals</div>
+            <div className="text-lg font-medium text-gray-900 group-hover:text-orange-600 transition-colors">
+              {formatCurrency(totalWithdrawals)}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Secondary Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Business Overview</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-blue-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+          <div className="flex items-center justify-between mb-4 relative">
+            <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Operations</h3>
+            <div className="p-1.5 bg-blue-50 rounded-lg">
+              <Activity className="h-4 w-4 text-blue-600" />
+            </div>
+          </div>
           <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Total Products:</span>
-              <span className="font-semibold">{products.length}</span>
+            <div className="flex justify-between items-center group cursor-default">
+              <span className="text-sm text-gray-500">Products</span>
+              <span className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{products.length}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Total Containers:</span>
-              <span className="font-semibold">{containers.length}</span>
+            <div className="flex justify-between items-center group cursor-default">
+              <span className="text-sm text-gray-500">Containers</span>
+              <span className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{containers.length}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Total Sales:</span>
-              <span className="font-semibold">{sales.length}</span>
+            <div className="flex justify-between items-center group cursor-default">
+              <span className="text-sm text-gray-500">Total Sales</span>
+              <span className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{sales.length}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Active Inventory:</span>
-              <span className="font-semibold">{products.filter(p => p.currentStock > 0).length} items</span>
+            <div className="flex justify-between items-center group cursor-default">
+              <span className="text-sm text-gray-500">Active Stock</span>
+              <span className="text-sm font-medium text-gray-900 group-hover:text-green-600 transition-colors">{products.filter(p => p.currentStock > 0).length}</span>
             </div>
-            <div className="flex justify-between border-t pt-2">
-              <span className="text-gray-600">Low Stock Items:</span>
-              <span className={`font-semibold ${lowStockProducts.length > 0 ? 'text-orange-600' : 'text-green-600'}`}>
+            <div className="flex justify-between items-center pt-3 border-t border-gray-100">
+              <span className="text-sm text-gray-500">Low Stock Alert</span>
+              <span className={`text-sm font-medium px-2 py-0.5 rounded-full ${
+                lowStockProducts.length > 0
+                  ? 'bg-orange-100 text-orange-600'
+                  : 'bg-green-100 text-green-600'
+              }`}>
                 {lowStockProducts.length}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Financial Overview</h3>
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-green-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+          <div className="flex items-center justify-between mb-4 relative">
+            <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Financials</h3>
+            <div className="p-1.5 bg-green-50 rounded-lg">
+              <DollarSign className="h-4 w-4 text-green-600" />
+            </div>
+          </div>
           <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Total Revenue:</span>
-              <span className="font-semibold text-green-600">{formatCurrency(totalRevenue)}</span>
+            <div className="flex justify-between items-center group cursor-default">
+              <span className="text-sm text-gray-500">Revenue</span>
+              <span className="text-sm font-medium text-green-600 group-hover:text-green-700 transition-colors">{formatCurrency(totalRevenue)}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Total Expenses:</span>
-              <span className="font-semibold text-red-600">{formatCurrency(totalExpenses)}</span>
+            <div className="flex justify-between items-center group cursor-default">
+              <span className="text-sm text-gray-500">Expenses</span>
+              <span className="text-sm font-medium text-red-600 group-hover:text-red-700 transition-colors">{formatCurrency(totalExpenses)}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Net Profit:</span>
-              <span className={`font-semibold ${totalNetProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <div className="flex justify-between items-center group cursor-default">
+              <span className="text-sm text-gray-500">Gross Profit</span>
+              <span className={`text-sm font-medium transition-colors ${
+                totalNetProfit >= 0
+                  ? 'text-green-600 group-hover:text-green-700'
+                  : 'text-red-600 group-hover:text-red-700'
+              }`}>
                 {formatCurrency(totalNetProfit)}
               </span>
             </div>
-            <div className="flex justify-between border-t pt-2">
-              <span className="text-gray-900 font-medium">Cash Position:</span>
-              <span className={`font-bold text-lg ${currentCashPosition >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
-                {formatCurrency(currentCashPosition)}
+            <div className="flex justify-between items-center pt-3 border-t border-gray-100">
+              <span className="text-sm text-gray-500">Profit Margin</span>
+              <span className={`text-sm font-medium px-2 py-0.5 rounded-full ${
+                totalRevenue > 0 && (totalNetProfit / totalRevenue) * 100 > 0
+                  ? 'bg-green-100 text-green-600'
+                  : 'bg-red-100 text-red-600'
+              }`}>
+                {totalRevenue > 0 ? `${((totalNetProfit / totalRevenue) * 100).toFixed(1)}%` : '0%'}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">This Month</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Sales Count:</span>
-              <span className="font-semibold">{thisMonthsSales.length}</span>
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-purple-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+          <div className="flex items-center justify-between mb-4 relative">
+            <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">This Month</h3>
+            <div className="p-1.5 bg-purple-50 rounded-lg">
+              <TrendingUp className="h-4 w-4 text-purple-600" />
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Avg Sale:</span>
-              <span className="font-semibold">
-                {thisMonthsSales.length > 0 
+          </div>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center group cursor-default">
+              <span className="text-sm text-gray-500">Sales</span>
+              <span className="text-sm font-medium text-gray-900 group-hover:text-purple-600 transition-colors">{thisMonthsSales.length}</span>
+            </div>
+            <div className="flex justify-between items-center group cursor-default">
+              <span className="text-sm text-gray-500">Avg Sale</span>
+              <span className="text-sm font-medium text-gray-900 group-hover:text-purple-600 transition-colors">
+                {thisMonthsSales.length > 0
                   ? formatCurrency(monthlyRevenue / thisMonthsSales.length)
                   : formatCurrency(0)
                 }
               </span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Expense Count:</span>
-              <span className="font-semibold">{thisMonthsExpenses.length}</span>
+            <div className="flex justify-between items-center group cursor-default">
+              <span className="text-sm text-gray-500">Expenses</span>
+              <span className="text-sm font-medium text-gray-900 group-hover:text-purple-600 transition-colors">{thisMonthsExpenses.length}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Avg Expense:</span>
-              <span className="font-semibold">
-                {thisMonthsExpenses.length > 0 
-                  ? formatCurrency(monthlyExpenses / thisMonthsExpenses.length)
-                  : formatCurrency(0)
-                }
+            <div className="flex justify-between items-center pt-3 border-t border-gray-100">
+              <span className="text-sm text-gray-500">Net Cash Flow</span>
+              <span className={`text-sm font-medium px-2 py-0.5 rounded-full ${
+                monthlyRevenue - monthlyExpenses > 0
+                  ? 'bg-green-100 text-green-600'
+                  : 'bg-red-100 text-red-600'
+              }`}>
+                {formatCurrency(monthlyRevenue - monthlyExpenses)}
               </span>
             </div>
           </div>
@@ -220,18 +305,23 @@ export default function Dashboard() {
 
       {/* Low Stock Alert */}
       {lowStockProducts.length > 0 && (
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 sm:p-6 mb-6 sm:mb-8">
+        <div className="bg-white rounded-xl shadow-sm border border-orange-100 p-6 mb-8 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-50/0 via-orange-50/20 to-orange-50/0 pointer-events-none"></div>
           <div
             className="flex items-center justify-between cursor-pointer select-none"
             onClick={() => setIsLowStockExpanded(!isLowStockExpanded)}
           >
             <div className="flex items-center">
-              <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600 mr-2" />
-              <h3 className="text-base sm:text-lg font-semibold text-orange-900">Low Stock Alert</h3>
-              <span className="ml-2 text-sm text-orange-700">({lowStockProducts.length} items)</span>
+              <div className="p-2 bg-orange-50 rounded-lg mr-3">
+                <AlertTriangle className="h-5 w-5 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-gray-900">Low Stock Alert</h3>
+                <p className="text-xs text-gray-500 mt-0.5">{lowStockProducts.length} items need restocking</p>
+              </div>
             </div>
             <ChevronDown
-              className={`h-5 w-5 text-orange-600 transform transition-transform duration-300 ease-in-out ${
+              className={`h-5 w-5 text-gray-400 transform transition-transform duration-300 ease-in-out ${
                 isLowStockExpanded ? 'rotate-180' : 'rotate-0'
               }`}
             />
@@ -245,22 +335,24 @@ export default function Dashboard() {
             }}
           >
             <div ref={contentRef} className="pt-4">
-              <p className="text-orange-700 mb-4 text-sm sm:text-base">The following products have low stock (less than 10 bags):</p>
-              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
-                <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0">
-                  {lowStockProducts.map(product => (
-                    <div
-                      key={product.id}
-                      className="bg-white p-3 rounded border border-orange-200 min-w-[250px] sm:min-w-0 flex-shrink-0 sm:flex-shrink"
-                    >
-                      <div className="font-medium text-gray-900">{product.name}</div>
-                      <div className="text-sm text-gray-600">{product.category}</div>
-                      <div className="text-sm font-semibold text-orange-600">
-                        Stock: {product.currentStock} bags
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {lowStockProducts.map(product => (
+                  <div
+                    key={product.id}
+                    className="group bg-gray-50 hover:bg-orange-50 p-3 rounded-lg border border-gray-100 hover:border-orange-200 transition-all duration-200 cursor-default"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="font-medium text-gray-900 text-sm">{product.name}</div>
+                        <div className="text-xs text-gray-500 mt-0.5">{product.category}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-semibold text-orange-600">{product.currentStock}</div>
+                        <div className="text-xs text-gray-500">bags left</div>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -268,56 +360,78 @@ export default function Dashboard() {
       )}
 
       {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Sales */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Recent Sales</h3>
-            {recentSales.length > 0 ? (
-              <div className="space-y-4">
-                {recentSales.map(sale => (
-                  <div key={sale.id} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-green-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Daily Sales</h3>
+              <div className="p-1.5 bg-green-50 rounded-lg">
+                <TrendingUp className="h-4 w-4 text-green-600" />
+              </div>
+            </div>
+            {recentSalesByDay.length > 0 ? (
+              <div className="space-y-3">
+                {recentSalesByDay.map(day => (
+                  <div key={day.date} className="group flex justify-between items-center py-3 px-3 rounded-lg hover:bg-gray-50 transition-all duration-200 cursor-default">
                     <div>
-                      <div className="font-medium text-gray-900">{sale.productName}</div>
-                      <div className="text-sm text-gray-600">
-                        {sale.quantity} units • {formatDate(sale.date)}
+                      <div className="font-medium text-gray-900 text-sm group-hover:text-blue-600 transition-colors">{formatDate(day.date)}</div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {day.count} sale{day.count !== 1 ? 's' : ''} • Profit: {formatCurrency(day.profit)}
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-semibold text-green-600">{formatCurrency(sale.totalAmount)}</div>
-                      <div className="text-sm text-gray-500">+{formatCurrency(sale.profit)} profit</div>
+                      <div className="font-semibold text-green-600 text-sm">{formatCurrency(day.amount)}</div>
+                      <div className="text-xs text-gray-500">Daily Total</div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500">No sales recorded yet</p>
+              <div className="text-center py-8">
+                <div className="text-gray-400 mb-2">
+                  <TrendingUp className="h-8 w-8 mx-auto" />
+                </div>
+                <p className="text-sm text-gray-500">No sales recorded yet</p>
+              </div>
             )}
           </div>
         </div>
 
         {/* Recent Expenses */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Recent Expenses</h3>
-            {recentExpenses.length > 0 ? (
-              <div className="space-y-4">
-                {recentExpenses.map(expense => (
-                  <div key={expense.id} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-red-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Daily Expenses</h3>
+              <div className="p-1.5 bg-red-50 rounded-lg">
+                <TrendingDown className="h-4 w-4 text-red-600" />
+              </div>
+            </div>
+            {recentExpensesByDay.length > 0 ? (
+              <div className="space-y-3">
+                {recentExpensesByDay.map(day => (
+                  <div key={day.date} className="group flex justify-between items-center py-3 px-3 rounded-lg hover:bg-gray-50 transition-all duration-200 cursor-default">
                     <div>
-                      <div className="font-medium text-gray-900">{expense.description}</div>
-                      <div className="text-sm text-gray-600">
-                        {expense.category} • {formatDate(expense.date)}
+                      <div className="font-medium text-gray-900 text-sm group-hover:text-blue-600 transition-colors">{formatDate(day.date)}</div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {day.count} expense{day.count !== 1 ? 's' : ''}
                       </div>
                     </div>
-                    <div className="font-semibold text-red-600">
-                      -{formatCurrency(expense.amount)}
+                    <div className="font-semibold text-red-600 text-sm">
+                      -{formatCurrency(day.amount)}
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500">No expenses recorded yet</p>
+              <div className="text-center py-8">
+                <div className="text-gray-400 mb-2">
+                  <TrendingDown className="h-8 w-8 mx-auto" />
+                </div>
+                <p className="text-sm text-gray-500">No expenses recorded yet</p>
+              </div>
             )}
           </div>
         </div>

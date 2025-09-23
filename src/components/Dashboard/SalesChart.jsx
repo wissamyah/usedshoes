@@ -1,5 +1,6 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { useData } from '../../context/DataContext';
+import { TrendingUp, Calendar, DollarSign } from 'lucide-react';
 
 export default function SalesChart() {
   const { sales } = useData();
@@ -30,79 +31,156 @@ export default function SalesChart() {
     return `$${value.toLocaleString()}`;
   };
 
-  return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900">Sales Trend</h3>
-          <p className="text-sm text-gray-600">Revenue and profit over the last 30 days</p>
+  // Custom tooltip
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-100">
+          <p className="text-sm font-medium text-gray-900 mb-2">{label}</p>
+          {payload.map((entry, index) => (
+            <div key={index} className="flex items-center justify-between gap-4">
+              <span className="text-xs text-gray-600">{entry.name}:</span>
+              <span className="text-xs font-semibold" style={{ color: entry.color }}>
+                {formatCurrency(entry.value)}
+              </span>
+            </div>
+          ))}
         </div>
-      </div>
-      
-      <div className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={last30Days} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis 
-              dataKey="displayDate" 
-              stroke="#6b7280"
-              fontSize={12}
-              interval="preserveStartEnd"
-            />
-            <YAxis 
-              stroke="#6b7280"
-              fontSize={12}
-              tickFormatter={formatCurrency}
-            />
-            <Tooltip 
-              formatter={(value, name) => [formatCurrency(value), name]}
-              labelFormatter={(label) => `Date: ${label}`}
-              contentStyle={{
-                backgroundColor: '#f9fafb',
-                border: '1px solid #e5e7eb',
-                borderRadius: '6px'
-              }}
-            />
-            <Legend />
-            <Line 
-              type="monotone" 
-              dataKey="revenue" 
-              stroke="#059669" 
-              strokeWidth={3}
-              dot={{ fill: '#059669', strokeWidth: 2, r: 4 }}
-              name="Revenue"
-            />
-            <Line 
-              type="monotone" 
-              dataKey="profit" 
-              stroke="#3b82f6" 
-              strokeWidth={2}
-              dot={{ fill: '#3b82f6', strokeWidth: 2, r: 3 }}
-              name="Profit"
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      );
+    }
+    return null;
+  };
 
-      {/* Summary Stats */}
-      <div className="mt-6 grid grid-cols-3 gap-4 pt-4 border-t border-gray-200">
-        <div className="text-center">
-          <div className="text-2xl font-bold text-gray-900">
-            {last30Days.reduce((sum, day) => sum + day.salesCount, 0)}
+  // Custom dot for active points
+  const CustomDot = (props) => {
+    const { cx, cy, fill, payload, dataKey } = props;
+    if (payload[dataKey] > 0) {
+      return (
+        <circle
+          cx={cx}
+          cy={cy}
+          r={4}
+          fill={fill}
+          className="animate-pulse"
+        />
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent to-blue-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+      <div className="p-6 relative">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="p-1.5 bg-blue-50 rounded-lg">
+                <TrendingUp className="h-4 w-4 text-blue-600" />
+              </div>
+              <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Sales Performance</h3>
+            </div>
+            <p className="text-xs text-gray-500 ml-8">Last 30 days trend analysis</p>
           </div>
-          <div className="text-sm text-gray-600">Total Sales</div>
+          <div className="flex items-center text-xs text-gray-400">
+            <span className="relative flex h-2 w-2 mr-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            <span>Live</span>
+          </div>
         </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-green-600">
-            {formatCurrency(last30Days.reduce((sum, day) => sum + day.revenue, 0))}
-          </div>
-          <div className="text-sm text-gray-600">Total Revenue</div>
+
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={last30Days} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+              <defs>
+                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+              <XAxis
+                dataKey="displayDate"
+                stroke="#9ca3af"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+                interval="preserveStartEnd"
+              />
+              <YAxis
+                stroke="#9ca3af"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={formatCurrency}
+              />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(59, 130, 246, 0.05)' }} />
+              <Legend
+                verticalAlign="top"
+                height={36}
+                iconType="rect"
+                wrapperStyle={{
+                  fontSize: '12px',
+                  paddingBottom: '10px'
+                }}
+              />
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="#10b981"
+                strokeWidth={2}
+                fill="url(#colorRevenue)"
+                name="Revenue"
+                animationDuration={1000}
+              />
+              <Area
+                type="monotone"
+                dataKey="profit"
+                stroke="#3b82f6"
+                strokeWidth={2}
+                fill="url(#colorProfit)"
+                name="Profit"
+                animationDuration={1200}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-blue-600">
-            {formatCurrency(last30Days.reduce((sum, day) => sum + day.profit, 0))}
+
+        {/* Summary Stats */}
+        <div className="mt-6 grid grid-cols-3 gap-4 pt-4 border-t border-gray-100">
+          <div className="group cursor-default">
+            <div className="flex items-center justify-center mb-1">
+              <Calendar className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+            </div>
+            <div className="text-2xl font-light text-gray-900 text-center group-hover:text-blue-600 transition-colors">
+              {last30Days.reduce((sum, day) => sum + day.salesCount, 0)}
+            </div>
+            <div className="text-xs text-gray-500 text-center">Total Sales</div>
           </div>
-          <div className="text-sm text-gray-600">Total Profit</div>
+          <div className="group cursor-default">
+            <div className="flex items-center justify-center mb-1">
+              <DollarSign className="h-4 w-4 text-green-400 group-hover:text-green-600 transition-colors" />
+            </div>
+            <div className="text-2xl font-light text-green-600 text-center group-hover:text-green-700 transition-colors">
+              {formatCurrency(last30Days.reduce((sum, day) => sum + day.revenue, 0))}
+            </div>
+            <div className="text-xs text-gray-500 text-center">Total Revenue</div>
+          </div>
+          <div className="group cursor-default">
+            <div className="flex items-center justify-center mb-1">
+              <TrendingUp className="h-4 w-4 text-blue-400 group-hover:text-blue-600 transition-colors" />
+            </div>
+            <div className="text-2xl font-light text-blue-600 text-center group-hover:text-blue-700 transition-colors">
+              {formatCurrency(last30Days.reduce((sum, day) => sum + day.profit, 0))}
+            </div>
+            <div className="text-xs text-gray-500 text-center">Total Profit</div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Package } from 'lucide-react';
+import { Plus, Package, DollarSign, AlertTriangle, Archive } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 import { useUI } from '../../context/UIContext';
 import ProductList from './ProductList';
@@ -7,6 +7,7 @@ import ProductForm from './ProductForm';
 import ProductCard from './ProductCard';
 import ProductMovementModal from './ProductMovementModal';
 import DestroyProductModal from './DestroyProductModal';
+import StatCard from '../UI/StatCard';
 
 export default function ProductsPage() {
   const { products, containers, addProduct, updateProduct, deleteProduct } = useData();
@@ -41,7 +42,7 @@ export default function ProductsPage() {
     return sum + (totalKg * costPerKg);
   }, 0);
   const lowStockCount = products.filter(p => p.currentStock <= 5).length;
-  const outOfStockCount = products.filter(p => p.currentStock === 0).length;
+  const totalBagsAvailable = products.reduce((sum, p) => sum + (p.currentStock || 0), 0);
 
   const handleAddProduct = () => {
     setEditingProduct(null);
@@ -126,98 +127,42 @@ export default function ProductsPage() {
           </div>
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold text-sm">{totalProducts}</span>
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        Total Products
-                      </dt>
-                      <dd className="text-lg font-medium text-gray-900">
-                        {totalProducts} items
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <StatCard
+              title="Total Products"
+              value={`${totalProducts}`}
+              subtitle="Active items in catalog"
+              icon={Archive}
+              iconBgColor="bg-blue-100"
+              iconColor="text-blue-600"
+            />
 
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold text-xs">$</span>
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        Total Value
-                      </dt>
-                      <dd className="text-lg font-medium text-gray-900">
-                        ${totalValue.toLocaleString()}
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <StatCard
+              title="Total Value"
+              value={`$${totalValue.toLocaleString()}`}
+              subtitle="Inventory worth"
+              icon={DollarSign}
+              iconBgColor="bg-green-100"
+              iconColor="text-green-600"
+            />
 
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      lowStockCount > 0 ? 'bg-yellow-500' : 'bg-gray-300'
-                    }`}>
-                      <span className="text-white font-semibold text-sm">{lowStockCount}</span>
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        Low Stock
-                      </dt>
-                      <dd className="text-lg font-medium text-gray-900">
-                        {lowStockCount} items
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <StatCard
+              title="Low Stock"
+              value={`${lowStockCount}`}
+              subtitle={lowStockCount > 0 ? "Items need restocking" : "All items stocked"}
+              icon={AlertTriangle}
+              iconBgColor={lowStockCount > 0 ? "bg-yellow-100" : "bg-gray-100"}
+              iconColor={lowStockCount > 0 ? "text-yellow-600" : "text-gray-600"}
+            />
 
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      outOfStockCount > 0 ? 'bg-red-500' : 'bg-gray-300'
-                    }`}>
-                      <span className="text-white font-semibold text-sm">{outOfStockCount}</span>
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        Out of Stock
-                      </dt>
-                      <dd className="text-lg font-medium text-gray-900">
-                        {outOfStockCount} items
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <StatCard
+              title="Bags Available"
+              value={`${totalBagsAvailable}`}
+              subtitle="Total bags in stock"
+              icon={Package}
+              iconBgColor="bg-purple-100"
+              iconColor="text-purple-600"
+            />
           </div>
 
           {/* Filters and Search */}

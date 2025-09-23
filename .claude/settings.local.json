@@ -18,7 +18,8 @@
       "Bash(npm run build:*)",
       "Bash(npm run deploy:*)",
       "Bash(git subtree push:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(start http://localhost:5174/usedshoes/)"
     ],
     "deny": [],
     "ask": []

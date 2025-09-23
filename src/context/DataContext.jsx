@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect, useRef } from 'react';
+import { createContext, useContext, useReducer, useEffect, useRef, useMemo } from 'react';
 
 // Initial data structure based on our data model
 const initialState = {
@@ -82,6 +82,7 @@ export const DATA_ACTIONS = {
   // Utility actions
   MARK_SAVED: 'MARK_SAVED',
   MARK_UNSAVED: 'MARK_UNSAVED',
+  FIX_MALFORMED_IDS: 'FIX_MALFORMED_IDS',
 };
 
 // Data reducer
@@ -94,9 +95,26 @@ function dataReducer(state, action) {
       return { ...state, error: action.payload, loading: false };
     
     case DATA_ACTIONS.LOAD_DATA:
+      // Ensure all nextIds fields are properly initialized
+      const loadedMetadata = action.payload.metadata || {};
+      const ensuredNextIds = {
+        product: loadedMetadata.nextIds?.product || 1,
+        container: loadedMetadata.nextIds?.container || 1,
+        sale: loadedMetadata.nextIds?.sale || 1,
+        expense: loadedMetadata.nextIds?.expense || 1,
+        partner: loadedMetadata.nextIds?.partner || 1,
+        withdrawal: loadedMetadata.nextIds?.withdrawal || 1,
+        cashFlow: loadedMetadata.nextIds?.cashFlow || 1,
+        cashInjection: loadedMetadata.nextIds?.cashInjection || 1,
+      };
+
       return {
         ...state,
         ...action.payload,
+        metadata: {
+          ...loadedMetadata,
+          nextIds: ensuredNextIds
+        },
         loading: false,
         error: null,
         unsavedChanges: false,
@@ -620,9 +638,11 @@ function dataReducer(state, action) {
     // Partner actions
     case DATA_ACTIONS.ADD_PARTNER: {
       const initialInvestment = action.payload.initialInvestment || 0;
+      // Ensure we have a valid partner ID counter
+      const currentPartnerId = state.metadata.nextIds.partner || 1;
       const newPartner = {
         ...action.payload,
-        id: `P${state.metadata.nextIds.partner}`,
+        id: `P${currentPartnerId}`,
         capitalAccount: {
           initialInvestment: initialInvestment,
           additionalContributions: [],
@@ -632,7 +652,7 @@ function dataReducer(state, action) {
         },
         createdAt: new Date().toISOString()
       };
-      
+
       return {
         ...state,
         partners: [...state.partners, newPartner],
@@ -640,7 +660,7 @@ function dataReducer(state, action) {
           ...state.metadata,
           nextIds: {
             ...state.metadata.nextIds,
-            partner: state.metadata.nextIds.partner + 1,
+            partner: currentPartnerId + 1,
           },
           lastUpdated: new Date().toISOString(),
         },
@@ -706,9 +726,11 @@ function dataReducer(state, action) {
     
     // Withdrawal actions
     case DATA_ACTIONS.ADD_WITHDRAWAL: {
+      // Ensure we have a valid withdrawal ID counter
+      const currentWithdrawalId = state.metadata.nextIds.withdrawal || 1;
       const withdrawal = {
         ...action.payload,
-        id: `W${state.metadata.nextIds.withdrawal}`,
+        id: `W${currentWithdrawalId}`,
         createdAt: new Date().toISOString()
       };
       
@@ -734,7 +756,7 @@ function dataReducer(state, action) {
           ...state.metadata,
           nextIds: {
             ...state.metadata.nextIds,
-            withdrawal: state.metadata.nextIds.withdrawal + 1,
+            withdrawal: currentWithdrawalId + 1,
           },
           lastUpdated: new Date().toISOString(),
         },
@@ -846,9 +868,11 @@ function dataReducer(state, action) {
     
     // Cash Injection actions
     case DATA_ACTIONS.ADD_CASH_INJECTION: {
+      // Ensure we have a valid cash injection ID counter
+      const currentCashInjectionId = state.metadata.nextIds.cashInjection || 1;
       const cashInjection = {
         ...action.payload,
-        id: `CI${state.metadata.nextIds.cashInjection}`,
+        id: `CI${currentCashInjectionId}`,
         createdAt: new Date().toISOString()
       };
       
@@ -878,7 +902,7 @@ function dataReducer(state, action) {
           ...state.metadata,
           nextIds: {
             ...state.metadata.nextIds,
-            cashInjection: state.metadata.nextIds.cashInjection + 1,
+            cashInjection: currentCashInjectionId + 1,
           },
           lastUpdated: new Date().toISOString(),
         },
@@ -935,10 +959,107 @@ function dataReducer(state, action) {
     
     case DATA_ACTIONS.MARK_SAVED:
       return { ...state, unsavedChanges: false };
-    
+
     case DATA_ACTIONS.MARK_UNSAVED:
       return { ...state, unsavedChanges: true };
-    
+
+    case DATA_ACTIONS.FIX_MALFORMED_IDS: {
+      // Create mapping of old IDs to new IDs
+      const partnerIdMap = {};
+      let nextPartnerId = 1;
+      let nextWithdrawalId = 1;
+      let nextCashInjectionId = 1;
+
+      // Fix partner IDs
+      const fixedPartners = state.partners.map(partner => {
+        const oldId = partner.id;
+        // Check if ID is malformed (contains undefined, NaN, null, etc.)
+        if (oldId && (oldId.includes('undefined') || oldId.includes('NaN') || oldId.includes('null'))) {
+          const newId = `P${nextPartnerId}`;
+          partnerIdMap[oldId] = newId;
+          nextPartnerId++;
+          return { ...partner, id: newId };
+        }
+        // Extract number from valid IDs to update counter
+        const match = oldId?.match(/^P(\d+)$/);
+        if (match) {
+          const idNum = parseInt(match[1]);
+          nextPartnerId = Math.max(nextPartnerId, idNum + 1);
+        }
+        return partner;
+      });
+
+      // Fix withdrawal IDs and update partner references
+      const fixedWithdrawals = state.withdrawals.map(withdrawal => {
+        let updatedWithdrawal = { ...withdrawal };
+
+        // Fix withdrawal ID if malformed
+        const oldId = withdrawal.id;
+        if (oldId && (oldId.includes('undefined') || oldId.includes('NaN') || oldId.includes('null'))) {
+          updatedWithdrawal.id = `W${nextWithdrawalId}`;
+          nextWithdrawalId++;
+        } else {
+          // Extract number from valid IDs to update counter
+          const match = oldId?.match(/^W(\d+)$/);
+          if (match) {
+            const idNum = parseInt(match[1]);
+            nextWithdrawalId = Math.max(nextWithdrawalId, idNum + 1);
+          }
+        }
+
+        // Update partner reference if needed
+        if (partnerIdMap[withdrawal.partnerId]) {
+          updatedWithdrawal.partnerId = partnerIdMap[withdrawal.partnerId];
+        }
+
+        return updatedWithdrawal;
+      });
+
+      // Fix cash injection IDs and update partner references
+      const fixedCashInjections = state.cashInjections.map(injection => {
+        let updatedInjection = { ...injection };
+
+        // Fix injection ID if malformed
+        const oldId = injection.id;
+        if (oldId && (oldId.includes('undefined') || oldId.includes('NaN') || oldId.includes('null'))) {
+          updatedInjection.id = `CI${nextCashInjectionId}`;
+          nextCashInjectionId++;
+        } else {
+          // Extract number from valid IDs to update counter
+          const match = oldId?.match(/^CI(\d+)$/);
+          if (match) {
+            const idNum = parseInt(match[1]);
+            nextCashInjectionId = Math.max(nextCashInjectionId, idNum + 1);
+          }
+        }
+
+        // Update partner reference if needed
+        if (partnerIdMap[injection.partnerId]) {
+          updatedInjection.partnerId = partnerIdMap[injection.partnerId];
+        }
+
+        return updatedInjection;
+      });
+
+      return {
+        ...state,
+        partners: fixedPartners,
+        withdrawals: fixedWithdrawals,
+        cashInjections: fixedCashInjections,
+        metadata: {
+          ...state.metadata,
+          nextIds: {
+            ...state.metadata.nextIds,
+            partner: nextPartnerId,
+            withdrawal: nextWithdrawalId,
+            cashInjection: nextCashInjectionId
+          },
+          lastUpdated: new Date().toISOString()
+        },
+        unsavedChanges: true
+      };
+    }
+
     default:
       return state;
   }
@@ -976,27 +1097,30 @@ export function DataProvider({ children }) {
     }
   }, [state.unsavedChanges]);
 
-  // Calculate average selling prices for products
-  const productsWithAvgPrice = state.products.map(product => {
-    const productSales = state.sales.filter(sale => sale.productId === product.id);
-    
-    if (productSales.length === 0) {
-      return { ...product, avgSellingPrice: null, totalSold: 0 };
-    }
-    
-    const totalRevenue = productSales.reduce((sum, sale) => sum + (sale.quantity * sale.pricePerUnit), 0);
-    const totalQuantity = productSales.reduce((sum, sale) => sum + sale.quantity, 0);
-    const avgSellingPrice = totalRevenue / totalQuantity;
-    
-    return {
-      ...product,
-      avgSellingPrice,
-      totalSold: totalQuantity,
-      totalRevenue
-    };
-  });
+  // Calculate average selling prices for products - MEMOIZED for performance
+  const productsWithAvgPrice = useMemo(() => {
+    return state.products.map(product => {
+      const productSales = state.sales.filter(sale => sale.productId === product.id);
+
+      if (productSales.length === 0) {
+        return { ...product, avgSellingPrice: null, totalSold: 0 };
+      }
+
+      const totalRevenue = productSales.reduce((sum, sale) => sum + (sale.quantity * sale.pricePerUnit), 0);
+      const totalQuantity = productSales.reduce((sum, sale) => sum + sale.quantity, 0);
+      const avgSellingPrice = totalRevenue / totalQuantity;
+
+      return {
+        ...product,
+        avgSellingPrice,
+        totalSold: totalQuantity,
+        totalRevenue
+      };
+    });
+  }, [state.products, state.sales]); // Only recalculate when products or sales change
   
-  const value = {
+  // Memoize the context value to prevent unnecessary re-renders
+  const value = useMemo(() => ({
     ...state,
     products: productsWithAvgPrice,
     dispatch,
@@ -1062,7 +1186,8 @@ export function DataProvider({ children }) {
     
     markSaved: () => dispatch({ type: DATA_ACTIONS.MARK_SAVED }),
     markUnsaved: () => dispatch({ type: DATA_ACTIONS.MARK_UNSAVED }),
-    
+    fixMalformedIds: () => dispatch({ type: DATA_ACTIONS.FIX_MALFORMED_IDS }),
+
     // Alias for compatibility
     hasUnsavedChanges: state.unsavedChanges,
     markChanged: () => dispatch({ type: DATA_ACTIONS.MARK_UNSAVED }),
@@ -1070,7 +1195,7 @@ export function DataProvider({ children }) {
     // Save management
     registerSaveCallback,
     triggerSave,
-  };
+  }), [state, productsWithAvgPrice, dispatch, registerSaveCallback, triggerSave]);
 
   return (
     <DataContext.Provider value={value}>

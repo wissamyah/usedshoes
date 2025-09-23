@@ -4,7 +4,8 @@ import { useUI } from '../../context/UIContext';
 import { formatDate } from '../../utils/dateFormatter';
 import SalesForm from './SalesForm';
 import SalesHistory from './SalesHistory';
-import { Plus, BarChart3, DollarSign } from 'lucide-react';
+import StatCard from '../UI/StatCard';
+import { Plus, BarChart3, DollarSign, TrendingUp, TrendingDown } from 'lucide-react';
 
 export default function SalesPage() {
   const { sales, products } = useData();
@@ -86,62 +87,45 @@ export default function SalesPage() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <DollarSign className="h-8 w-8 text-green-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">{displayDate}'s Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(todaysRevenue)}</p>
-              <p className="text-sm text-gray-600">{recentSales.length} transactions</p>
-            </div>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <StatCard
+          title={`${displayDate}'s Revenue`}
+          value={formatCurrency(todaysRevenue)}
+          subtitle={`${recentSales.length} transactions`}
+          icon={DollarSign}
+          iconBgColor="bg-green-100"
+          iconColor="text-green-600"
+          trend={todaysRevenue > 0 ? 'up' : null}
+        />
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <BarChart3 className="h-8 w-8 text-blue-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">{displayDate}'s Profit</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(todaysProfit)}</p>
-              <p className="text-sm text-gray-600">
-                {todaysRevenue > 0 ? `${((todaysProfit / todaysRevenue) * 100).toFixed(1)}% margin` : '0% margin'}
-              </p>
-            </div>
-          </div>
-        </div>
+        <StatCard
+          title={`${displayDate}'s Profit`}
+          value={formatCurrency(todaysProfit)}
+          subtitle={todaysRevenue > 0 ? `${((todaysProfit / todaysRevenue) * 100).toFixed(1)}% margin` : '0% margin'}
+          icon={TrendingUp}
+          iconBgColor={todaysProfit >= 0 ? "bg-blue-100" : "bg-red-100"}
+          iconColor={todaysProfit >= 0 ? "text-blue-600" : "text-red-600"}
+          trend={todaysProfit > 0 ? 'up' : todaysProfit < 0 ? 'down' : null}
+        />
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <DollarSign className="h-8 w-8 text-purple-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">{displayMonth} Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(monthlyRevenue)}</p>
-              <p className="text-sm text-gray-600">{thisMonthsSales.length} transactions</p>
-            </div>
-          </div>
-        </div>
+        <StatCard
+          title={`${displayMonth} Revenue`}
+          value={formatCurrency(monthlyRevenue)}
+          subtitle={`${thisMonthsSales.length} transactions`}
+          icon={BarChart3}
+          iconBgColor="bg-purple-100"
+          iconColor="text-purple-600"
+        />
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <BarChart3 className="h-8 w-8 text-orange-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">{displayMonth} Profit</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(monthlyProfit)}</p>
-              <p className="text-sm text-gray-600">
-                {monthlyRevenue > 0 ? `${((monthlyProfit / monthlyRevenue) * 100).toFixed(1)}% margin` : '0% margin'}
-              </p>
-            </div>
-          </div>
-        </div>
+        <StatCard
+          title={`${displayMonth} Profit`}
+          value={formatCurrency(monthlyProfit)}
+          subtitle={monthlyRevenue > 0 ? `${((monthlyProfit / monthlyRevenue) * 100).toFixed(1)}% margin` : '0% margin'}
+          icon={TrendingUp}
+          iconBgColor={monthlyProfit >= 0 ? "bg-orange-100" : "bg-red-100"}
+          iconColor={monthlyProfit >= 0 ? "text-orange-600" : "text-red-600"}
+          trend={monthlyProfit > 0 ? 'up' : monthlyProfit < 0 ? 'down' : null}
+        />
       </div>
 
       {/* Sales History */}

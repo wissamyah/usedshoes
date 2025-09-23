@@ -1,4 +1,5 @@
 import { DollarSign, BarChart3, Package, TrendingUp } from 'lucide-react';
+import StatCard from '../UI/StatCard';
 
 export default function KPICards({ todaysRevenue, monthlyRevenue, inventoryValue, netProfit }) {
   const formatCurrency = (amount) => {
@@ -53,28 +54,43 @@ export default function KPICards({ todaysRevenue, monthlyRevenue, inventoryValue
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-      {kpiData.map((kpi, index) => {
-        const Icon = kpi.icon;
-        
-        return (
-          <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className={`p-2 rounded-lg ${kpi.bgColor}`}>
-                  <Icon className={`h-6 w-6 ${kpi.iconColor}`} />
-                </div>
-                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {kpi.description}
-                </span>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">{kpi.title}</p>
-                <p className="text-2xl font-bold text-gray-900 break-words">{kpi.value}</p>
-              </div>
-            </div>
-          </div>
-        );
-      })}
+      <StatCard
+        title="Today's Sales"
+        value={formatCurrency(todaysRevenue)}
+        subtitle="Revenue today"
+        icon={DollarSign}
+        iconBgColor="bg-green-100"
+        iconColor="text-green-600"
+        trend={todaysRevenue > 0 ? 'up' : null}
+      />
+
+      <StatCard
+        title="This Month"
+        value={formatCurrency(monthlyRevenue)}
+        subtitle="Monthly revenue"
+        icon={BarChart3}
+        iconBgColor="bg-blue-100"
+        iconColor="text-blue-600"
+      />
+
+      <StatCard
+        title="Inventory Value"
+        value={formatCurrency(inventoryValue)}
+        subtitle="Total stock value"
+        icon={Package}
+        iconBgColor="bg-purple-100"
+        iconColor="text-purple-600"
+      />
+
+      <StatCard
+        title="Net Profit"
+        value={formatCurrency(netProfit)}
+        subtitle="This month"
+        icon={TrendingUp}
+        iconBgColor={netProfit >= 0 ? "bg-green-100" : "bg-red-100"}
+        iconColor={netProfit >= 0 ? "text-green-600" : "text-red-600"}
+        trend={netProfit > 0 ? 'up' : netProfit < 0 ? 'down' : null}
+      />
     </div>
   );
 }

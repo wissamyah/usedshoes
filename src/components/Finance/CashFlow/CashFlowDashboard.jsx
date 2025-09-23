@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useData } from '../../../context/DataContext';
 import { useUI } from '../../../context/UIContext';
 import { formatDate } from '../../../utils/dateFormatter';
-import { DollarSign, TrendingUp, TrendingDown, AlertTriangle, Check } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, AlertTriangle, Check, Wallet } from 'lucide-react';
 import CashReconciliation from './CashReconciliation';
+import StatCard from '../../UI/StatCard';
 
 export default function CashFlowDashboard({ currentCashPosition, openingBalance }) {
   const { sales, expenses, withdrawals, cashInjections = [], cashFlows, addCashFlow } = useData();
@@ -120,134 +121,183 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
       
       {/* Cash Flow Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {/* Opening Balance */}
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Opening Balance</p>
-              <p className="text-xl font-semibold text-gray-900">{formatCurrency(todaysOpeningBalance)}</p>
-              <p className="text-xs text-gray-500">Total Revenue: {formatCurrency(allSales)}</p>
-            </div>
-            <DollarSign className="h-8 w-8 text-gray-400" />
-          </div>
-        </div>
-        
-        {/* Cash Inflows */}
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Cash Inflows</p>
-              <p className="text-xl font-semibold text-green-600">+{formatCurrency(cashInflows)}</p>
-              <p className="text-xs text-gray-500">
-                Sales: {formatCurrency(salesInflows)} | Injections: {formatCurrency(injectionInflows)}
-              </p>
-            </div>
-            <TrendingUp className="h-8 w-8 text-green-500" />
-          </div>
-        </div>
-        
-        {/* Cash Outflows */}
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Cash Outflows</p>
-              <p className="text-xl font-semibold text-red-600">-{formatCurrency(cashOutflows)}</p>
-              <p className="text-xs text-gray-500">
-                Expenses: {formatCurrency(expenseOutflows)} | Withdrawals: {formatCurrency(withdrawalOutflows)}
-              </p>
-            </div>
-            <TrendingDown className="h-8 w-8 text-red-500" />
-          </div>
-        </div>
-        
-        {/* Expected Balance */}
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Expected Balance</p>
-              <p className="text-xl font-semibold text-gray-900">{formatCurrency(expectedBalance)}</p>
-              <p className="text-xs text-gray-500">
-                Net: {netCashFlow >= 0 ? '+' : ''}{formatCurrency(netCashFlow)}
-              </p>
-            </div>
-            <DollarSign className="h-8 w-8 text-blue-500" />
-          </div>
-        </div>
+        <StatCard
+          title="Opening Balance"
+          value={formatCurrency(todaysOpeningBalance)}
+          subtitle={`Total Revenue: ${formatCurrency(allSales)}`}
+          icon={Wallet}
+          iconBgColor="bg-gray-100"
+          iconColor="text-gray-600"
+        />
+
+        <StatCard
+          title="Cash Inflows"
+          value={`+${formatCurrency(cashInflows)}`}
+          subtitle={`Sales: ${formatCurrency(salesInflows)} • Injections: ${formatCurrency(injectionInflows)}`}
+          icon={TrendingUp}
+          iconBgColor="bg-green-100"
+          iconColor="text-green-600"
+          trend={cashInflows > 0 ? 'up' : null}
+        />
+
+        <StatCard
+          title="Cash Outflows"
+          value={`-${formatCurrency(cashOutflows)}`}
+          subtitle={`Expenses: ${formatCurrency(expenseOutflows)} • Withdrawals: ${formatCurrency(withdrawalOutflows)}`}
+          icon={TrendingDown}
+          iconBgColor="bg-red-100"
+          iconColor="text-red-600"
+          trend={cashOutflows > 0 ? 'down' : null}
+        />
+
+        <StatCard
+          title="Expected Balance"
+          value={formatCurrency(expectedBalance)}
+          subtitle={`Net: ${netCashFlow >= 0 ? '+' : ''}${formatCurrency(netCashFlow)}`}
+          icon={DollarSign}
+          iconBgColor="bg-blue-100"
+          iconColor="text-blue-600"
+          trend={netCashFlow > 0 ? 'up' : netCashFlow < 0 ? 'down' : null}
+        />
       </div>
       
       {/* Transaction Details */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Inflow Details */}
+        {/* Inflow Details - Grouped by Date */}
         <div className="bg-white rounded-lg border border-gray-200">
           <div className="px-4 py-3 border-b border-gray-200">
-            <h4 className="text-sm font-medium text-gray-900">Cash Inflows</h4>
+            <h4 className="text-sm font-medium text-gray-900">Cash Inflows by Date</h4>
           </div>
           <div className="p-4">
-            {todaysSales.length === 0 && todaysInjections.length === 0 ? (
-              <p className="text-sm text-gray-500">No cash inflows today</p>
-            ) : (
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {todaysSales.map(sale => (
-                  <div key={sale.id} className="flex justify-between items-center">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{sale.productName}</p>
-                      <p className="text-xs text-gray-500">Sale - Qty: {sale.quantity}</p>
-                    </div>
-                    <span className="text-sm font-medium text-green-600">
-                      +{formatCurrency(sale.totalAmount)}
-                    </span>
-                  </div>
-                ))}
-                {todaysInjections.map(injection => (
-                  <div key={injection.id} className="flex justify-between items-center">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{injection.description}</p>
-                      <p className="text-xs text-gray-500">{injection.type}</p>
-                    </div>
-                    <span className="text-sm font-medium text-green-600">
-                      +{formatCurrency(injection.amount)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+            {(() => {
+              // Group all sales and injections by date
+              const inflowsByDate = {};
+
+              // Process sales
+              sales.forEach(sale => {
+                if (!inflowsByDate[sale.date]) {
+                  inflowsByDate[sale.date] = { sales: 0, injections: 0, count: 0 };
+                }
+                inflowsByDate[sale.date].sales += sale.totalAmount || 0;
+                inflowsByDate[sale.date].count += 1;
+              });
+
+              // Process cash injections
+              cashInjections.forEach(injection => {
+                if (!inflowsByDate[injection.date]) {
+                  inflowsByDate[injection.date] = { sales: 0, injections: 0, count: 0 };
+                }
+                inflowsByDate[injection.date].injections += injection.amount || 0;
+                inflowsByDate[injection.date].count += 1;
+              });
+
+              // Sort dates in descending order (most recent first)
+              const sortedDates = Object.keys(inflowsByDate).sort((a, b) => b.localeCompare(a));
+
+              // Take only the last 10 dates for display
+              const recentDates = sortedDates.slice(0, 10);
+
+              if (recentDates.length === 0) {
+                return <p className="text-sm text-gray-500">No cash inflows recorded</p>;
+              }
+
+              return (
+                <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+                  {recentDates.map(date => {
+                    const inflow = inflowsByDate[date];
+                    const total = inflow.sales + inflow.injections;
+                    const isToday = date === today;
+
+                    return (
+                      <div key={date} className={`flex justify-between items-center ${isToday ? 'bg-blue-50 p-2 rounded' : ''}`}>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {formatDate(date)} {isToday && <span className="text-xs text-blue-600 ml-1">(Today)</span>}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {inflow.count} transaction{inflow.count !== 1 ? 's' : ''}
+                            {inflow.sales > 0 && ` • Sales: ${formatCurrency(inflow.sales)}`}
+                            {inflow.injections > 0 && ` • Injections: ${formatCurrency(inflow.injections)}`}
+                          </p>
+                        </div>
+                        <span className="text-sm font-medium text-green-600">
+                          +{formatCurrency(total)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
           </div>
         </div>
         
-        {/* Outflow Details */}
+        {/* Outflow Details - Grouped by Date */}
         <div className="bg-white rounded-lg border border-gray-200">
           <div className="px-4 py-3 border-b border-gray-200">
-            <h4 className="text-sm font-medium text-gray-900">Cash Outflows</h4>
+            <h4 className="text-sm font-medium text-gray-900">Cash Outflows by Date</h4>
           </div>
           <div className="p-4">
-            {todaysExpenses.length === 0 && todaysWithdrawals.length === 0 ? (
-              <p className="text-sm text-gray-500">No cash outflows today</p>
-            ) : (
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {todaysExpenses.map(expense => (
-                  <div key={expense.id} className="flex justify-between items-center">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{expense.description}</p>
-                      <p className="text-xs text-gray-500">{expense.category}</p>
-                    </div>
-                    <span className="text-sm font-medium text-red-600">
-                      -{formatCurrency(expense.amount)}
-                    </span>
-                  </div>
-                ))}
-                {todaysWithdrawals.map(withdrawal => (
-                  <div key={withdrawal.id} className="flex justify-between items-center">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{withdrawal.partnerName} - Withdrawal</p>
-                      <p className="text-xs text-gray-500">{withdrawal.type}</p>
-                    </div>
-                    <span className="text-sm font-medium text-red-600">
-                      -{formatCurrency(withdrawal.amount)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+            {(() => {
+              // Group all expenses and withdrawals by date
+              const outflowsByDate = {};
+
+              // Process expenses
+              expenses.forEach(expense => {
+                if (!outflowsByDate[expense.date]) {
+                  outflowsByDate[expense.date] = { expenses: 0, withdrawals: 0, count: 0 };
+                }
+                outflowsByDate[expense.date].expenses += expense.amount || 0;
+                outflowsByDate[expense.date].count += 1;
+              });
+
+              // Process withdrawals
+              withdrawals.forEach(withdrawal => {
+                if (!outflowsByDate[withdrawal.date]) {
+                  outflowsByDate[withdrawal.date] = { expenses: 0, withdrawals: 0, count: 0 };
+                }
+                outflowsByDate[withdrawal.date].withdrawals += withdrawal.amount || 0;
+                outflowsByDate[withdrawal.date].count += 1;
+              });
+
+              // Sort dates in descending order (most recent first)
+              const sortedDates = Object.keys(outflowsByDate).sort((a, b) => b.localeCompare(a));
+
+              // Take only the last 10 dates for display
+              const recentDates = sortedDates.slice(0, 10);
+
+              if (recentDates.length === 0) {
+                return <p className="text-sm text-gray-500">No cash outflows recorded</p>;
+              }
+
+              return (
+                <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+                  {recentDates.map(date => {
+                    const outflow = outflowsByDate[date];
+                    const total = outflow.expenses + outflow.withdrawals;
+                    const isToday = date === today;
+
+                    return (
+                      <div key={date} className={`flex justify-between items-center ${isToday ? 'bg-red-50 p-2 rounded' : ''}`}>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {formatDate(date)} {isToday && <span className="text-xs text-red-600 ml-1">(Today)</span>}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {outflow.count} transaction{outflow.count !== 1 ? 's' : ''}
+                            {outflow.expenses > 0 && ` • Expenses: ${formatCurrency(outflow.expenses)}`}
+                            {outflow.withdrawals > 0 && ` • Withdrawals: ${formatCurrency(outflow.withdrawals)}`}
+                          </p>
+                        </div>
+                        <span className="text-sm font-medium text-red-600">
+                          -{formatCurrency(total)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
           </div>
         </div>
       </div>
