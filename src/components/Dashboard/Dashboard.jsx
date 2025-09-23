@@ -246,19 +246,21 @@ export default function Dashboard() {
           >
             <div ref={contentRef} className="pt-4">
               <p className="text-orange-700 mb-4 text-sm sm:text-base">The following products have low stock (less than 10 bags):</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                {lowStockProducts.map(product => (
-                  <div
-                    key={product.id}
-                    className="bg-white p-3 rounded border border-orange-200"
-                  >
-                    <div className="font-medium text-gray-900">{product.name}</div>
-                    <div className="text-sm text-gray-600">{product.category}</div>
-                    <div className="text-sm font-semibold text-orange-600">
-                      Stock: {product.currentStock} bags
+              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0">
+                  {lowStockProducts.map(product => (
+                    <div
+                      key={product.id}
+                      className="bg-white p-3 rounded border border-orange-200 min-w-[250px] sm:min-w-0 flex-shrink-0 sm:flex-shrink"
+                    >
+                      <div className="font-medium text-gray-900">{product.name}</div>
+                      <div className="text-sm text-gray-600">{product.category}</div>
+                      <div className="text-sm font-semibold text-orange-600">
+                        Stock: {product.currentStock} bags
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </div>

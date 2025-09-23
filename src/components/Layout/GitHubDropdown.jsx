@@ -169,7 +169,7 @@ export default function GitHubDropdown() {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+        <div className="absolute right-0 sm:right-0 left-1/2 sm:left-auto transform -translate-x-1/2 sm:translate-x-0 mt-2 w-[90vw] sm:w-80 md:w-96 max-w-md bg-white rounded-lg shadow-xl border border-gray-200 z-50">
           <div className="p-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center">
