@@ -133,16 +133,25 @@ export default function ExpensesPage() {
       {Object.keys(categoryTotals).length > 0 && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
           <div className="p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">This Month by Category</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(categoryTotals)
-                .sort(([,a], [,b]) => b - a)
-                .map(([category, amount]) => (
-                  <div key={category} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <span className="font-medium text-gray-900">{category}</span>
-                    <span className="text-lg font-bold text-gray-900">{formatCurrency(amount)}</span>
-                  </div>
-                ))}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-medium text-gray-900">This Month by Category</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  {Object.keys(categoryTotals).length} categor{Object.keys(categoryTotals).length !== 1 ? 'ies' : 'y'} • {formatCurrency(monthlyTotal)}
+                </p>
+              </div>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {Object.entries(categoryTotals)
+                  .sort(([,a], [,b]) => b - a)
+                  .map(([category, amount]) => (
+                    <div key={category} className="flex justify-between items-center p-3 bg-white rounded-md border border-gray-200">
+                      <span className="font-medium text-gray-900">{category}</span>
+                      <span className="text-lg font-bold text-gray-900">{formatCurrency(amount)}</span>
+                    </div>
+                  ))}
+              </div>
             </div>
           </div>
         </div>

@@ -195,7 +195,7 @@ export default function ExpenseHistory({ onEditExpense }) {
               <Search className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder="Search description, notes, or container..."
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -236,10 +236,10 @@ export default function ExpenseHistory({ onEditExpense }) {
               <option value="amount">Amount</option>
               <option value="category">Category</option>
             </select>
-            
+
             <button
               onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-              className="px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               title={`Sort ${sortOrder === 'desc' ? 'ascending' : 'descending'}`}
             >
               {sortOrder === 'desc' ? '↓' : '↑'}
@@ -283,25 +283,25 @@ export default function ExpenseHistory({ onEditExpense }) {
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => handleQuickFilter('today')}
-                className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                className="px-3 py-1 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
               >
                 Today
               </button>
               <button
                 onClick={() => handleQuickFilter('thisMonth')}
-                className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                className="px-3 py-1 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
               >
                 This Month
               </button>
               <button
                 onClick={() => handleQuickFilter('lastMonth')}
-                className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                className="px-3 py-1 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
               >
                 Last Month
               </button>
               <button
                 onClick={() => handleQuickFilter('clear')}
-                className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                className="px-3 py-1 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
               >
                 Clear Dates
               </button>

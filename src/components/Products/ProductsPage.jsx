@@ -166,98 +166,117 @@ export default function ProductsPage() {
           </div>
 
           {/* Filters and Search */}
-          <div className="bg-white shadow rounded-lg mb-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
             <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Search */}
-                <div className="lg:col-span-2">
-                  <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
-                    Search Products
-                  </label>
-                  <input
-                    type="text"
-                    id="search"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search by name or description..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                {/* Category Filter */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
-                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-                    Category
-                  </label>
-                  <select
-                    id="category"
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">All Categories</option>
-                    {categories.map(category => (
-                      <option key={category} value={category}>
-                        {category}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-end space-x-2">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={showLowStock}
-                      onChange={(e) => setShowLowStock(e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">Low Stock Only</span>
-                  </label>
+                  <h3 className="text-lg font-medium text-gray-900">Filter Products</h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} found
+                  </p>
                 </div>
               </div>
 
-              {/* View Controls */}
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-                <div className="flex items-center space-x-4">
-                  <span className="text-sm text-gray-700">
-                    Showing {filteredProducts.length} of {totalProducts} products
-                  </span>
+              {/* Filters Section */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                  {/* Search - full width on mobile, spans 2 columns on desktop */}
+                  <div className="col-span-1 sm:col-span-2 lg:col-span-2">
+                    <div className="relative">
+                      <svg className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search by name or description..."
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Category Filter */}
+                  <div className="col-span-1">
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    >
+                      <option value="">All Categories</option>
+                      {categories.map(category => (
+                        <option key={category} value={category}>
+                          {category}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* View Mode Toggle */}
+                  <div className="col-span-1 flex gap-2">
+                    <div className="flex rounded-md shadow-sm flex-1">
+                      <button
+                        onClick={() => setViewMode('list')}
+                        className={`flex-1 px-3 py-2 text-sm font-medium rounded-l-md border ${
+                          viewMode === 'list'
+                            ? 'bg-blue-50 border-blue-200 text-blue-700'
+                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        List
+                      </button>
+                      <button
+                        onClick={() => setViewMode('grid')}
+                        className={`flex-1 px-3 py-2 text-sm font-medium rounded-r-md border-l-0 border ${
+                          viewMode === 'grid'
+                            ? 'bg-blue-50 border-blue-200 text-blue-700'
+                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        Grid
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Filters and Actions */}
+                <div className="flex flex-wrap gap-2 items-center">
+                  {/* Quick Filter Buttons */}
+                  <div className="flex flex-wrap gap-2">
+                    <label className="flex items-center px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={showLowStock}
+                        onChange={(e) => setShowLowStock(e.target.checked)}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2"
+                      />
+                      <span className="text-gray-700">Low Stock Only</span>
+                    </label>
+                  </div>
+
+                  {/* Clear All Filters */}
                   {(searchQuery || selectedCategory || showLowStock) && (
                     <button
                       onClick={clearFilters}
-                      className="text-sm text-blue-600 hover:text-blue-800"
+                      className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 underline sm:ml-auto"
                     >
-                      Clear filters
+                      Clear All
                     </button>
                   )}
                 </div>
+              </div>
 
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-700">View:</span>
-                  <div className="flex rounded-md shadow-sm">
-                    <button
-                      onClick={() => setViewMode('list')}
-                      className={`px-3 py-1 text-sm font-medium rounded-l-md border ${
-                        viewMode === 'list'
-                          ? 'bg-blue-50 border-blue-200 text-blue-700'
-                          : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      List
-                    </button>
-                    <button
-                      onClick={() => setViewMode('grid')}
-                      className={`px-3 py-1 text-sm font-medium rounded-r-md border-l-0 border ${
-                        viewMode === 'grid'
-                          ? 'bg-blue-50 border-blue-200 text-blue-700'
-                          : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      Grid
-                    </button>
-                  </div>
+              {/* Results Summary */}
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-700">
+                    Showing {filteredProducts.length} of {totalProducts} products
+                  </span>
+                  {filteredProducts.length > 0 && (
+                    <span className="text-sm text-gray-500">
+                      Total Value: ${totalValue.toLocaleString()}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
