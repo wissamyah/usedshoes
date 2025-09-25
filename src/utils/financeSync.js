@@ -30,7 +30,8 @@ export function calculateInitialCashPosition(containers, sales, expenses) {
 export function generateInitialCashFlow(containers, sales, expenses) {
   // Combine all transactions for cash flow history
   const transactions = [];
-  
+  const today = new Date().toISOString().split('T')[0];
+
   // Add container purchases as cash outflows (use a reasonable default date if not available)
   containers.forEach(container => {
     const containerDate = container.arrivalDate || container.orderDate || container.createdAt || '2024-01-01';
@@ -43,7 +44,7 @@ export function generateInitialCashFlow(containers, sales, expenses) {
       reference: `container_${container.id}`
     });
   });
-  
+
   // Add sales as cash inflows
   sales.forEach(sale => {
     transactions.push({
@@ -55,7 +56,7 @@ export function generateInitialCashFlow(containers, sales, expenses) {
       reference: `sale_${sale.id}`
     });
   });
-  
+
   // Add expenses as cash outflows
   expenses.forEach(expense => {
     transactions.push({
@@ -67,14 +68,14 @@ export function generateInitialCashFlow(containers, sales, expenses) {
       reference: `expense_${expense.id}`
     });
   });
-  
+
   // Sort transactions by date
   transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
-  
+
   // Calculate running balance
   let runningBalance = 0;
   const cashFlowRecords = [];
-  
+
   // Group transactions by date
   const groupedByDate = transactions.reduce((acc, transaction) => {
     const date = transaction.date;
@@ -84,10 +85,10 @@ export function generateInitialCashFlow(containers, sales, expenses) {
     acc[date].push(transaction);
     return acc;
   }, {});
-  
+
   // Create cash flow records for each date (sorted chronologically)
   const sortedDates = Object.keys(groupedByDate).sort((a, b) => new Date(a) - new Date(b));
-  
+
   sortedDates.forEach(date => {
     const dayTransactions = groupedByDate[date];
     const dayInflows = dayTransactions
@@ -96,11 +97,14 @@ export function generateInitialCashFlow(containers, sales, expenses) {
     const dayOutflows = dayTransactions
       .filter(t => t.amount < 0)
       .reduce((sum, t) => sum + Math.abs(t.amount), 0);
-    
+
     const openingBalance = runningBalance;
     const closingBalance = runningBalance + dayInflows - dayOutflows;
     runningBalance = closingBalance; // Update running balance for next day
-    
+
+    // Only auto-reconcile historical records (before today)
+    const isHistorical = date < today;
+
     cashFlowRecords.push({
       id: `cf_${date}`,
       date,
@@ -108,15 +112,15 @@ export function generateInitialCashFlow(containers, sales, expenses) {
       cashIn: dayInflows,
       cashOut: dayOutflows,
       theoreticalBalance: closingBalance, // This is the closing balance for the day
-      actualBalance: closingBalance, // Initially assume no discrepancy
-      discrepancy: 0,
+      actualBalance: isHistorical ? closingBalance : null, // Only set for historical records
+      discrepancy: isHistorical ? 0 : null,
       transactions: dayTransactions,
-      reconciled: true,
-      reconciledBy: 'System Init',
-      reconciledAt: new Date().toISOString()
+      reconciled: isHistorical,
+      reconciledBy: isHistorical ? 'System Init' : null,
+      reconciledAt: isHistorical ? new Date().toISOString() : null
     });
   });
-  
+
   return cashFlowRecords;
 }
 
@@ -182,10 +186,10 @@ export function syncFinanceData(existingData) {
   // Never create default partners - let user manage them manually
   const partners = existingData.partners || [];
   
-  // Get today's cash flow or create one
+  // Get today's cash flow or create one - NEVER auto-reconciled
   const today = new Date().toISOString().split('T')[0];
   let todayCashFlow = cashFlows.find(cf => cf.date === today);
-  
+
   if (!todayCashFlow) {
     const lastCashFlow = cashFlows[cashFlows.length - 1];
     todayCashFlow = {
@@ -195,12 +199,24 @@ export function syncFinanceData(existingData) {
       cashIn: 0,
       cashOut: 0,
       theoreticalBalance: lastCashFlow ? lastCashFlow.theoreticalBalance : 0,
-      actualBalance: lastCashFlow ? lastCashFlow.theoreticalBalance : 0,
-      discrepancy: 0,
+      actualBalance: null, // Not reconciled yet
+      discrepancy: null,
       transactions: [],
-      reconciled: false
+      reconciled: false,
+      reconciledBy: null,
+      reconciledAt: null
     };
     cashFlows.push(todayCashFlow);
+  } else if (todayCashFlow.date === today) {
+    // Ensure today's record is never auto-reconciled
+    todayCashFlow.reconciled = false;
+    todayCashFlow.reconciledBy = null;
+    todayCashFlow.reconciledAt = null;
+    if (todayCashFlow.actualBalance === todayCashFlow.theoreticalBalance && todayCashFlow.discrepancy === 0) {
+      // Reset auto-reconciled today's record
+      todayCashFlow.actualBalance = null;
+      todayCashFlow.discrepancy = null;
+    }
   }
   
   return {
