@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useData } from '../../context/DataContext';
 import { useUI } from '../../context/UIContext';
-import { Wallet, Users, TrendingUp, DollarSign, Plus, Calculator, ClipboardCheck, RefreshCw, PiggyBank } from 'lucide-react';
+import { Wallet, Users, TrendingUp, DollarSign, Plus, Calculator, ClipboardCheck, PiggyBank } from 'lucide-react';
 import CashFlowDashboard from './CashFlow/CashFlowDashboard';
 import WithdrawalHistory from './Withdrawals/WithdrawalHistory';
 import PartnerList from './Partners/PartnerList';
@@ -13,49 +13,7 @@ export default function FinancePage() {
   const { partners, withdrawals, cashFlows, cashInjections = [], sales, expenses, containers, syncFinanceData: syncData } = useData();
   const { showSuccessMessage, showInfoMessage, showErrorMessage } = useUI();
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [hasInitialSync, setHasInitialSync] = useState(false);
-  
-  // Auto-sync on page load to ensure finance data is always up-to-date
-  useEffect(() => {
-    // Always sync when the page loads to get latest transaction data
-    if (!hasInitialSync) {
-      // Perform sync to update cash flows from latest transactions
-      handleSync(true);
-      setHasInitialSync(true);
-    }
-  }, []); // Empty dependency array to run only once on mount
-  
-  const handleSync = async (isAutoSync = false) => {
-    setIsSyncing(true);
-    
-    try {
-      // Get synced data from utility
-      const syncedData = syncFinanceData({
-        containers,
-        sales,
-        expenses,
-        partners,
-        withdrawals
-      });
-      
-      // Update the context with synced data
-      await syncData(syncedData);
-      
-      if (!isAutoSync) {
-        showSuccessMessage(
-          'Finance Data Synced',
-          `Successfully synced ${syncedData.cashFlows.length} cash flow records from existing transactions`
-        );
-      }
-    } catch (error) {
-      console.error('Sync error:', error);
-      showErrorMessage('Sync Failed', error.message);
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-  
+
   // Calculate today's cash position
   const today = new Date().toISOString().split('T')[0];
   const todaysSales = sales.filter(s => s.date === today);
@@ -111,24 +69,15 @@ export default function FinancePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="sm:max-w-7xl sm:mx-auto sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="mb-6 flex justify-between items-start">
+          <div className="mb-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">Finance Management</h2>
               <p className="text-sm text-gray-600 mt-1">
                 Manage cash flow, partner withdrawals, and equity distributions
               </p>
             </div>
-            <button
-              onClick={() => handleSync(false)}
-              disabled={isSyncing}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-              title="Sync financial data from existing transactions"
-            >
-              <RefreshCw className={`h-4 w-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
-              {isSyncing ? 'Syncing...' : 'Sync Data'}
-            </button>
           </div>
           
           {/* Summary Cards */}

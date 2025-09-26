@@ -235,30 +235,30 @@ export default function SalesForm({ sale, onClose }) {
     <Modal isOpen={true} onClose={onClose} size="xlarge">
       <div className="bg-white rounded-lg shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <div>
-            <h3 className="text-xl font-semibold text-gray-900">
-              {sale ? 'Edit Sale' : 'Record Multiple Sales'}
+        <div className="flex items-start justify-between px-4 sm:px-6 py-4 border-b border-gray-200">
+          <div className="flex-1 pr-2">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
+              {sale ? 'Edit Sale' : 'Record Sales'}
             </h3>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 mt-1 hidden sm:block">
               Add multiple products for the same date and time
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors p-1"
           >
             <span className="sr-only">Close</span>
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5 sm:h-6 sm:w-6" />
           </button>
         </div>
         
-        <div className="p-6">
+        <div className="p-4 sm:p-6 max-h-[80vh] overflow-y-auto">
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
             {/* Common Date and Time */}
             <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <div className="flex items-center gap-6">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                 <div className="flex-1">
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
                     <Calendar className="h-4 w-4 text-gray-500" />
@@ -268,7 +268,7 @@ export default function SalesForm({ sale, onClose }) {
                     type="date"
                     value={commonDate}
                     onChange={(e) => setCommonDate(e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                    className={`w-full px-3 py-3 sm:py-2 text-base sm:text-sm border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 ${
                       errors.date ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-green-500'
                     }`}
                   />
@@ -283,7 +283,7 @@ export default function SalesForm({ sale, onClose }) {
                     type="time"
                     value={commonTime}
                     onChange={(e) => setCommonTime(e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                    className={`w-full px-3 py-3 sm:py-2 text-base sm:text-sm border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 ${
                       errors.time ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-green-500'
                     }`}
                   />
@@ -292,15 +292,15 @@ export default function SalesForm({ sale, onClose }) {
               </div>
             </div>
             
-            {/* Sale Entries Table */}
+            {/* Sale Entries */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="text-sm font-medium text-gray-700">Sale Items</h4>
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-base sm:text-sm font-medium text-gray-700">Sale Items</h4>
                 {!sale && (
                   <button
                     type="button"
                     onClick={addNewEntry}
-                    className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-green-700 bg-green-50 border border-green-300 rounded-md hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    className="inline-flex items-center px-3 py-2 sm:py-1.5 text-sm font-medium text-green-700 bg-green-50 border border-green-300 rounded-md hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 touch-manipulation"
                   >
                     <Plus className="h-4 w-4 mr-1" />
                     Add Item
@@ -308,8 +308,8 @@ export default function SalesForm({ sale, onClose }) {
                 )}
               </div>
               
-              {/* Table Header */}
-              <div className="bg-gray-50 border border-gray-200 rounded-t-lg">
+              {/* Desktop Table Header */}
+              <div className="hidden md:block bg-gray-50 border border-gray-200 rounded-t-lg">
                 <div className="grid grid-cols-12 gap-4 px-4 py-3 text-sm font-medium text-gray-700">
                   <div className="col-span-4">Product</div>
                   <div className="col-span-2">Quantity</div>
@@ -320,12 +320,12 @@ export default function SalesForm({ sale, onClose }) {
                 </div>
               </div>
               
-              {/* Sale Entry Rows */}
-              <div className="border border-t-0 border-gray-200 rounded-b-lg overflow-hidden">
+              {/* Sale Entry Rows - Desktop */}
+              <div className="hidden md:block border border-t-0 border-gray-200 rounded-b-lg overflow-hidden">
                 {saleEntries.map((entry, index) => {
                   const product = products.find(p => p.id === parseInt(entry.productId));
                   const entryTotal = (parseInt(entry.quantity) || 0) * (parseFloat(entry.pricePerUnit) || 0);
-                  
+
                   return (
                     <div key={entry.id} className={`grid grid-cols-12 gap-4 px-4 py-3 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b border-gray-100 last:border-b-0`}>
                       {/* Product Selection */}
@@ -426,6 +426,126 @@ export default function SalesForm({ sale, onClose }) {
                   );
                 })}
               </div>
+
+              {/* Mobile Card Layout */}
+              <div className="md:hidden space-y-3">
+                {saleEntries.map((entry, index) => {
+                  const product = products.find(p => p.id === parseInt(entry.productId));
+                  const entryTotal = (parseInt(entry.quantity) || 0) * (parseFloat(entry.pricePerUnit) || 0);
+
+                  return (
+                    <div key={entry.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                      {/* Mobile Card Header */}
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-gray-500">Item #{index + 1}</span>
+                        {!sale && saleEntries.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeEntry(entry.id)}
+                            className="text-red-600 hover:text-red-800 transition-colors p-1"
+                          >
+                            <Trash2 className="h-5 w-5" />
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Product Selection */}
+                      <div className="mb-3">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Product</label>
+                        <select
+                          value={entry.productId}
+                          onChange={(e) => handleEntryChange(entry.id, 'productId', e.target.value)}
+                          className={`w-full px-3 py-2.5 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                            errors[`entry_${entry.id}_productId`] ? 'border-red-300' : 'border-gray-300'
+                          }`}
+                        >
+                          <option value="">Select product...</option>
+                          {availableProducts.map(product => {
+                            const isDisabled = selectedProductIds.includes(product.id.toString()) && product.id.toString() !== entry.productId;
+                            return (
+                              <option key={product.id} value={product.id} disabled={isDisabled}>
+                                {product.name} - Stock: {product.currentStock}
+                                {isDisabled && ' (Already selected)'}
+                              </option>
+                            );
+                          })}
+                        </select>
+                        {errors[`entry_${entry.id}_productId`] && (
+                          <p className="mt-1 text-sm text-red-600">{errors[`entry_${entry.id}_productId`]}</p>
+                        )}
+                      </div>
+
+                      {/* Quantity and Price Row */}
+                      <div className="grid grid-cols-2 gap-3 mb-3">
+                        {/* Quantity */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                          <input
+                            type="number"
+                            value={entry.quantity}
+                            onChange={(e) => handleEntryChange(entry.id, 'quantity', e.target.value)}
+                            min="1"
+                            step="1"
+                            inputMode="numeric"
+                            className={`w-full px-3 py-2.5 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                              errors[`entry_${entry.id}_quantity`] ? 'border-red-300' : 'border-gray-300'
+                            }`}
+                            placeholder="0"
+                          />
+                          {errors[`entry_${entry.id}_quantity`] && (
+                            <p className="mt-1 text-xs text-red-600">{errors[`entry_${entry.id}_quantity`]}</p>
+                          )}
+                          {product && (
+                            <p className="mt-1 text-xs text-gray-500">Stock: {product.currentStock}</p>
+                          )}
+                        </div>
+
+                        {/* Price per Unit */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Price/Unit</label>
+                          <input
+                            type="number"
+                            value={entry.pricePerUnit}
+                            onChange={(e) => handleEntryChange(entry.id, 'pricePerUnit', e.target.value)}
+                            min="0"
+                            step="0.01"
+                            inputMode="decimal"
+                            className={`w-full px-3 py-2.5 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                              errors[`entry_${entry.id}_pricePerUnit`] ? 'border-red-300' : 'border-gray-300'
+                            }`}
+                            placeholder="0.00"
+                          />
+                          {errors[`entry_${entry.id}_pricePerUnit`] && (
+                            <p className="mt-1 text-xs text-red-600">{errors[`entry_${entry.id}_pricePerUnit`]}</p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Notes */}
+                      <div className="mb-3">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
+                        <input
+                          type="text"
+                          value={entry.notes}
+                          onChange={(e) => handleEntryChange(entry.id, 'notes', e.target.value)}
+                          className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                          placeholder="Add notes..."
+                        />
+                      </div>
+
+                      {/* Total */}
+                      <div className="pt-3 border-t border-gray-100">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-gray-600">Item Total:</span>
+                          <span className="text-lg font-bold text-green-600">
+                            {formatCurrency(entryTotal)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
               
               {availableProducts.length === 0 && (
                 <div className="text-center py-4 text-sm text-orange-600">
@@ -436,52 +556,58 @@ export default function SalesForm({ sale, onClose }) {
 
             {/* Sale Summary */}
             {totals.totalAmount > 0 && (
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-5 border border-green-200">
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 md:p-5 border border-green-200">
                 <h4 className="text-base font-semibold text-green-900 mb-3">Order Summary</h4>
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                  <div className="flex justify-between sm:block">
                     <p className="text-sm text-green-700">Total Items</p>
-                    <p className="text-xl font-bold text-green-900">{totals.totalQuantity}</p>
-                    <p className="text-xs text-green-600">{saleEntries.length} product{saleEntries.length > 1 ? 's' : ''}</p>
+                    <div className="text-right sm:text-left">
+                      <p className="text-xl font-bold text-green-900">{totals.totalQuantity}</p>
+                      <p className="text-xs text-green-600">{saleEntries.length} product{saleEntries.length > 1 ? 's' : ''}</p>
+                    </div>
                   </div>
-                  <div>
+                  <div className="flex justify-between sm:block">
                     <p className="text-sm text-green-700">Total Revenue</p>
-                    <p className="text-xl font-bold text-green-900">{formatCurrency(totals.totalAmount)}</p>
-                    <p className="text-xs text-green-600">Before expenses</p>
+                    <div className="text-right sm:text-left">
+                      <p className="text-xl font-bold text-green-900">{formatCurrency(totals.totalAmount)}</p>
+                      <p className="text-xs text-green-600">Before expenses</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-green-700">Estimated Profit</p>
-                    <p className={`text-xl font-bold ${totals.totalProfit >= 0 ? 'text-green-900' : 'text-red-600'}`}>
-                      {formatCurrency(totals.totalProfit)}
-                    </p>
-                    <p className="text-xs text-green-600">
-                      {totals.totalAmount > 0 ? `${((totals.totalProfit / totals.totalAmount) * 100).toFixed(1)}% margin` : '0% margin'}
-                    </p>
+                  <div className="flex justify-between sm:block">
+                    <p className="text-sm text-green-700">Est. Profit</p>
+                    <div className="text-right sm:text-left">
+                      <p className={`text-xl font-bold ${totals.totalProfit >= 0 ? 'text-green-900' : 'text-red-600'}`}>
+                        {formatCurrency(totals.totalProfit)}
+                      </p>
+                      <p className="text-xs text-green-600">
+                        {totals.totalAmount > 0 ? `${((totals.totalProfit / totals.totalAmount) * 100).toFixed(1)}% margin` : '0% margin'}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
 
             {/* Form Actions */}
-            <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-              <div className="text-sm text-gray-500">
+            <div className="flex flex-col sm:flex-row sm:justify-between items-stretch sm:items-center gap-3 pt-4 border-t border-gray-200">
+              <div className="text-sm text-gray-500 text-center sm:text-left">
                 {!sale && saleEntries.length > 1 && (
-                  <span>Recording {saleEntries.length} sales for {commonDate}</span>
+                  <span className="hidden sm:inline">Recording {saleEntries.length} sales for {commonDate}</span>
                 )}
               </div>
-              <div className="flex space-x-3">
+              <div className="flex flex-col-reverse sm:flex-row gap-3 sm:space-x-0">
                 <button
                   type="button"
                   onClick={onClose}
                   disabled={isSubmitting}
-                  className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full sm:w-auto px-5 py-3 sm:py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting || availableProducts.length === 0}
-                  className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 border border-transparent rounded-md shadow-sm hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  className="w-full sm:w-auto inline-flex justify-center items-center px-5 py-3 sm:py-2.5 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 border border-transparent rounded-md shadow-sm hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all touch-manipulation"
                 >
                   {isSubmitting ? (
                     <>

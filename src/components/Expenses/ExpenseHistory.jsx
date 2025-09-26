@@ -186,73 +186,82 @@ export default function ExpenseHistory({ onEditExpense }) {
       </div>
 
       {/* Filters */}
-      <div className="bg-gray-50 rounded-lg p-4 mb-6">
+      <div className="bg-gray-50 rounded-lg p-4 sm:p-4 mb-6">
         {/* Main filters grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-          {/* Search - full width on mobile */}
-          <div className="col-span-1 sm:col-span-2 lg:col-span-2">
+        <div className="space-y-4 sm:space-y-3 mb-4">
+          {/* Search - full width with larger touch target on mobile */}
+          <div className="w-full">
             <div className="relative">
               <Search className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search description, notes, or container..."
+                placeholder="Search expenses..."
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                className="w-full pl-10 pr-4 py-3 sm:py-2 text-base sm:text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
 
-          {/* Category Filter */}
-          <div className="col-span-1">
-            <select
-              value={categoryFilter}
-              onChange={(e) => {
-                setCategoryFilter(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-            >
-              <option value="">All Categories</option>
-              {uniqueCategories.map(category => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Category and Sort Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* Category Filter */}
+            <div className="sm:col-span-1">
+              <label className="block text-xs font-medium text-gray-600 mb-1 sm:hidden">Category</label>
+              <select
+                value={categoryFilter}
+                onChange={(e) => {
+                  setCategoryFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full px-3 py-2.5 sm:py-2 text-base sm:text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">All Categories</option>
+                {uniqueCategories.map(category => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Sort Options */}
-          <div className="col-span-1 flex gap-2">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-            >
-              <option value="date">Date</option>
-              <option value="amount">Amount</option>
-              <option value="category">Category</option>
-            </select>
-
-            <button
-              onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-              className="px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-              title={`Sort ${sortOrder === 'desc' ? 'ascending' : 'descending'}`}
-            >
-              {sortOrder === 'desc' ? '↓' : '↑'}
-            </button>
+            {/* Sort Options */}
+            <div className="sm:col-span-1 flex gap-2">
+              <div className="flex-1">
+                <label className="block text-xs font-medium text-gray-600 mb-1 sm:hidden">Sort by</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="w-full px-3 py-2.5 sm:py-2 text-base sm:text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="date">Date</option>
+                  <option value="amount">Amount</option>
+                  <option value="category">Category</option>
+                </select>
+              </div>
+              <button
+                onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
+                className="px-4 sm:px-3 py-2.5 sm:py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base sm:text-sm font-medium mt-5 sm:mt-0"
+                title={`Sort ${sortOrder === 'desc' ? 'ascending' : 'descending'}`}
+              >
+                {sortOrder === 'desc' ? '↓' : '↑'}
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Date Range Section */}
         <div className="space-y-3">
+          <div className="border-t border-gray-200 pt-3 sm:hidden">
+            <label className="block text-xs font-medium text-gray-600 mb-2">Date Range</label>
+          </div>
           {/* Date inputs - stack on mobile */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1 flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700 whitespace-nowrap">From:</label>
+          <div className="grid grid-cols-2 sm:grid-cols-2 gap-3">
+            <div className="col-span-1">
+              <label className="block text-xs font-medium text-gray-600 mb-1 sm:inline sm:mr-2">From</label>
               <input
                 type="date"
                 value={dateFromFilter}
@@ -260,11 +269,11 @@ export default function ExpenseHistory({ onEditExpense }) {
                   setDateFromFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2.5 sm:py-1.5 text-base sm:text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-            <div className="flex-1 flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700 whitespace-nowrap">To:</label>
+            <div className="col-span-1">
+              <label className="block text-xs font-medium text-gray-600 mb-1 sm:inline sm:mr-2">To</label>
               <input
                 type="date"
                 value={dateToFilter}
@@ -272,63 +281,67 @@ export default function ExpenseHistory({ onEditExpense }) {
                   setDateToFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2.5 sm:py-1.5 text-base sm:text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
           
           {/* Quick filters and clear button */}
-          <div className="flex flex-wrap gap-2 items-center">
+          <div className="space-y-3">
             {/* Quick Filter Buttons */}
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
               <button
                 onClick={() => handleQuickFilter('today')}
-                className="px-3 py-1 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                className="px-3 py-2.5 sm:py-1.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 touch-manipulation"
               >
                 Today
               </button>
               <button
                 onClick={() => handleQuickFilter('thisMonth')}
-                className="px-3 py-1 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                className="px-3 py-2.5 sm:py-1.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 touch-manipulation"
               >
                 This Month
               </button>
               <button
                 onClick={() => handleQuickFilter('lastMonth')}
-                className="px-3 py-1 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                className="px-3 py-2.5 sm:py-1.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 touch-manipulation"
               >
                 Last Month
               </button>
               <button
                 onClick={() => handleQuickFilter('clear')}
-                className="px-3 py-1 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                className="px-3 py-2.5 sm:py-1.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 touch-manipulation"
               >
                 Clear Dates
               </button>
             </div>
 
-            {/* Clear All Filters - moves to new line on mobile if needed */}
+            {/* Clear All Filters */}
             {(searchTerm || categoryFilter || dateFromFilter || dateToFilter) && (
-              <button
-                onClick={() => {
-                  setSearchTerm('');
-                  setCategoryFilter('');
-                  setDateFromFilter('');
-                  setDateToFilter('');
-                }}
-                className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 underline sm:ml-auto"
-              >
-                Clear All
-              </button>
+              <div className="flex justify-center sm:justify-end">
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setCategoryFilter('');
+                    setDateFromFilter('');
+                    setDateToFilter('');
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 underline"
+                >
+                  Clear All Filters
+                </button>
+              </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* Expenses Table */}
+      {/* Expenses Table Container */}
       {filteredExpenses.length > 0 ? (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+        <>
+          {/* Table with horizontal scroll */}
+          <div className="overflow-x-auto rounded-t-lg border border-gray-200 border-b-0">
+            <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -398,10 +411,11 @@ export default function ExpenseHistory({ onEditExpense }) {
               ))}
             </tbody>
           </table>
-          
-          {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <div className="bg-gray-50 px-4 py-3 border-t">
+        </div>
+
+        {/* Pagination Controls - Outside scrollable area */}
+        {totalPages > 1 && (
+          <div className="bg-gray-50 px-4 py-3 border-t border-gray-200 rounded-b-lg">
               {/* Mobile Pagination */}
               <div className="sm:hidden">
                 <div className="flex items-center justify-between mb-3">
@@ -553,9 +567,9 @@ export default function ExpenseHistory({ onEditExpense }) {
                   Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} expense{totalItems !== 1 ? 's' : ''}
                 </div>
               </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
+        </>
       ) : (
         <div className="text-center py-12">
           <FileX className="mx-auto h-12 w-12 text-gray-400 mb-4" />

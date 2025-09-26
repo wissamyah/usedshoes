@@ -70,7 +70,7 @@ export default function SalesPage() {
   };
 
   return (
-    <div className="p-6">
+    <div className="py-6 sm:p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
@@ -79,10 +79,10 @@ export default function SalesPage() {
         </div>
         <button
           onClick={handleAddSale}
-          className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          className="inline-flex items-center justify-center w-12 h-12 sm:w-auto sm:h-auto sm:px-4 sm:py-2 bg-green-600 text-white text-sm font-medium rounded-lg sm:rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 touch-manipulation"
         >
-          <Plus className="h-4 w-4 mr-2" />
-          Record Sale
+          <Plus className="h-6 w-6 sm:h-4 sm:w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Record Sale</span>
         </button>
       </div>
 

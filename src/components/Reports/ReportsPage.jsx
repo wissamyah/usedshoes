@@ -25,7 +25,7 @@ export default function ReportsPage() {
   ];
 
   return (
-    <div className="p-6">
+    <div className="py-6 sm:p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>

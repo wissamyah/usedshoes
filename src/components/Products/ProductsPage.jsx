@@ -106,24 +106,22 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="sm:max-w-7xl sm:mx-auto sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="md:flex md:items-center md:justify-between mb-6">
-            <div className="flex-1 min-w-0">
+          <div className="flex justify-between items-center mb-6">
+            <div>
               <h2 className="text-2xl font-bold text-gray-900">Products & Inventory</h2>
               <p className="text-sm text-gray-600 mt-1">
                 Manage your product catalog and track inventory levels
               </p>
             </div>
-            <div className="mt-4 md:mt-0 md:ml-4">
-              <button
-                onClick={handleAddProduct}
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Product
-              </button>
-            </div>
+            <button
+              onClick={handleAddProduct}
+              className="inline-flex items-center justify-center w-12 h-12 sm:w-auto sm:h-auto sm:px-4 sm:py-2 border border-transparent rounded-lg sm:rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 touch-manipulation"
+            >
+              <Plus className="h-6 w-6 sm:h-4 sm:w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Add Product</span>
+            </button>
           </div>
 
           {/* Summary Cards */}

@@ -114,43 +114,43 @@ function Navigation({ activeTab, onTabChange }) {
 
   return (
     <>
-      {/* Mobile menu button */}
-      <div className="sm:hidden bg-white border-b border-gray-200">
+      {/* Mobile menu button - sticky on mobile */}
+      <div className="sm:hidden sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
         <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center">
-            {navigationTabs.find(tab => tab.id === activeTab)?.icon && (() => {
-              const Icon = navigationTabs.find(tab => tab.id === activeTab).icon;
-              const activeTabData = navigationTabs.find(tab => tab.id === activeTab);
-              return (
-                <div className={`p-2 rounded-lg mr-3 bg-${activeTabData.color}-100`}>
-                  <Icon className={`h-5 w-5 text-${activeTabData.color}-600`} />
+            <div className="flex items-center">
+              {navigationTabs.find(tab => tab.id === activeTab)?.icon && (() => {
+                const Icon = navigationTabs.find(tab => tab.id === activeTab).icon;
+                const activeTabData = navigationTabs.find(tab => tab.id === activeTab);
+                return (
+                  <div className={`p-2 rounded-lg mr-3 bg-${activeTabData.color}-100`}>
+                    <Icon className={`h-5 w-5 text-${activeTabData.color}-600`} />
+                  </div>
+                );
+              })()}
+              <div>
+                <div className="text-sm font-semibold text-gray-900">
+                  {navigationTabs.find(tab => tab.id === activeTab)?.name || 'Menu'}
                 </div>
-              );
-            })()}
-            <div>
-              <div className="text-sm font-semibold text-gray-900">
-                {navigationTabs.find(tab => tab.id === activeTab)?.name || 'Menu'}
-              </div>
-              <div className="text-xs text-gray-500">
-                {navigationTabs.find(tab => tab.id === activeTab)?.description}
+                <div className="text-xs text-gray-500">
+                  {navigationTabs.find(tab => tab.id === activeTab)?.description}
+                </div>
               </div>
             </div>
-          </div>
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`p-2 rounded-lg transition-all duration-200 ${
-              isMobileMenuOpen
-                ? 'bg-gray-100 text-gray-700'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-            aria-label="Toggle menu"
-          >
-            {isMobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className={`p-2 rounded-lg transition-all duration-200 ${
+                isMobileMenuOpen
+                  ? 'bg-gray-100 text-gray-700'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+              aria-label="Toggle menu"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
         </div>
       </div>
 
@@ -166,11 +166,11 @@ function Navigation({ activeTab, onTabChange }) {
         />
 
         {/* Slide-out menu */}
-        <div className={`fixed top-0 left-0 right-0 bottom-0 z-40 bg-white overflow-y-auto transition-transform duration-300 ease-out ${
+        <div className={`fixed inset-0 z-50 bg-white overflow-y-auto transition-transform duration-300 ease-out ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}>
             {/* Menu header */}
-            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+            <div className="py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between px-4">
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Navigation</p>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -194,11 +194,11 @@ function Navigation({ activeTab, onTabChange }) {
                         onTabChange(tab.id);
                         setIsMobileMenuOpen(false);
                       }}
-                      className={`w-full group flex items-center px-4 py-4 text-left transition-all duration-200 relative overflow-hidden ${
+                      className={`w-full group flex items-center py-4 text-left transition-all duration-200 relative overflow-hidden ${
                         isActive
                           ? 'bg-gradient-to-r from-white to-gray-50'
                           : 'hover:bg-gray-50'
-                      }`}
+                      } px-4`}
                     >
                       {/* Active indicator bar */}
                       {isActive && (
@@ -234,7 +234,7 @@ function Navigation({ activeTab, onTabChange }) {
 
                     {/* Separator - except for last item */}
                     {index < navigationTabs.length - 1 && (
-                      <div className="mx-4 border-b border-gray-100" />
+                      <div className="border-b border-gray-100" />
                     )}
                   </div>
                 );
@@ -249,7 +249,8 @@ function Navigation({ activeTab, onTabChange }) {
         isScrolled ? 'bg-white/95 backdrop-blur-sm shadow-md' : 'bg-white'
       }`}>
         <div className="border-b border-gray-200">
-          <div className="flex overflow-x-auto scrollbar-hide">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex overflow-x-auto scrollbar-hide">
             {navigationTabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -287,6 +288,7 @@ function Navigation({ activeTab, onTabChange }) {
                 </button>
               );
             })}
+            </div>
           </div>
         </div>
       </nav>

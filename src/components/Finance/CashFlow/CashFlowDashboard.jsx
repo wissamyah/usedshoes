@@ -42,7 +42,7 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
   
   // Check if today's cash has been reconciled
   const todaysReconciliation = cashFlows.find(cf => cf.date === today);
-  const isReconciled = !!todaysReconciliation;
+  const isReconciled = todaysReconciliation?.reconciled === true;
   
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -61,11 +61,14 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
         withdrawals: todaysWithdrawals.map(w => w.id),
         theoreticalBalance: expectedBalance,
         actualCount: reconciledData.actualCount,
+        actualBalance: reconciledData.actualCount,
         discrepancy: reconciledData.actualCount - expectedBalance,
         availableForDistribution: reconciledData.availableForDistribution,
         reservedAmount: reconciledData.reservedAmount,
         notes: reconciledData.notes,
-        reconciledBy: 'Current User' // Should get from auth context
+        reconciled: true,
+        reconciledBy: 'Current User', // Should get from auth context
+        reconciledAt: new Date().toISOString()
       });
       
       showSuccessMessage('Cash Reconciled', 'Daily cash flow has been reconciled successfully');

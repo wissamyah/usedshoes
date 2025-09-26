@@ -96,10 +96,11 @@ function Layout() {
         lastSyncTime={lastSync}
         onTitleClick={() => setActiveTab('dashboard')}
       />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
 
+      {/* Navigation - Outside of padding on mobile */}
+      <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <main className="mt-6">
           <ActiveComponent />
         </main>
