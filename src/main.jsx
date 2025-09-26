@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
-import { onNetworkStatusChange } from './utils/serviceWorker'
+import { onNetworkStatusChange, unregister } from './utils/serviceWorker'
 import { performanceConfig } from './config/performance'
 
 // Conditionally wrap in StrictMode based on config
@@ -16,8 +16,9 @@ const AppWrapper = performanceConfig.strictMode ? (
 
 createRoot(document.getElementById('root')).render(AppWrapper)
 
-// Temporarily disable service worker to fix caching issues
-// Will re-enable after fixing the deployment
+// Unregister any existing service worker to fix deployment issues
+// The service worker was causing problems with GitHub Pages deployment
+unregister();
 
 // Monitor network status for offline handling
 onNetworkStatusChange((status) => {
