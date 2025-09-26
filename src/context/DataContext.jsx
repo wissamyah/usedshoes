@@ -796,12 +796,33 @@ function dataReducer(state, action) {
     
     // Cash Flow actions
     case DATA_ACTIONS.ADD_CASH_FLOW: {
+      // Check if there's already a reconciliation for this date
+      const existingFlow = state.cashFlows.find(cf => cf.date === action.payload.date);
+
+      if (existingFlow) {
+        // Update existing cash flow instead of creating a duplicate
+        return {
+          ...state,
+          cashFlows: state.cashFlows.map(cf =>
+            cf.date === action.payload.date
+              ? { ...cf, ...action.payload, id: cf.id } // Keep existing ID
+              : cf
+          ),
+          metadata: {
+            ...state.metadata,
+            lastUpdated: new Date().toISOString(),
+          },
+          unsavedChanges: true,
+        };
+      }
+
+      // Create new cash flow if none exists for this date
       const cashFlow = {
         ...action.payload,
         id: `CF${state.metadata.nextIds.cashFlow}`,
         reconciledAt: new Date().toISOString()
       };
-      
+
       return {
         ...state,
         cashFlows: [...state.cashFlows, cashFlow],

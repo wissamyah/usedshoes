@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { AlertTriangle } from 'lucide-react';
 
 export default class ErrorBoundary extends Component {
   constructor(props) {
@@ -46,20 +47,9 @@ export default class ErrorBoundary extends Component {
           <div className="sm:mx-auto sm:w-full sm:max-w-md">
             <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
               <div className="text-center">
-                <svg
-                  className="mx-auto h-12 w-12 text-red-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 48 48"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v3m0 0v3m0-3h3m-3 0H9m-1 8l12 12 12-12M12 21l12 12 12-12"
-                  />
-                </svg>
+                <div className="mx-auto h-12 w-12 text-red-400 flex items-center justify-center">
+                  <AlertTriangle className="h-12 w-12" />
+                </div>
                 <h3 className="mt-4 text-lg font-medium text-gray-900">
                   Something went wrong
                 </h3>
@@ -123,6 +113,7 @@ export function withErrorBoundary(Component, fallback = null) {
 
 // Hook for error handling in functional components
 import { useState, useCallback } from 'react';
+import { XCircle, BarChart3 } from 'lucide-react';
 
 export function useErrorHandler() {
   const [error, setError] = useState(null);
@@ -145,9 +136,7 @@ export function FormErrorFallback({ error, onRetry }) {
     <div className="rounded-md bg-red-50 p-4 border border-red-200">
       <div className="flex">
         <div className="flex-shrink-0">
-          <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-          </svg>
+          <XCircle className="h-5 w-5 text-red-400" />
         </div>
         <div className="ml-3">
           <h3 className="text-sm font-medium text-red-800">
@@ -174,9 +163,7 @@ export function ChartErrorFallback({ error, onRetry }) {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div className="text-center">
-        <svg className="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-        </svg>
+        <BarChart3 className="mx-auto h-8 w-8 text-gray-400" />
         <h3 className="mt-2 text-sm font-medium text-gray-900">Chart unavailable</h3>
         <p className="mt-1 text-sm text-gray-500">
           Unable to load chart data at this time.

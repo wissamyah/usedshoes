@@ -22,7 +22,8 @@
       "Bash(start http://localhost:5174/usedshoes/)",
       "Bash(git checkout:*)",
       "Bash(cat:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(gh run list:*)"
     ],
     "deny": [],
     "ask": []

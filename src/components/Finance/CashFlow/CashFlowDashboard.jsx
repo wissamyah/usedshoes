@@ -13,15 +13,15 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
   
   const today = new Date().toISOString().split('T')[0];
   
-  // All transactions (for calculating actual opening balance for today)
-  const allSales = sales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
-  const allInjections = cashInjections.reduce((sum, injection) => sum + (injection.amount || 0), 0);
+  // Calculate previous transactions (before today) for opening balance
+  const previousSales = sales.filter(s => s.date < today).reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
+  const previousInjections = cashInjections.filter(i => i.date < today).reduce((sum, i) => sum + i.amount, 0);
   const previousExpenses = expenses.filter(e => e.date < today).reduce((sum, e) => sum + e.amount, 0);
   const previousWithdrawals = withdrawals.filter(w => w.date < today).reduce((sum, w) => sum + w.amount, 0);
-  const previousInjections = cashInjections.filter(i => i.date < today).reduce((sum, i) => sum + i.amount, 0);
-  
-  // Today's opening balance = Total Revenue + Previous Injections - Previous Expenses - Previous Withdrawals
-  const todaysOpeningBalance = allSales + previousInjections - previousExpenses - previousWithdrawals;
+
+  // Today's opening balance = Previous Sales + Previous Injections - Previous Expenses - Previous Withdrawals
+  // This represents the cash position at the START of today (before any of today's transactions)
+  const todaysOpeningBalance = previousSales + previousInjections - previousExpenses - previousWithdrawals;
   
   // Today's transactions
   const todaysSales = sales.filter(s => s.date === today);
@@ -127,7 +127,7 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
         <StatCard
           title="Opening Balance"
           value={formatCurrency(todaysOpeningBalance)}
-          subtitle={`Total Revenue: ${formatCurrency(allSales)}`}
+          subtitle="Balance at start of today"
           icon={Wallet}
           iconBgColor="bg-gray-100"
           iconColor="text-gray-600"
