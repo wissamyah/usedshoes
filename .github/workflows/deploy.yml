@@ -6,13 +6,17 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
+  actions: read
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,14 +30,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Lint code
+        run: npm run lint || echo "Linting completed with warnings/errors - continuing deployment"
+
       - name: Build
-        run: |
-          npm run build
-          cp public/favicon.svg dist/
+        run: npm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: dist
-          branch: gh-pages
-          clean: true
+        id: deployment
+        uses: actions/deploy-pages@v4
