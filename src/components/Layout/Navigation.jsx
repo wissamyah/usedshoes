@@ -131,9 +131,6 @@ function Navigation({ activeTab, onTabChange }) {
                 <div className="text-sm font-semibold text-gray-900">
                   {navigationTabs.find(tab => tab.id === activeTab)?.name || 'Menu'}
                 </div>
-                <div className="text-xs text-gray-500">
-                  {navigationTabs.find(tab => tab.id === activeTab)?.description}
-                </div>
               </div>
             </div>
             <button
@@ -225,9 +222,6 @@ function Navigation({ activeTab, onTabChange }) {
                         }`}>
                           {tab.name}
                         </div>
-                        <div className="text-xs text-gray-500 mt-0.5">
-                          {tab.description}
-                        </div>
                       </div>
 
                     </button>
@@ -280,11 +274,6 @@ function Navigation({ activeTab, onTabChange }) {
                     </span>
                   </div>
 
-                  {/* Tooltip */}
-                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-50">
-                    {tab.description}
-                    <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
-                  </div>
                 </button>
               );
             })}
