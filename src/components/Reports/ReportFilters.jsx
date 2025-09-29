@@ -82,13 +82,22 @@ export default function ReportFilters({ dateRange, onDateRangeChange }) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div style={{
+      backgroundColor: '#2a2a2a',
+      borderRadius: '12px',
+      border: '1px solid #404040',
+      overflow: 'hidden'
+    }}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+      <div style={{
+        backgroundColor: '#333333',
+        padding: '16px 20px',
+        borderBottom: '1px solid #404040'
+      }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Filter className="h-4 sm:h-5 w-4 sm:w-5 text-gray-600" />
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900">Report Filters</h3>
+            <Filter style={{ height: '18px', width: '18px', color: '#3b82f6' }} />
+            <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#ebebeb' }}>Report Filters</h3>
           </div>
           {(localDateRange.startDate || localDateRange.endDate) && (
             <button
@@ -97,9 +106,29 @@ export default function ReportFilters({ dateRange, onDateRangeChange }) {
                 setLocalDateRange(newRange);
                 onDateRangeChange(newRange);
               }}
-              className="text-xs sm:text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1 transition-colors"
+              style={{
+                fontSize: '12px',
+                color: '#ef4444',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: '6px',
+                padding: '6px 12px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                e.target.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                e.target.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+              }}
             >
-              <X className="h-3 sm:h-4 w-3 sm:w-4" />
+              <X style={{ height: '14px', width: '14px' }} />
               <span className="hidden sm:inline">Clear all</span>
               <span className="sm:hidden">Clear</span>
             </button>
@@ -107,23 +136,43 @@ export default function ReportFilters({ dateRange, onDateRangeChange }) {
         </div>
       </div>
 
-      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+      <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {/* Preset Date Ranges */}
         <div>
-          <div className="flex items-center mb-2 sm:mb-3">
-            <Clock className="h-4 w-4 text-gray-500 mr-2" />
-            <label className="text-sm font-medium text-gray-700">Quick Date Ranges</label>
+          <div className="flex items-center mb-3">
+            <Clock style={{ height: '16px', width: '16px', color: '#808080', marginRight: '8px' }} />
+            <label style={{ fontSize: '14px', fontWeight: '500', color: '#b3b3b3' }}>Quick Date Ranges</label>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2">
             {presetRanges.map((preset) => (
               <button
                 key={preset.id}
                 onClick={() => handlePresetChange(preset)}
-                className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg border transition-all duration-200 ${
-                  localDateRange.preset === preset.id
-                    ? 'bg-blue-600 border-blue-600 text-white shadow-md transform scale-105'
-                    : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
-                }`}
+                style={{
+                  padding: '8px 12px',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  borderRadius: '6px',
+                  border: '1px solid',
+                  borderColor: localDateRange.preset === preset.id ? '#3b82f6' : '#404040',
+                  backgroundColor: localDateRange.preset === preset.id ? '#3b82f6' : '#1c1c1c',
+                  color: localDateRange.preset === preset.id ? 'white' : '#ebebeb',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  textAlign: 'center'
+                }}
+                onMouseEnter={(e) => {
+                  if (localDateRange.preset !== preset.id) {
+                    e.target.style.backgroundColor = '#333333';
+                    e.target.style.borderColor = '#3b82f6';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (localDateRange.preset !== preset.id) {
+                    e.target.style.backgroundColor = '#1c1c1c';
+                    e.target.style.borderColor = '#404040';
+                  }
+                }}
               >
                 {preset.label}
               </button>
@@ -133,35 +182,77 @@ export default function ReportFilters({ dateRange, onDateRangeChange }) {
 
         {/* Custom Date Range */}
         <div>
-          <div className="flex items-center mb-2 sm:mb-3">
-            <Calendar className="h-4 w-4 text-gray-500 mr-2" />
-            <label className="text-sm font-medium text-gray-700">Custom Date Range</label>
+          <div className="flex items-center mb-3">
+            <Calendar style={{ height: '16px', width: '16px', color: '#808080', marginRight: '8px' }} />
+            <label style={{ fontSize: '14px', fontWeight: '500', color: '#b3b3b3' }}>Custom Date Range</label>
           </div>
-          <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
+          <div style={{ backgroundColor: '#1c1c1c', borderRadius: '8px', padding: '16px' }}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="relative">
-                <label htmlFor="startDate" className="block text-xs font-medium text-gray-600 mb-1.5">From</label>
+                <label htmlFor="startDate" style={{ display: 'block', fontSize: '12px', fontWeight: '500', color: '#808080', marginBottom: '6px' }}>From</label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Calendar style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', height: '16px', width: '16px', color: '#808080' }} />
                   <input
                     type="date"
                     id="startDate"
                     value={localDateRange.startDate}
                     onChange={(e) => handleCustomDateChange('startDate', e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                    style={{
+                      width: '100%',
+                      paddingLeft: '40px',
+                      paddingRight: '12px',
+                      paddingTop: '10px',
+                      paddingBottom: '10px',
+                      border: '1px solid #404040',
+                      borderRadius: '6px',
+                      backgroundColor: '#2a2a2a',
+                      color: '#ebebeb',
+                      fontSize: '14px',
+                      outline: 'none',
+                      transition: 'all 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#3b82f6';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#404040';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   />
                 </div>
               </div>
               <div className="relative">
-                <label htmlFor="endDate" className="block text-xs font-medium text-gray-600 mb-1.5">To</label>
+                <label htmlFor="endDate" style={{ display: 'block', fontSize: '12px', fontWeight: '500', color: '#808080', marginBottom: '6px' }}>To</label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Calendar style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', height: '16px', width: '16px', color: '#808080' }} />
                   <input
                     type="date"
                     id="endDate"
                     value={localDateRange.endDate}
                     onChange={(e) => handleCustomDateChange('endDate', e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                    style={{
+                      width: '100%',
+                      paddingLeft: '40px',
+                      paddingRight: '12px',
+                      paddingTop: '10px',
+                      paddingBottom: '10px',
+                      border: '1px solid #404040',
+                      borderRadius: '6px',
+                      backgroundColor: '#2a2a2a',
+                      color: '#ebebeb',
+                      fontSize: '14px',
+                      outline: 'none',
+                      transition: 'all 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#3b82f6';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#404040';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   />
                 </div>
               </div>
@@ -174,9 +265,27 @@ export default function ReportFilters({ dateRange, onDateRangeChange }) {
                   handleCustomDateChange('startDate', '');
                   handleCustomDateChange('endDate', '');
                 }}
-                className="mt-3 text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 transition-colors"
+                style={{
+                  marginTop: '12px',
+                  fontSize: '14px',
+                  color: '#3b82f6',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'color 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.color = '#2563eb';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.color = '#3b82f6';
+                }}
               >
-                <X className="h-3 w-3" />
+                <X style={{ height: '12px', width: '12px' }} />
                 Clear custom range
               </button>
             )}
@@ -185,22 +294,35 @@ export default function ReportFilters({ dateRange, onDateRangeChange }) {
 
         {/* Date Range Summary */}
         {(localDateRange.startDate || localDateRange.endDate) && (
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+          <div style={{
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            border: '1px solid rgba(59, 130, 246, 0.3)',
+            borderRadius: '8px',
+            padding: '16px'
+          }}>
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Calendar className="h-4 w-4 text-blue-600" />
+              <div className="flex items-center space-x-3">
+                <div style={{
+                  height: '32px',
+                  width: '32px',
+                  backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <Calendar style={{ height: '16px', width: '16px', color: '#3b82f6' }} />
                 </div>
                 <div>
-                  <div className="text-xs font-medium text-gray-600 uppercase tracking-wide">Active Period</div>
-                  <div className="text-sm font-semibold text-gray-900">
+                  <div style={{ fontSize: '12px', fontWeight: '500', color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Active Period</div>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#ebebeb', marginTop: '2px' }}>
                     {localDateRange.startDate && localDateRange.endDate ? (
                       localDateRange.startDate === localDateRange.endDate ? (
                         formatDate(localDateRange.startDate)
                       ) : (
                         <div className="flex items-center gap-2">
                           <span>{formatDate(localDateRange.startDate)}</span>
-                          <ChevronRight className="h-4 w-4 text-gray-400" />
+                          <ChevronRight style={{ height: '16px', width: '16px', color: '#808080' }} />
                           <span>{formatDate(localDateRange.endDate)}</span>
                         </div>
                       )
@@ -213,9 +335,9 @@ export default function ReportFilters({ dateRange, onDateRangeChange }) {
                 </div>
               </div>
               {localDateRange.startDate && localDateRange.endDate && (
-                <div className="text-right">
-                  <div className="text-xs text-gray-600">Duration</div>
-                  <div className="text-sm font-semibold text-gray-900">
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '12px', color: '#b3b3b3' }}>Duration</div>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#ebebeb' }}>
                     {Math.ceil((new Date(localDateRange.endDate) - new Date(localDateRange.startDate)) / (1000 * 60 * 60 * 24)) + 1} days
                   </div>
                 </div>

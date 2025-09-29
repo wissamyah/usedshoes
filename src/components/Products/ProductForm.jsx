@@ -88,15 +88,46 @@ export default function ProductForm({ product, containers, onSubmit, onCancel })
 
   return (
     <Modal isOpen={true} onClose={onCancel} size="large">
-      <div className="bg-white rounded-lg shadow-xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white rounded-t-lg border-b border-gray-200 px-4 sm:px-6 py-4">
+      <div className="rounded-lg shadow-xl w-full max-h-[90vh] overflow-y-auto" style={{
+        backgroundColor: '#2a2a2a',
+        border: '1px solid #404040'
+      }}>
+        <div className="sticky top-0 rounded-t-lg px-4 sm:px-6 py-4" style={{
+          backgroundColor: '#2a2a2a',
+          borderBottom: '1px solid #404040'
+        }}>
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium text-gray-900">
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '500',
+              color: '#ebebeb'
+            }}>
               {product ? 'Edit Product' : 'Add New Product'}
             </h3>
             <button
               onClick={handleCancel}
-              className="text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 min-h-[44px] min-w-[44px] flex items-center justify-center"
+              style={{
+                color: '#b3b3b3',
+                padding: '4px',
+                borderRadius: '6px',
+                minHeight: '44px',
+                minWidth: '44px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.color = '#ebebeb';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.color = '#b3b3b3';
+                e.target.style.backgroundColor = 'transparent';
+              }}
             >
               <span className="sr-only">Close</span>
               <X className="h-6 w-6" />
@@ -110,7 +141,13 @@ export default function ProductForm({ product, containers, onSubmit, onCancel })
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               {/* Product Name */}
               <div className="sm:col-span-2">
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="name" style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ebebeb',
+                  marginBottom: '4px'
+                }}>
                   Product Name *
                 </label>
                 <input
@@ -119,12 +156,35 @@ export default function ProductForm({ product, containers, onSubmit, onCancel })
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className={`mt-1 block w-full border rounded-md shadow-sm py-3 px-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.name ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                  }`}
+                  style={{
+                    marginTop: '4px',
+                    display: 'block',
+                    width: '100%',
+                    border: errors.name ? '1px solid #ef4444' : '1px solid #404040',
+                    borderRadius: '6px',
+                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                    padding: '12px',
+                    fontSize: '16px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = errors.name ? '#ef4444' : '#60a5fa';
+                    e.target.style.boxShadow = errors.name ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = errors.name ? '#ef4444' : '#404040';
+                    e.target.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+                  }}
                   placeholder="Product name"
                 />
-                {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+                {errors.name && <p style={{
+                  marginTop: '4px',
+                  fontSize: '14px',
+                  color: '#ef4444'
+                }}>{errors.name}</p>}
               </div>
 
               {/* Category */}

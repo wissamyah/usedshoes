@@ -46,8 +46,8 @@ export function withLazyLoading(LazyComponent, LoadingComponent = null, fallback
 export const LazyDashboard = withLazyLoading(Dashboard, (
   <div className="p-4 sm:p-6 space-y-6">
     <div className="space-y-2">
-      <div className="h-8 bg-gray-200 rounded w-48 animate-pulse"></div>
-      <div className="h-4 bg-gray-200 rounded w-96 animate-pulse"></div>
+      <div className="h-8 rounded w-48 animate-pulse" style={{ backgroundColor: '#333333' }}></div>
+      <div className="h-4 rounded w-96 animate-pulse" style={{ backgroundColor: '#404040' }}></div>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {Array.from({ length: 4 }, (_, i) => (
@@ -66,8 +66,8 @@ export const LazyDashboard = withLazyLoading(Dashboard, (
 export const LazyProductsPage = withLazyLoading(ProductsPage, (
   <div className="p-4 sm:p-6 space-y-6">
     <div className="flex justify-between items-center">
-      <div className="h-8 bg-gray-200 rounded w-32 animate-pulse"></div>
-      <div className="h-10 bg-gray-200 rounded w-24 animate-pulse"></div>
+      <div className="h-8 rounded w-32 animate-pulse" style={{ backgroundColor: '#333333' }}></div>
+      <div className="h-10 rounded w-24 animate-pulse" style={{ backgroundColor: '#404040' }}></div>
     </div>
     <SkeletonTable rows={8} columns={5} />
   </div>
@@ -76,8 +76,8 @@ export const LazyProductsPage = withLazyLoading(ProductsPage, (
 export const LazyContainersPage = withLazyLoading(ContainersPage, (
   <div className="p-4 sm:p-6 space-y-6">
     <div className="flex justify-between items-center">
-      <div className="h-8 bg-gray-200 rounded w-36 animate-pulse"></div>
-      <div className="h-10 bg-gray-200 rounded w-28 animate-pulse"></div>
+      <div className="h-8 rounded w-36 animate-pulse" style={{ backgroundColor: '#333333' }}></div>
+      <div className="h-10 rounded w-28 animate-pulse" style={{ backgroundColor: '#404040' }}></div>
     </div>
     <SkeletonTable rows={6} columns={6} />
   </div>
@@ -85,7 +85,7 @@ export const LazyContainersPage = withLazyLoading(ContainersPage, (
 
 export const LazySalesPage = withLazyLoading(SalesPage, (
   <div className="p-4 sm:p-6 space-y-6">
-    <div className="h-8 bg-gray-200 rounded w-24 animate-pulse"></div>
+    <div className="h-8 rounded w-24 animate-pulse" style={{ backgroundColor: '#333333' }}></div>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {Array.from({ length: 3 }, (_, i) => (
         <SkeletonCard key={i} />
@@ -97,7 +97,7 @@ export const LazySalesPage = withLazyLoading(SalesPage, (
 
 export const LazyExpensesPage = withLazyLoading(ExpensesPage, (
   <div className="p-4 sm:p-6 space-y-6">
-    <div className="h-8 bg-gray-200 rounded w-28 animate-pulse"></div>
+    <div className="h-8 rounded w-28 animate-pulse" style={{ backgroundColor: '#333333' }}></div>
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {Array.from({ length: 4 }, (_, i) => (
         <SkeletonCard key={i} />
@@ -109,7 +109,7 @@ export const LazyExpensesPage = withLazyLoading(ExpensesPage, (
 
 export const LazyFinancePage = withLazyLoading(FinancePage, (
   <div className="p-4 sm:p-6 space-y-6">
-    <div className="h-8 bg-gray-200 rounded w-32 animate-pulse"></div>
+    <div className="h-8 rounded w-32 animate-pulse" style={{ backgroundColor: '#333333' }}></div>
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {Array.from({ length: 3 }, (_, i) => (
         <SkeletonCard key={i} />
@@ -121,7 +121,7 @@ export const LazyFinancePage = withLazyLoading(FinancePage, (
 
 export const LazyReportsPage = withLazyLoading(ReportsPage, (
   <div className="p-4 sm:p-6 space-y-6">
-    <div className="h-8 bg-gray-200 rounded w-28 animate-pulse"></div>
+    <div className="h-8 rounded w-28 animate-pulse" style={{ backgroundColor: '#333333' }}></div>
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <div className="lg:col-span-1 space-y-4">
         <SkeletonCard />
@@ -136,7 +136,7 @@ export const LazyReportsPage = withLazyLoading(ReportsPage, (
 
 export const LazySettingsPage = withLazyLoading(SettingsPage, (
   <div className="p-4 sm:p-6 space-y-6">
-    <div className="h-8 bg-gray-200 rounded w-28 animate-pulse"></div>
+    <div className="h-8 rounded w-28 animate-pulse" style={{ backgroundColor: '#333333' }}></div>
     <div className="space-y-6">
       {Array.from({ length: 3 }, (_, i) => (
         <SkeletonCard key={i} />

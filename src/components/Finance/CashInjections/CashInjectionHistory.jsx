@@ -97,8 +97,16 @@ export default function CashInjectionHistory() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h3 className="text-lg font-medium text-gray-900">Cash Injections</h3>
-          <p className="text-sm text-gray-600 mt-1">
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: '500',
+            color: '#ebebeb'
+          }}>Cash Injections</h3>
+          <p style={{
+            fontSize: '14px',
+            color: '#b3b3b3',
+            marginTop: '4px'
+          }}>
             Track capital contributions, loans, and other cash additions
           </p>
         </div>
@@ -116,20 +124,30 @@ export default function CashInjectionHistory() {
       
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+        <div style={{
+          backgroundColor: '#3a3a3a',
+          padding: '16px',
+          borderRadius: '8px',
+          border: '1px solid #525252'
+        }}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Injections</p>
-              <p className="text-xl font-semibold text-gray-900">{formatCurrency(grandTotal)}</p>
+              <p style={{ fontSize: '14px', color: '#b3b3b3' }}>Total Injections</p>
+              <p style={{ fontSize: '20px', fontWeight: '600', color: '#ebebeb' }}>{formatCurrency(grandTotal)}</p>
             </div>
             <DollarSign className="h-8 w-8 text-green-500" />
           </div>
         </div>
-        
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+
+        <div style={{
+          backgroundColor: '#3a3a3a',
+          padding: '16px',
+          borderRadius: '8px',
+          border: '1px solid #525252'
+        }}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Capital Contributions</p>
+              <p style={{ fontSize: '14px', color: '#b3b3b3' }}>Capital Contributions</p>
               <p className="text-lg font-semibold text-purple-600">
                 {formatCurrency(totalsByType['Capital Contribution'] || 0)}
               </p>
@@ -137,11 +155,16 @@ export default function CashInjectionHistory() {
             <Wallet className="h-8 w-8 text-purple-500" />
           </div>
         </div>
-        
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+
+        <div style={{
+          backgroundColor: '#3a3a3a',
+          padding: '16px',
+          borderRadius: '8px',
+          border: '1px solid #525252'
+        }}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Loans</p>
+              <p style={{ fontSize: '14px', color: '#b3b3b3' }}>Loans</p>
               <p className="text-lg font-semibold text-orange-600">
                 {formatCurrency(totalsByType['Loan'] || 0)}
               </p>
@@ -149,11 +172,16 @@ export default function CashInjectionHistory() {
             <Building2 className="h-8 w-8 text-orange-500" />
           </div>
         </div>
-        
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+
+        <div style={{
+          backgroundColor: '#3a3a3a',
+          padding: '16px',
+          borderRadius: '8px',
+          border: '1px solid #525252'
+        }}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Other Income</p>
+              <p style={{ fontSize: '14px', color: '#b3b3b3' }}>Other Income</p>
               <p className="text-lg font-semibold text-green-600">
                 {formatCurrency(totalsByType['Other Income'] || 0)}
               </p>
@@ -161,11 +189,16 @@ export default function CashInjectionHistory() {
             <TrendingUp className="h-8 w-8 text-green-500" />
           </div>
         </div>
-        
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+
+        <div style={{
+          backgroundColor: '#3a3a3a',
+          padding: '16px',
+          borderRadius: '8px',
+          border: '1px solid #525252'
+        }}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Opening Balance</p>
+              <p style={{ fontSize: '14px', color: '#b3b3b3' }}>Opening Balance</p>
               <p className="text-lg font-semibold text-blue-600">
                 {formatCurrency(totalsByType['Opening Balance'] || 0)}
               </p>
@@ -176,15 +209,15 @@ export default function CashInjectionHistory() {
       </div>
       
       {/* Filter Tabs */}
-      <div className="border-b border-gray-200 mb-4">
+      <div style={{ borderBottom: '1px solid #404040', marginBottom: '16px' }}>
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setFilterType('all')}
-            className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
-              filterType === 'all'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+            className="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm"
+            style={{
+              borderBottomColor: filterType === 'all' ? '#2563eb' : 'transparent',
+              color: filterType === 'all' ? '#2563eb' : '#b3b3b3'
+            }}
           >
             All ({cashInjections.length})
           </button>
@@ -194,11 +227,11 @@ export default function CashInjectionHistory() {
               <button
                 key={type}
                 onClick={() => setFilterType(type)}
-                className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
-                  filterType === type
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                className="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm"
+                style={{
+                  borderBottomColor: filterType === type ? '#2563eb' : 'transparent',
+                  color: filterType === type ? '#2563eb' : '#b3b3b3'
+                }}
               >
                 {type} ({count})
               </button>
@@ -209,18 +242,34 @@ export default function CashInjectionHistory() {
       
       {/* Injections List */}
       {sortedInjections.length === 0 ? (
-        <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-          <DollarSign className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No Cash Injections</h3>
-          <p className="text-gray-600">
-            {filterType === 'all' 
+        <div style={{
+          backgroundColor: '#3a3a3a',
+          border: '1px solid #525252',
+          borderRadius: '8px',
+          padding: '32px',
+          textAlign: 'center'
+        }}>
+          <DollarSign className="h-12 w-12 mx-auto mb-4" style={{ color: '#6b7280' }} />
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: '500',
+            color: '#ebebeb',
+            marginBottom: '8px'
+          }}>No Cash Injections</h3>
+          <p style={{ color: '#b3b3b3' }}>
+            {filterType === 'all'
               ? 'No records found'
               : `No ${filterType.toLowerCase()} records found`}
           </p>
         </div>
       ) : (
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <ul className="divide-y divide-gray-200">
+        <div style={{
+          backgroundColor: '#3a3a3a',
+          border: '1px solid #525252',
+          borderRadius: '8px',
+          overflow: 'hidden'
+        }}>
+          <ul style={{ borderTop: 'none' }}>
             {sortedInjections.map((injection) => {
               const partner = injection.partnerId 
                 ? partners.find(p => p.id === injection.partnerId)
@@ -228,7 +277,13 @@ export default function CashInjectionHistory() {
               
               return (
                 <li key={injection.id}>
-                  <div className="px-4 py-4 sm:px-6 hover:bg-gray-50">
+                  <div className="px-4 py-4 sm:px-6" style={{
+                    borderBottom: '1px solid #404040'
+                  }} onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#4a4a4a';
+                  }} onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <div className="flex-shrink-0">
@@ -236,14 +291,21 @@ export default function CashInjectionHistory() {
                         </div>
                         <div className="ml-4">
                           <div className="flex items-center">
-                            <p className="text-sm font-medium text-gray-900">
+                            <p style={{
+                              fontSize: '14px',
+                              fontWeight: '500',
+                              color: '#ebebeb'
+                            }}>
                               {injection.description}
                             </p>
                             <span className={`ml-3 inline-flex px-2 py-0.5 text-xs font-semibold rounded-full ${getTypeColor(injection.type)}`}>
                               {injection.type}
                             </span>
                           </div>
-                          <div className="mt-1 flex items-center text-sm text-gray-500">
+                          <div className="mt-1 flex items-center" style={{
+                            fontSize: '14px',
+                            color: '#b3b3b3'
+                          }}>
                             <span>{formatDate(injection.date)}</span>
                             <span className="mx-2">•</span>
                             <span>{injection.source}</span>
@@ -264,7 +326,10 @@ export default function CashInjectionHistory() {
                             )}
                           </div>
                           {injection.notes && (
-                            <p className="mt-1 text-xs text-gray-500 italic">
+                            <p className="mt-1 italic" style={{
+                              fontSize: '12px',
+                              color: '#b3b3b3'
+                            }}>
                               {injection.notes}
                             </p>
                           )}
@@ -279,14 +344,16 @@ export default function CashInjectionHistory() {
                         <div className="flex space-x-2">
                           <button
                             onClick={() => handleEdit(injection)}
-                            className="text-gray-400 hover:text-blue-600"
+                            className="hover:text-blue-400"
+                            style={{ color: '#9ca3af' }}
                             title="Edit injection"
                           >
                             <Edit2 className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(injection)}
-                            className="text-gray-400 hover:text-red-600"
+                            className="hover:text-red-400"
+                            style={{ color: '#9ca3af' }}
                             title="Delete injection"
                           >
                             <Trash2 className="h-4 w-4" />

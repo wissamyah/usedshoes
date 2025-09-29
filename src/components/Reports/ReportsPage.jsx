@@ -25,36 +25,71 @@ export default function ReportsPage() {
   ];
 
   return (
-    <div className="py-6 sm:p-6">
+    <div style={{ padding: '24px' }}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Reports & Analytics</h2>
-          <p className="text-sm text-gray-600 mt-1">Comprehensive business performance analysis</p>
+          <h2 style={{ fontSize: '24px', fontWeight: '600', color: '#ebebeb' }}>Reports & Analytics</h2>
+          <p style={{ fontSize: '14px', color: '#b3b3b3', marginTop: '6px' }}>Comprehensive business performance analysis</p>
         </div>
         <div className="mt-4 sm:mt-0">
           <ExportButton dateRange={dateRange} activeReport={activeReport} />
         </div>
       </div>
 
-      {/* Report Type Selector */}
-      <div className="mb-6">
-        <div className="border-b border-gray-200">
-          <nav className="flex space-x-4 sm:space-x-8">
-            {reports.map((report) => (
+      {/* Enhanced Report Type Selector */}
+      <div style={{ marginBottom: '32px' }}>
+        <div style={{
+          backgroundColor: '#2a2a2a',
+          borderRadius: '12px',
+          border: '1px solid #404040',
+          padding: '8px',
+          overflow: 'hidden'
+        }}>
+          <nav className="flex">
+            {reports.map((report, index) => (
               <button
                 key={report.id}
                 onClick={() => setActiveReport(report.id)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex-1 sm:flex-none ${
-                  activeReport === report.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                style={{
+                  flex: '1',
+                  padding: '16px 20px',
+                  borderRadius: '8px',
+                  backgroundColor: activeReport === report.id ? '#3b82f6' : 'transparent',
+                  color: activeReport === report.id ? 'white' : '#b3b3b3',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  textAlign: 'center',
+                  marginRight: index < reports.length - 1 ? '4px' : '0'
+                }}
+                onMouseEnter={(e) => {
+                  if (activeReport !== report.id) {
+                    e.target.style.backgroundColor = '#333333';
+                    e.target.style.color = '#ebebeb';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeReport !== report.id) {
+                    e.target.style.backgroundColor = 'transparent';
+                    e.target.style.color = '#b3b3b3';
+                  }
+                }}
                 title={`${report.name}: ${report.description}`}
               >
-                <div className="text-center sm:text-left">
-                  <div className="text-xs sm:text-sm">{report.name.replace(' & ', '/')}</div>
-                  <div className="hidden sm:block text-xs font-normal mt-1">{report.description}</div>
+                <div>
+                  <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '4px' }}>
+                    {report.name}
+                  </div>
+                  <div style={{
+                    fontSize: '12px',
+                    opacity: activeReport === report.id ? 0.9 : 0.7,
+                    lineHeight: '1.3'
+                  }} className="hidden sm:block">
+                    {report.description}
+                  </div>
                 </div>
               </button>
             ))}
@@ -63,32 +98,32 @@ export default function ReportsPage() {
       </div>
 
       {/* Report Filters */}
-      <div className="mb-6">
-        <ReportFilters 
-          dateRange={dateRange} 
+      <div style={{ marginBottom: '32px' }}>
+        <ReportFilters
+          dateRange={dateRange}
           onDateRangeChange={handleDateRangeChange}
         />
       </div>
 
       {/* Report Content */}
-      <div className="space-y-6">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {activeReport === 'profitLoss' && (
-          <ProfitLoss 
-            startDate={dateRange.startDate || null} 
+          <ProfitLoss
+            startDate={dateRange.startDate || null}
             endDate={dateRange.endDate || null}
           />
         )}
-        
+
         {activeReport === 'sales' && (
-          <SalesReport 
-            startDate={dateRange.startDate || null} 
+          <SalesReport
+            startDate={dateRange.startDate || null}
             endDate={dateRange.endDate || null}
           />
         )}
-        
+
         {activeReport === 'expenses' && (
-          <ExpenseReport 
-            startDate={dateRange.startDate || null} 
+          <ExpenseReport
+            startDate={dateRange.startDate || null}
             endDate={dateRange.endDate || null}
           />
         )}

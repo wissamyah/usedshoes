@@ -161,31 +161,43 @@ export default function ExpenseReport({ startDate, endDate }) {
     }
   };
 
-  // Category colors for visual distinction
+  // Category colors for visual distinction (dark theme)
   const getCategoryColor = (category) => {
     const colors = {
-      'Shipping': 'bg-blue-100 text-blue-800',
-      'Container': 'bg-purple-100 text-purple-800',
-      'Customs': 'bg-green-100 text-green-800',
-      'Transportation': 'bg-yellow-100 text-yellow-800',
-      'Storage': 'bg-orange-100 text-orange-800',
-      'Marketing': 'bg-pink-100 text-pink-800',
-      'Loss/Damage': 'bg-red-100 text-red-800',
-      'Other': 'bg-gray-100 text-gray-800',
-      'Uncategorized': 'bg-gray-100 text-gray-800'
+      'Shipping': { bg: 'rgba(59, 130, 246, 0.1)', text: '#60a5fa', border: 'rgba(59, 130, 246, 0.3)' },
+      'Container': { bg: 'rgba(147, 51, 234, 0.1)', text: '#a855f7', border: 'rgba(147, 51, 234, 0.3)' },
+      'Customs': { bg: 'rgba(34, 197, 94, 0.1)', text: '#4ade80', border: 'rgba(34, 197, 94, 0.3)' },
+      'Transportation': { bg: 'rgba(245, 158, 11, 0.1)', text: '#fbbf24', border: 'rgba(245, 158, 11, 0.3)' },
+      'Storage': { bg: 'rgba(249, 115, 22, 0.1)', text: '#fb923c', border: 'rgba(249, 115, 22, 0.3)' },
+      'Marketing': { bg: 'rgba(236, 72, 153, 0.1)', text: '#f472b6', border: 'rgba(236, 72, 153, 0.3)' },
+      'Loss/Damage': { bg: 'rgba(239, 68, 68, 0.1)', text: '#f87171', border: 'rgba(239, 68, 68, 0.3)' },
+      'Other': { bg: 'rgba(107, 114, 128, 0.1)', text: '#9ca3af', border: 'rgba(107, 114, 128, 0.3)' },
+      'Uncategorized': { bg: 'rgba(107, 114, 128, 0.1)', text: '#9ca3af', border: 'rgba(107, 114, 128, 0.3)' }
     };
-    return colors[category] || 'bg-gray-100 text-gray-800';
+    return colors[category] || { bg: 'rgba(107, 114, 128, 0.1)', text: '#9ca3af', border: 'rgba(107, 114, 128, 0.3)' };
   };
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Report Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div style={{
+        backgroundColor: '#2a2a2a',
+        borderRadius: '12px',
+        border: '1px solid #404040',
+        padding: '24px'
+      }}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Expense Report</h3>
-          <span className="text-sm text-gray-500">{dateRangeDisplay()}</span>
+          <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#ebebeb' }}>Expense Report</h3>
+          <span style={{
+            fontSize: '14px',
+            color: '#b3b3b3',
+            backgroundColor: '#1c1c1c',
+            padding: '6px 12px',
+            borderRadius: '6px',
+            border: '1px solid #404040'
+          }}>{dateRangeDisplay()}</span>
         </div>
-        
+
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
@@ -227,79 +239,84 @@ export default function ExpenseReport({ startDate, endDate }) {
       </div>
 
       {/* Expenses by Category */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h4 className="text-md font-semibold text-gray-900 mb-4">Expenses by Category</h4>
+      <div style={{
+        backgroundColor: '#2a2a2a',
+        borderRadius: '12px',
+        border: '1px solid #404040',
+        padding: '24px'
+      }}>
+        <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#ebebeb', marginBottom: '16px' }}>Expenses by Category</h4>
         {expensesByCategory.length === 0 ? (
-          <p className="text-gray-500 text-center py-4">No expense data available for the selected period</p>
+          <p style={{ color: '#808080', textAlign: 'center', padding: '16px 0' }}>No expense data available for the selected period</p>
         ) : (
           <div>
-            {/* Category breakdown */}
-            <div className="space-y-3 mb-6">
-              {expensesByCategory.map((category) => (
-                <div key={category.category} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3 flex-1">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getCategoryColor(category.category)}`}>
-                      {category.category}
-                    </span>
-                    <div className="flex-1 bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-red-600 h-2 rounded-full"
-                        style={{ width: `${category.percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                  <div className="ml-4 text-right">
-                    <p className="text-sm font-medium text-gray-900">{formatCurrency(category.amount)}</p>
-                    <p className="text-xs text-gray-500">{category.count} items • {category.percentage.toFixed(1)}%</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
             {/* Category table */}
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+            <div style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid #404040' }}>
+              <table style={{ minWidth: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
+                <thead style={{ backgroundColor: '#333333' }}>
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       Category
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       Transactions
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       Total Amount
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       Average
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       % of Total
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {expensesByCategory.map((category) => (
-                    <tr key={category.category} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getCategoryColor(category.category)}`}>
-                          {category.category}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                        {category.count}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
-                        {formatCurrency(category.amount)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                        {formatCurrency(category.amount / category.count)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                        {category.percentage.toFixed(1)}%
-                      </td>
-                    </tr>
-                  ))}
+                <tbody style={{ backgroundColor: '#1c1c1c' }}>
+                  {expensesByCategory.map((category, index) => {
+                    const colors = getCategoryColor(category.category);
+                    return (
+                      <tr
+                        key={category.category}
+                        style={{
+                          borderBottom: index < expensesByCategory.length - 1 ? '1px solid #404040' : 'none',
+                          transition: 'background-color 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#333333';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
+                        <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                          <span style={{
+                            padding: '4px 8px',
+                            fontSize: '12px',
+                            fontWeight: '500',
+                            borderRadius: '9999px',
+                            backgroundColor: colors.bg,
+                            color: colors.text,
+                            border: `1px solid ${colors.border}`
+                          }}>
+                            {category.category}
+                          </span>
+                        </td>
+                        <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: '#ebebeb', textAlign: 'right' }}>
+                          {category.count}
+                        </td>
+                        <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: '#ebebeb', textAlign: 'right', fontWeight: '500' }}>
+                          {formatCurrency(category.amount)}
+                        </td>
+                        <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: '#ebebeb', textAlign: 'right' }}>
+                          {formatCurrency(category.amount / category.count)}
+                        </td>
+                        <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: '#ebebeb', textAlign: 'right' }}>
+                          {category.percentage.toFixed(1)}%
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -309,39 +326,56 @@ export default function ExpenseReport({ startDate, endDate }) {
 
       {/* Monthly Trend */}
       {monthlyTrend.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h4 className="text-md font-semibold text-gray-900 mb-4">Monthly Expense Trend</h4>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+        <div style={{
+          backgroundColor: '#2a2a2a',
+          borderRadius: '12px',
+          border: '1px solid #404040',
+          padding: '24px'
+        }}>
+          <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#ebebeb', marginBottom: '16px' }}>Monthly Expense Trend</h4>
+          <div style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid #404040' }}>
+            <table style={{ minWidth: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
+              <thead style={{ backgroundColor: '#333333' }}>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Month
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Transactions
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Total Amount
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Average
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {monthlyTrend.map((month) => (
-                  <tr key={month.month} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              <tbody style={{ backgroundColor: '#1c1c1c' }}>
+                {monthlyTrend.map((month, index) => (
+                  <tr
+                    key={month.month}
+                    style={{
+                      borderBottom: index < monthlyTrend.length - 1 ? '1px solid #404040' : 'none',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#333333';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                  >
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', fontWeight: '500', color: '#ebebeb' }}>
                       {formatMonth(month.month)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: '#ebebeb', textAlign: 'right' }}>
                       {month.count}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: '#ebebeb', textAlign: 'right', fontWeight: '500' }}>
                       {formatCurrency(month.amount)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: '#ebebeb', textAlign: 'right' }}>
                       {formatCurrency(month.amount / month.count)}
                     </td>
                   </tr>
@@ -353,51 +387,79 @@ export default function ExpenseReport({ startDate, endDate }) {
       )}
 
       {/* Recent Expenses */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h4 className="text-md font-semibold text-gray-900 mb-4">Recent Expenses</h4>
+      <div style={{
+        backgroundColor: '#2a2a2a',
+        borderRadius: '12px',
+        border: '1px solid #404040',
+        padding: '24px'
+      }}>
+        <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#ebebeb', marginBottom: '16px' }}>Recent Expenses</h4>
         {filteredExpenses.length === 0 ? (
-          <p className="text-gray-500 text-center py-4">No expenses found for the selected period</p>
+          <p style={{ color: '#808080', textAlign: 'center', padding: '16px 0' }}>No expenses found for the selected period</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <div style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid #404040' }}>
+            <table style={{ minWidth: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
+              <thead style={{ backgroundColor: '#333333' }}>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Description
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Category
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Amount
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody style={{ backgroundColor: '#1c1c1c' }}>
                 {filteredExpenses
                   .sort((a, b) => new Date(b.date) - new Date(a.date))
                   .slice(0, 10)
-                  .map((expense) => (
-                    <tr key={expense.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {formatDateOrUnknown(expense.date)}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {expense.description || 'No description'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getCategoryColor(expense.category)}`}>
-                          {expense.category || 'Uncategorized'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
-                        {formatCurrency(expense.amount)}
-                      </td>
-                    </tr>
-                  ))}
+                  .map((expense, index) => {
+                    const colors = getCategoryColor(expense.category);
+                    return (
+                      <tr
+                        key={expense.id}
+                        style={{
+                          borderBottom: index < 9 ? '1px solid #404040' : 'none',
+                          transition: 'background-color 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#333333';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
+                        <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: '#ebebeb' }}>
+                          {formatDateOrUnknown(expense.date)}
+                        </td>
+                        <td style={{ padding: '16px 24px', fontSize: '14px', color: '#ebebeb' }}>
+                          {expense.description || 'No description'}
+                        </td>
+                        <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                          <span style={{
+                            padding: '4px 8px',
+                            fontSize: '12px',
+                            fontWeight: '500',
+                            borderRadius: '9999px',
+                            backgroundColor: colors.bg,
+                            color: colors.text,
+                            border: `1px solid ${colors.border}`
+                          }}>
+                            {expense.category || 'Uncategorized'}
+                          </span>
+                        </td>
+                        <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: '#ebebeb', textAlign: 'right', fontWeight: '500' }}>
+                          {formatCurrency(expense.amount)}
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>

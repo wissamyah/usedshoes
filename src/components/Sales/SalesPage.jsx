@@ -74,8 +74,16 @@ export default function SalesPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Sales Management</h2>
-          <p className="text-sm text-gray-600 mt-1">Record sales, track revenue and manage transactions</p>
+          <h2 style={{
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: '#ebebeb'
+          }}>Sales Management</h2>
+          <p style={{
+            fontSize: '14px',
+            color: '#b3b3b3',
+            marginTop: '4px'
+          }}>Record sales, track revenue and manage transactions</p>
         </div>
         <button
           onClick={handleAddSale}
@@ -129,7 +137,7 @@ export default function SalesPage() {
       </div>
 
       {/* Sales History */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div style={{ backgroundColor: '#2a2a2a', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', border: '1px solid #404040' }}>
         <SalesHistory onEditSale={handleEditSale} />
       </div>
 

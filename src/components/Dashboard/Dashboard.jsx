@@ -103,11 +103,19 @@ export default function Dashboard() {
 
 
   return (
-    <div className="py-4 sm:p-6 bg-gray-50 min-h-screen">
+    <div className="py-4 sm:p-6 min-h-screen">
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
-        <p className="text-sm text-gray-600 mt-1">Overview of your business performance</p>
+        <h2 style={{
+          fontSize: '24px',
+          fontWeight: 'bold',
+          color: '#ebebeb'
+        }}>Dashboard</h2>
+        <p style={{
+          fontSize: '14px',
+          color: '#b3b3b3',
+          marginTop: '4px'
+        }}>Overview of your business performance</p>
       </div>
 
       {/* KPI Cards */}
@@ -119,27 +127,27 @@ export default function Dashboard() {
       />
 
       {/* Cash Position Card - Professional Display */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-50/0 via-blue-50/50 to-blue-50/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+      <div className="rounded-xl shadow-sm p-6 mb-6 hover:shadow-lg transition-all duration-300 relative overflow-hidden group" style={{ backgroundColor: '#2a2a2a', border: '1px solid #404040' }}>
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-800/0 via-gray-800/10 to-gray-800/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
         <div className="flex items-start justify-between mb-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <div className="p-2 bg-blue-50 rounded-lg">
-                <Wallet className="h-5 w-5 text-blue-600" />
+              <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                <Wallet className="h-5 w-5" style={{ color: '#ebebeb', opacity: 0.7 }} />
               </div>
-              <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Cash Position</h3>
+              <h3 className="text-sm font-medium uppercase tracking-wider" style={{ color: '#b3b3b3' }}>Cash Position</h3>
             </div>
             <div className="flex items-baseline gap-2 mt-3">
-              <span className="text-3xl font-light text-gray-900 transition-all duration-500">
+              <span className="text-3xl font-light transition-all duration-500" style={{ color: '#ebebeb' }}>
                 {formatCurrency(currentCashPosition)}
               </span>
               {currentCashPosition >= 0 ? (
-                <span className="flex items-center text-sm text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                <span className="flex items-center text-sm px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#10b981' }}>
                   <ArrowUpRight className="h-3 w-3 mr-1" />
                   Positive
                 </span>
               ) : (
-                <span className="flex items-center text-sm text-red-600 bg-red-50 px-2 py-1 rounded-full">
+                <span className="flex items-center text-sm px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#ef4444' }}>
                   <ArrowDownRight className="h-3 w-3 mr-1" />
                   Negative
                 </span>
@@ -151,32 +159,32 @@ export default function Dashboard() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
             </span>
-            <span className="text-gray-500">Live</span>
+            <span style={{ color: '#808080' }}>Live</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-gray-100">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4" style={{ borderTop: '1px solid #404040' }}>
           <div className="group">
-            <div className="text-xs text-gray-500 mb-1">Revenue</div>
-            <div className="text-lg font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+            <div className="text-xs mb-1" style={{ color: '#808080' }}>Revenue</div>
+            <div className="text-lg font-medium group-hover:text-blue-600 transition-colors" style={{ color: '#ebebeb' }}>
               {formatCurrency(totalRevenue)}
             </div>
           </div>
           <div className="group">
-            <div className="text-xs text-gray-500 mb-1">Investments</div>
-            <div className="text-lg font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+            <div className="text-xs mb-1" style={{ color: '#808080' }}>Investments</div>
+            <div className="text-lg font-medium group-hover:text-blue-600 transition-colors" style={{ color: '#ebebeb' }}>
               {formatCurrency(totalPurchases)}
             </div>
           </div>
           <div className="group">
-            <div className="text-xs text-gray-500 mb-1">Expenses</div>
-            <div className="text-lg font-medium text-gray-900 group-hover:text-red-600 transition-colors">
+            <div className="text-xs mb-1" style={{ color: '#808080' }}>Expenses</div>
+            <div className="text-lg font-medium group-hover:text-red-600 transition-colors" style={{ color: '#ebebeb' }}>
               {formatCurrency(totalExpenses)}
             </div>
           </div>
           <div className="group">
-            <div className="text-xs text-gray-500 mb-1">Withdrawals</div>
-            <div className="text-lg font-medium text-gray-900 group-hover:text-orange-600 transition-colors">
+            <div className="text-xs mb-1" style={{ color: '#808080' }}>Withdrawals</div>
+            <div className="text-lg font-medium group-hover:text-orange-600 transition-colors" style={{ color: '#ebebeb' }}>
               {formatCurrency(totalWithdrawals)}
             </div>
           </div>
@@ -185,63 +193,63 @@ export default function Dashboard() {
 
       {/* Secondary Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-blue-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+        <div className="p-6 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 relative overflow-hidden group" style={{ backgroundColor: '#2a2a2a', border: '1px solid #404040' }}>
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-gray-800/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
           <div className="flex items-center justify-between mb-4 relative">
-            <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Operations</h3>
-            <div className="p-1.5 bg-blue-50 rounded-lg">
-              <Activity className="h-4 w-4 text-blue-600" />
+            <h3 className="text-sm font-medium uppercase tracking-wider" style={{ color: '#b3b3b3' }}>Operations</h3>
+            <div className="p-1.5 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <Activity className="h-4 w-4" style={{ color: '#ebebeb', opacity: 0.7 }} />
             </div>
           </div>
           <div className="space-y-3">
             <div className="flex justify-between items-center group cursor-default">
-              <span className="text-sm text-gray-500">Products</span>
-              <span className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{products.length}</span>
+              <span className="text-sm" style={{ color: '#808080' }}>Products</span>
+              <span className="text-sm font-medium group-hover:text-blue-600 transition-colors" style={{ color: '#ebebeb' }}>{products.length}</span>
             </div>
             <div className="flex justify-between items-center group cursor-default">
-              <span className="text-sm text-gray-500">Containers</span>
-              <span className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{containers.length}</span>
+              <span className="text-sm" style={{ color: '#808080' }}>Containers</span>
+              <span className="text-sm font-medium group-hover:text-blue-600 transition-colors" style={{ color: '#ebebeb' }}>{containers.length}</span>
             </div>
             <div className="flex justify-between items-center group cursor-default">
-              <span className="text-sm text-gray-500">Total Sales</span>
-              <span className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{sales.length}</span>
+              <span className="text-sm" style={{ color: '#808080' }}>Total Sales</span>
+              <span className="text-sm font-medium group-hover:text-blue-600 transition-colors" style={{ color: '#ebebeb' }}>{sales.length}</span>
             </div>
             <div className="flex justify-between items-center group cursor-default">
-              <span className="text-sm text-gray-500">Active Stock</span>
-              <span className="text-sm font-medium text-gray-900 group-hover:text-green-600 transition-colors">{products.filter(p => p.currentStock > 0).length}</span>
+              <span className="text-sm" style={{ color: '#808080' }}>Active Stock</span>
+              <span className="text-sm font-medium group-hover:text-green-600 transition-colors" style={{ color: '#ebebeb' }}>{products.filter(p => p.currentStock > 0).length}</span>
             </div>
-            <div className="flex justify-between items-center pt-3 border-t border-gray-100">
-              <span className="text-sm text-gray-500">Low Stock Alert</span>
-              <span className={`text-sm font-medium px-2 py-0.5 rounded-full ${
-                lowStockProducts.length > 0
-                  ? 'bg-orange-100 text-orange-600'
-                  : 'bg-green-100 text-green-600'
-              }`}>
+            <div className="flex justify-between items-center pt-3" style={{ borderTop: '1px solid #404040' }}>
+              <span className="text-sm" style={{ color: '#808080' }}>Low Stock Alert</span>
+              <span className="text-sm font-medium px-2 py-0.5 rounded-full" style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: lowStockProducts.length > 0 ? '#ef4444' : '#10b981'
+              }}>
                 {lowStockProducts.length}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-green-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+        <div className="p-6 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 relative overflow-hidden group" style={{ backgroundColor: '#2a2a2a', border: '1px solid #404040' }}>
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-gray-800/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
           <div className="flex items-center justify-between mb-4 relative">
-            <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Financials</h3>
-            <div className="p-1.5 bg-green-50 rounded-lg">
-              <DollarSign className="h-4 w-4 text-green-600" />
+            <h3 className="text-sm font-medium uppercase tracking-wider" style={{ color: '#b3b3b3' }}>Financials</h3>
+            <div className="p-1.5 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <DollarSign className="h-4 w-4" style={{ color: '#ebebeb', opacity: 0.7 }} />
             </div>
           </div>
           <div className="space-y-3">
             <div className="flex justify-between items-center group cursor-default">
-              <span className="text-sm text-gray-500">Revenue</span>
+              <span className="text-sm" style={{ color: '#808080' }}>Revenue</span>
               <span className="text-sm font-medium text-green-600 group-hover:text-green-700 transition-colors">{formatCurrency(totalRevenue)}</span>
             </div>
             <div className="flex justify-between items-center group cursor-default">
-              <span className="text-sm text-gray-500">Expenses</span>
+              <span className="text-sm" style={{ color: '#808080' }}>Expenses</span>
               <span className="text-sm font-medium text-red-600 group-hover:text-red-700 transition-colors">{formatCurrency(totalExpenses)}</span>
             </div>
             <div className="flex justify-between items-center group cursor-default">
-              <span className="text-sm text-gray-500">Gross Profit</span>
+              <span className="text-sm" style={{ color: '#808080' }}>Gross Profit</span>
               <span className={`text-sm font-medium transition-colors ${
                 totalNetProfit >= 0
                   ? 'text-green-600 group-hover:text-green-700'
@@ -250,35 +258,35 @@ export default function Dashboard() {
                 {formatCurrency(totalNetProfit)}
               </span>
             </div>
-            <div className="flex justify-between items-center pt-3 border-t border-gray-100">
-              <span className="text-sm text-gray-500">Profit Margin</span>
-              <span className={`text-sm font-medium px-2 py-0.5 rounded-full ${
-                totalRevenue > 0 && (totalNetProfit / totalRevenue) * 100 > 0
-                  ? 'bg-green-100 text-green-600'
-                  : 'bg-red-100 text-red-600'
-              }`}>
+            <div className="flex justify-between items-center pt-3" style={{ borderTop: '1px solid #404040' }}>
+              <span className="text-sm" style={{ color: '#808080' }}>Profit Margin</span>
+              <span className="text-sm font-medium px-2 py-0.5 rounded-full" style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: totalRevenue > 0 && (totalNetProfit / totalRevenue) * 100 > 0 ? '#10b981' : '#ef4444'
+              }}>
                 {totalRevenue > 0 ? `${((totalNetProfit / totalRevenue) * 100).toFixed(1)}%` : '0%'}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-purple-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+        <div className="p-6 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 relative overflow-hidden group" style={{ backgroundColor: '#2a2a2a', border: '1px solid #404040' }}>
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-gray-800/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
           <div className="flex items-center justify-between mb-4 relative">
-            <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">This Month</h3>
-            <div className="p-1.5 bg-purple-50 rounded-lg">
-              <TrendingUp className="h-4 w-4 text-purple-600" />
+            <h3 className="text-sm font-medium uppercase tracking-wider" style={{ color: '#b3b3b3' }}>This Month</h3>
+            <div className="p-1.5 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <TrendingUp className="h-4 w-4" style={{ color: '#ebebeb', opacity: 0.7 }} />
             </div>
           </div>
           <div className="space-y-3">
             <div className="flex justify-between items-center group cursor-default">
-              <span className="text-sm text-gray-500">Sales</span>
-              <span className="text-sm font-medium text-gray-900 group-hover:text-purple-600 transition-colors">{thisMonthsSales.length}</span>
+              <span className="text-sm" style={{ color: '#808080' }}>Sales</span>
+              <span className="text-sm font-medium group-hover:text-purple-600 transition-colors" style={{ color: '#ebebeb' }}>{thisMonthsSales.length}</span>
             </div>
             <div className="flex justify-between items-center group cursor-default">
-              <span className="text-sm text-gray-500">Avg Sale</span>
-              <span className="text-sm font-medium text-gray-900 group-hover:text-purple-600 transition-colors">
+              <span className="text-sm" style={{ color: '#808080' }}>Avg Sale</span>
+              <span className="text-sm font-medium group-hover:text-purple-600 transition-colors" style={{ color: '#ebebeb' }}>
                 {thisMonthsSales.length > 0
                   ? formatCurrency(monthlyRevenue / thisMonthsSales.length)
                   : formatCurrency(0)
@@ -286,16 +294,16 @@ export default function Dashboard() {
               </span>
             </div>
             <div className="flex justify-between items-center group cursor-default">
-              <span className="text-sm text-gray-500">Expenses</span>
-              <span className="text-sm font-medium text-gray-900 group-hover:text-purple-600 transition-colors">{thisMonthsExpenses.length}</span>
+              <span className="text-sm" style={{ color: '#808080' }}>Expenses</span>
+              <span className="text-sm font-medium group-hover:text-purple-600 transition-colors" style={{ color: '#ebebeb' }}>{thisMonthsExpenses.length}</span>
             </div>
-            <div className="flex justify-between items-center pt-3 border-t border-gray-100">
-              <span className="text-sm text-gray-500">Net Cash Flow</span>
-              <span className={`text-sm font-medium px-2 py-0.5 rounded-full ${
-                monthlyRevenue - monthlyExpenses > 0
-                  ? 'bg-green-100 text-green-600'
-                  : 'bg-red-100 text-red-600'
-              }`}>
+            <div className="flex justify-between items-center pt-3" style={{ borderTop: '1px solid #404040' }}>
+              <span className="text-sm" style={{ color: '#808080' }}>Net Cash Flow</span>
+              <span className="text-sm font-medium px-2 py-0.5 rounded-full" style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: monthlyRevenue - monthlyExpenses > 0 ? '#10b981' : '#ef4444'
+              }}>
                 {formatCurrency(monthlyRevenue - monthlyExpenses)}
               </span>
             </div>
@@ -305,19 +313,19 @@ export default function Dashboard() {
 
       {/* Low Stock Alert */}
       {lowStockProducts.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-orange-100 p-6 mb-8 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-orange-50/0 via-orange-50/20 to-orange-50/0 pointer-events-none"></div>
+        <div className="rounded-xl shadow-sm p-6 mb-8 hover:shadow-lg transition-all duration-300 relative overflow-hidden" style={{ backgroundColor: '#2a2a2a', border: '1px solid #404040' }}>
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-800/0 via-gray-800/10 to-gray-800/0 pointer-events-none"></div>
           <div
             className="flex items-center justify-between cursor-pointer select-none"
             onClick={() => setIsLowStockExpanded(!isLowStockExpanded)}
           >
             <div className="flex items-center">
-              <div className="p-2 bg-orange-50 rounded-lg mr-3">
-                <AlertTriangle className="h-5 w-5 text-orange-600" />
+              <div className="p-2 rounded-lg mr-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                <AlertTriangle className="h-5 w-5" style={{ color: '#ebebeb', opacity: 0.7 }} />
               </div>
               <div>
-                <h3 className="text-sm font-medium text-gray-900">Low Stock Alert</h3>
-                <p className="text-xs text-gray-500 mt-0.5">{lowStockProducts.length} items need restocking</p>
+                <h3 className="text-sm font-medium" style={{ color: '#ebebeb' }}>Low Stock Alert</h3>
+                <p className="text-xs mt-0.5" style={{ color: '#808080' }}>{lowStockProducts.length} items need restocking</p>
               </div>
             </div>
             <ChevronDown
@@ -339,16 +347,19 @@ export default function Dashboard() {
                 {lowStockProducts.map(product => (
                   <div
                     key={product.id}
-                    className="group bg-gray-50 hover:bg-orange-50 p-3 rounded-lg border border-gray-100 hover:border-orange-200 transition-all duration-200 cursor-default"
+                    className="group p-3 rounded-lg transition-all duration-200 cursor-default"
+                    style={{ backgroundColor: '#333333', border: '1px solid #404040' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3a3a3a'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333333'}
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <div className="font-medium text-gray-900 text-sm">{product.name}</div>
-                        <div className="text-xs text-gray-500 mt-0.5">{product.category}</div>
+                        <div className="font-medium text-sm" style={{ color: '#ebebeb' }}>{product.name}</div>
+                        <div className="text-xs mt-0.5" style={{ color: '#808080' }}>{product.category}</div>
                       </div>
                       <div className="text-right">
                         <div className="text-lg font-semibold text-orange-600">{product.currentStock}</div>
-                        <div className="text-xs text-gray-500">bags left</div>
+                        <div className="text-xs" style={{ color: '#808080' }}>bags left</div>
                       </div>
                     </div>
                   </div>
@@ -362,28 +373,30 @@ export default function Dashboard() {
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Sales */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-green-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+        <div className="rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 relative overflow-hidden group" style={{ backgroundColor: '#2a2a2a', border: '1px solid #404040' }}>
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-gray-800/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
           <div className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Daily Sales</h3>
-              <div className="p-1.5 bg-green-50 rounded-lg">
-                <TrendingUp className="h-4 w-4 text-green-600" />
+              <h3 className="text-sm font-medium uppercase tracking-wider" style={{ color: '#b3b3b3' }}>Daily Sales</h3>
+              <div className="p-1.5 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                <TrendingUp className="h-4 w-4" style={{ color: '#ebebeb', opacity: 0.7 }} />
               </div>
             </div>
             {recentSalesByDay.length > 0 ? (
               <div className="space-y-3">
                 {recentSalesByDay.map(day => (
-                  <div key={day.date} className="group flex justify-between items-center py-3 px-3 rounded-lg hover:bg-gray-50 transition-all duration-200 cursor-default">
+                  <div key={day.date} className="group flex justify-between items-center py-3 px-3 rounded-lg transition-all duration-200 cursor-default"
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#333333'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                     <div>
-                      <div className="font-medium text-gray-900 text-sm group-hover:text-blue-600 transition-colors">{formatDate(day.date)}</div>
-                      <div className="text-xs text-gray-500 mt-0.5">
+                      <div className="font-medium text-sm group-hover:text-blue-600 transition-colors" style={{ color: '#ebebeb' }}>{formatDate(day.date)}</div>
+                      <div className="text-xs mt-0.5" style={{ color: '#808080' }}>
                         {day.count} sale{day.count !== 1 ? 's' : ''} • Profit: {formatCurrency(day.profit)}
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="font-semibold text-green-600 text-sm">{formatCurrency(day.amount)}</div>
-                      <div className="text-xs text-gray-500">Daily Total</div>
+                      <div className="text-xs" style={{ color: '#808080' }}>Daily Total</div>
                     </div>
                   </div>
                 ))}
@@ -393,29 +406,31 @@ export default function Dashboard() {
                 <div className="text-gray-400 mb-2">
                   <TrendingUp className="h-8 w-8 mx-auto" />
                 </div>
-                <p className="text-sm text-gray-500">No sales recorded yet</p>
+                <p className="text-sm" style={{ color: '#808080' }}>No sales recorded yet</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Recent Expenses */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-red-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+        <div className="rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 relative overflow-hidden group" style={{ backgroundColor: '#2a2a2a', border: '1px solid #404040' }}>
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-gray-800/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
           <div className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Daily Expenses</h3>
-              <div className="p-1.5 bg-red-50 rounded-lg">
-                <TrendingDown className="h-4 w-4 text-red-600" />
+              <h3 className="text-sm font-medium uppercase tracking-wider" style={{ color: '#b3b3b3' }}>Daily Expenses</h3>
+              <div className="p-1.5 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                <TrendingDown className="h-4 w-4" style={{ color: '#ebebeb', opacity: 0.7 }} />
               </div>
             </div>
             {recentExpensesByDay.length > 0 ? (
               <div className="space-y-3">
                 {recentExpensesByDay.map(day => (
-                  <div key={day.date} className="group flex justify-between items-center py-3 px-3 rounded-lg hover:bg-gray-50 transition-all duration-200 cursor-default">
+                  <div key={day.date} className="group flex justify-between items-center py-3 px-3 rounded-lg transition-all duration-200 cursor-default"
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#333333'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                     <div>
-                      <div className="font-medium text-gray-900 text-sm group-hover:text-blue-600 transition-colors">{formatDate(day.date)}</div>
-                      <div className="text-xs text-gray-500 mt-0.5">
+                      <div className="font-medium text-sm group-hover:text-blue-600 transition-colors" style={{ color: '#ebebeb' }}>{formatDate(day.date)}</div>
+                      <div className="text-xs mt-0.5" style={{ color: '#808080' }}>
                         {day.count} expense{day.count !== 1 ? 's' : ''}
                       </div>
                     </div>
@@ -430,7 +445,7 @@ export default function Dashboard() {
                 <div className="text-gray-400 mb-2">
                   <TrendingDown className="h-8 w-8 mx-auto" />
                 </div>
-                <p className="text-sm text-gray-500">No expenses recorded yet</p>
+                <p className="text-sm" style={{ color: '#808080' }}>No expenses recorded yet</p>
               </div>
             )}
           </div>

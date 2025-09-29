@@ -77,8 +77,8 @@ export default function ExpensesPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Expense Management</h2>
-          <p className="text-sm text-gray-600 mt-1">Track business expenses and monitor spending by category</p>
+          <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#ebebeb' }}>Expense Management</h2>
+          <p style={{ fontSize: '14px', color: '#b3b3b3', marginTop: '4px' }}>Track business expenses and monitor spending by category</p>
         </div>
         <button
           onClick={handleAddExpense}
@@ -124,31 +124,31 @@ export default function ExpensesPage() {
           value={formatCurrency(totalExpenses || 0)}
           subtitle={`${expenses.length || 0} all time`}
           icon={DollarSign}
-          iconBgColor="bg-gray-100"
-          iconColor="text-gray-600"
+          iconBgColor=""
+          iconColor=""
         />
       </div>
 
       {/* Category Breakdown */}
       {Object.keys(categoryTotals).length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+        <div style={{ backgroundColor: '#2a2a2a', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', border: '1px solid #404040' }} className="mb-8">
           <div className="p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
               <div>
-                <h3 className="text-lg font-medium text-gray-900">This Month by Category</h3>
-                <p className="text-sm text-gray-600 mt-1">
+                <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#ebebeb' }}>This Month by Category</h3>
+                <p style={{ fontSize: '14px', color: '#b3b3b3', marginTop: '4px' }}>
                   {Object.keys(categoryTotals).length} categor{Object.keys(categoryTotals).length !== 1 ? 'ies' : 'y'} • {formatCurrency(monthlyTotal)}
                 </p>
               </div>
             </div>
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div style={{ backgroundColor: '#333333', borderRadius: '8px' }} className="p-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {Object.entries(categoryTotals)
                   .sort(([,a], [,b]) => b - a)
                   .map(([category, amount]) => (
-                    <div key={category} className="flex justify-between items-center p-3 bg-white rounded-md border border-gray-200">
-                      <span className="font-medium text-gray-900">{category}</span>
-                      <span className="text-lg font-bold text-gray-900">{formatCurrency(amount)}</span>
+                    <div key={category} className="flex justify-between items-center p-3 rounded-md" style={{ border: '1px solid #404040' }}>
+                      <span className="font-medium" style={{ color: '#ebebeb' }}>{category}</span>
+                      <span className="text-lg font-bold" style={{ color: '#ebebeb' }}>{formatCurrency(amount)}</span>
                     </div>
                   ))}
               </div>
@@ -158,7 +158,7 @@ export default function ExpensesPage() {
       )}
 
       {/* Expense History */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div style={{ backgroundColor: '#2a2a2a', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', border: '1px solid #404040' }}>
         <ExpenseHistory onEditExpense={handleEditExpense} />
       </div>
 

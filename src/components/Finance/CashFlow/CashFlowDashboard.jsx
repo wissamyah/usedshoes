@@ -83,15 +83,34 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h3 className="text-lg font-medium text-gray-900">Today's Cash Flow</h3>
-          <p className="text-sm text-gray-600 mt-1">
+          <h3 style={{ fontSize: '18px', fontWeight: '500', color: '#ebebeb' }}>Today's Cash Flow</h3>
+          <p style={{ fontSize: '14px', color: '#b3b3b3', marginTop: '4px' }}>
             {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
         {!isReconciled && (
           <button
             onClick={() => setShowReconciliation(true)}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '8px 16px',
+              border: 'none',
+              fontSize: '14px',
+              fontWeight: '500',
+              borderRadius: '6px',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+              color: 'white',
+              backgroundColor: '#3b82f6',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#2563eb';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#3b82f6';
+            }}
           >
             Reconcile Cash
           </button>
@@ -100,22 +119,22 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
       
       {/* Reconciliation Status */}
       {isReconciled ? (
-        <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center">
-          <Check className="h-5 w-5 text-green-600 mr-3" />
+        <div style={{ marginBottom: '24px', backgroundColor: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '8px', padding: '16px', display: 'flex', alignItems: 'center' }}>
+          <Check style={{ height: '20px', width: '20px', color: '#22c55e', marginRight: '12px' }} />
           <div>
-            <p className="text-sm font-medium text-green-900">Cash Reconciled</p>
-            <p className="text-sm text-green-700">
-              Today's cash has been reconciled. Actual: {formatCurrency(todaysReconciliation.actualCount)} | 
+            <p style={{ fontSize: '14px', fontWeight: '500', color: '#22c55e' }}>Cash Reconciled</p>
+            <p style={{ fontSize: '14px', color: '#16a34a' }}>
+              Today's cash has been reconciled. Actual: {formatCurrency(todaysReconciliation.actualCount)} |
               Discrepancy: {formatCurrency(todaysReconciliation.discrepancy)}
             </p>
           </div>
         </div>
       ) : (
-        <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center">
-          <AlertTriangle className="h-5 w-5 text-yellow-600 mr-3" />
+        <div style={{ marginBottom: '24px', backgroundColor: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '8px', padding: '16px', display: 'flex', alignItems: 'center' }}>
+          <AlertTriangle style={{ height: '20px', width: '20px', color: '#f59e0b', marginRight: '12px' }} />
           <div>
-            <p className="text-sm font-medium text-yellow-900">Pending Reconciliation</p>
-            <p className="text-sm text-yellow-700">
+            <p style={{ fontSize: '14px', fontWeight: '500', color: '#f59e0b' }}>Pending Reconciliation</p>
+            <p style={{ fontSize: '14px', color: '#d97706' }}>
               Please reconcile today's cash before closing
             </p>
           </div>
@@ -167,9 +186,9 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
       {/* Transaction Details */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Inflow Details - Grouped by Date */}
-        <div className="bg-white rounded-lg border border-gray-200">
-          <div className="px-4 py-3 border-b border-gray-200">
-            <h4 className="text-sm font-medium text-gray-900">Cash Inflows by Date</h4>
+        <div style={{ backgroundColor: '#2a2a2a', borderRadius: '8px', border: '1px solid #404040' }}>
+          <div style={{ padding: '12px 16px', borderBottom: '1px solid #404040' }}>
+            <h4 style={{ fontSize: '14px', fontWeight: '500', color: '#ebebeb' }}>Cash Inflows by Date</h4>
           </div>
           <div className="p-4">
             {(() => {
@@ -201,7 +220,7 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
               const recentDates = sortedDates.slice(0, 10);
 
               if (recentDates.length === 0) {
-                return <p className="text-sm text-gray-500">No cash inflows recorded</p>;
+                return <p style={{ fontSize: '14px', color: '#808080' }}>No cash inflows recorded</p>;
               }
 
               return (
@@ -212,18 +231,18 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
                     const isToday = date === today;
 
                     return (
-                      <div key={date} className={`flex justify-between items-center ${isToday ? 'bg-blue-50 p-2 rounded' : ''}`}>
+                      <div key={date} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', ...(isToday ? { backgroundColor: 'rgba(59, 130, 246, 0.1)', padding: '8px', borderRadius: '4px' } : {}) }}>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {formatDate(date)} {isToday && <span className="text-xs text-blue-600 ml-1">(Today)</span>}
+                          <p style={{ fontSize: '14px', fontWeight: '500', color: '#ebebeb' }}>
+                            {formatDate(date)} {isToday && <span style={{ fontSize: '12px', color: '#60a5fa', marginLeft: '4px' }}>(Today)</span>}
                           </p>
-                          <p className="text-xs text-gray-500">
+                          <p style={{ fontSize: '12px', color: '#b3b3b3' }}>
                             {inflow.count} transaction{inflow.count !== 1 ? 's' : ''}
                             {inflow.sales > 0 && ` • Sales: ${formatCurrency(inflow.sales)}`}
                             {inflow.injections > 0 && ` • Injections: ${formatCurrency(inflow.injections)}`}
                           </p>
                         </div>
-                        <span className="text-sm font-medium text-green-600">
+                        <span style={{ fontSize: '14px', fontWeight: '500', color: '#22c55e' }}>
                           +{formatCurrency(total)}
                         </span>
                       </div>
@@ -236,9 +255,9 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
         </div>
         
         {/* Outflow Details - Grouped by Date */}
-        <div className="bg-white rounded-lg border border-gray-200">
-          <div className="px-4 py-3 border-b border-gray-200">
-            <h4 className="text-sm font-medium text-gray-900">Cash Outflows by Date</h4>
+        <div style={{ backgroundColor: '#2a2a2a', borderRadius: '8px', border: '1px solid #404040' }}>
+          <div style={{ padding: '12px 16px', borderBottom: '1px solid #404040' }}>
+            <h4 style={{ fontSize: '14px', fontWeight: '500', color: '#ebebeb' }}>Cash Outflows by Date</h4>
           </div>
           <div className="p-4">
             {(() => {
@@ -270,7 +289,7 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
               const recentDates = sortedDates.slice(0, 10);
 
               if (recentDates.length === 0) {
-                return <p className="text-sm text-gray-500">No cash outflows recorded</p>;
+                return <p style={{ fontSize: '14px', color: '#808080' }}>No cash outflows recorded</p>;
               }
 
               return (
@@ -281,18 +300,18 @@ export default function CashFlowDashboard({ currentCashPosition, openingBalance 
                     const isToday = date === today;
 
                     return (
-                      <div key={date} className={`flex justify-between items-center ${isToday ? 'bg-red-50 p-2 rounded' : ''}`}>
+                      <div key={date} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', ...(isToday ? { backgroundColor: 'rgba(239, 68, 68, 0.1)', padding: '8px', borderRadius: '4px' } : {}) }}>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {formatDate(date)} {isToday && <span className="text-xs text-red-600 ml-1">(Today)</span>}
+                          <p style={{ fontSize: '14px', fontWeight: '500', color: '#ebebeb' }}>
+                            {formatDate(date)} {isToday && <span style={{ fontSize: '12px', color: '#ef4444', marginLeft: '4px' }}>(Today)</span>}
                           </p>
-                          <p className="text-xs text-gray-500">
+                          <p style={{ fontSize: '12px', color: '#b3b3b3' }}>
                             {outflow.count} transaction{outflow.count !== 1 ? 's' : ''}
                             {outflow.expenses > 0 && ` • Expenses: ${formatCurrency(outflow.expenses)}`}
                             {outflow.withdrawals > 0 && ` • Withdrawals: ${formatCurrency(outflow.withdrawals)}`}
                           </p>
                         </div>
-                        <span className="text-sm font-medium text-red-600">
+                        <span style={{ fontSize: '14px', fontWeight: '500', color: '#ef4444' }}>
                           -{formatCurrency(total)}
                         </span>
                       </div>

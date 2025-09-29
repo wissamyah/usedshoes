@@ -173,51 +173,169 @@ export default function ExpenseHistory({ onEditExpense }) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
-          <h3 className="text-lg font-medium text-gray-900">Expense History</h3>
-          <p className="text-sm text-gray-600 mt-1">
+          <h3 style={{ fontSize: '18px', fontWeight: '500', color: '#ebebeb' }}>Expense History</h3>
+          <p style={{ fontSize: '14px', color: '#b3b3b3', marginTop: '4px' }}>
             {filteredExpenses.length} expense{filteredExpenses.length !== 1 ? 's' : ''} • {formatCurrency(totalAmount)} total
           </p>
           {totalPages > 1 && (
-            <p className="text-xs text-gray-500 mt-1">
+            <p style={{ fontSize: '12px', color: '#808080', marginTop: '4px' }}>
               Page {currentPage}: {paginatedExpenses.length} expense{paginatedExpenses.length !== 1 ? 's' : ''} • {formatCurrency(pageAmount)}
             </p>
           )}
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-gray-50 rounded-lg p-4 sm:p-4 mb-6">
-        {/* Main filters grid */}
-        <div className="space-y-4 sm:space-y-3 mb-4">
-          {/* Search - full width with larger touch target on mobile */}
-          <div className="w-full">
-            <div className="relative">
-              <Search className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search expenses..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
+      {/* Enhanced Filters Section */}
+      <div style={{
+        backgroundColor: '#2a2a2a',
+        borderRadius: '12px',
+        border: '1px solid #404040',
+        marginBottom: '24px',
+        overflow: 'hidden'
+      }}>
+        {/* Filter Header */}
+        <div style={{
+          padding: '16px 20px',
+          borderBottom: '1px solid #404040',
+          backgroundColor: '#333333'
+        }}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Filter style={{ height: '18px', width: '18px', color: '#3b82f6' }} />
+              <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#ebebeb', margin: 0 }}>
+                Filter Expenses
+              </h4>
+            </div>
+            {(searchTerm || categoryFilter || dateFromFilter || dateToFilter) && (
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setCategoryFilter('');
+                  setDateFromFilter('');
+                  setDateToFilter('');
                   setCurrentPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-3 sm:py-2 text-base sm:text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+                style={{
+                  padding: '6px 12px',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  color: '#ef4444',
+                  backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                  e.target.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                  e.target.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                }}
+              >
+                Clear All
+              </button>
+            )}
           </div>
+        </div>
 
-          {/* Category and Sort Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* Filter Content */}
+        <div style={{ padding: '20px' }}>
+          {/* Top Row - Search and Category */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+            {/* Search Input */}
+            <div className="lg:col-span-2">
+              <label style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: '500',
+                color: '#b3b3b3',
+                marginBottom: '6px'
+              }}>
+                Search
+              </label>
+              <div className="relative">
+                <Search style={{
+                  height: '18px',
+                  width: '18px',
+                  position: 'absolute',
+                  left: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#808080'
+                }} />
+                <input
+                  type="text"
+                  placeholder="Search by description, notes, or container ID..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  style={{
+                    width: '100%',
+                    paddingLeft: '2.75rem',
+                    paddingRight: '12px',
+                    paddingTop: '12px',
+                    paddingBottom: '12px',
+                    border: '1px solid #404040',
+                    borderRadius: '8px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    fontSize: '14px',
+                    outline: 'none',
+                    transition: 'all 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#3b82f6';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#404040';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
+            </div>
+
             {/* Category Filter */}
-            <div className="sm:col-span-1">
-              <label className="block text-xs font-medium text-gray-600 mb-1 sm:hidden">Category</label>
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: '500',
+                color: '#b3b3b3',
+                marginBottom: '6px'
+              }}>
+                Category
+              </label>
               <select
                 value={categoryFilter}
                 onChange={(e) => {
                   setCategoryFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full px-3 py-2.5 sm:py-2 text-base sm:text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  fontSize: '14px',
+                  border: '1px solid #404040',
+                  borderRadius: '8px',
+                  backgroundColor: '#1c1c1c',
+                  color: '#ebebeb',
+                  outline: 'none',
+                  transition: 'all 0.2s'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#3b82f6';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#404040';
+                  e.target.style.boxShadow = 'none';
+                }}
               >
                 <option value="">All Categories</option>
                 {uniqueCategories.map(category => (
@@ -227,111 +345,237 @@ export default function ExpenseHistory({ onEditExpense }) {
                 ))}
               </select>
             </div>
+          </div>
 
-            {/* Sort Options */}
-            <div className="sm:col-span-1 flex gap-2">
-              <div className="flex-1">
-                <label className="block text-xs font-medium text-gray-600 mb-1 sm:hidden">Sort by</label>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-3 py-2.5 sm:py-2 text-base sm:text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="date">Date</option>
-                  <option value="amount">Amount</option>
-                  <option value="category">Category</option>
-                </select>
+          {/* Middle Row - Date Range */}
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{
+              display: 'block',
+              fontSize: '13px',
+              fontWeight: '500',
+              color: '#b3b3b3',
+              marginBottom: '8px'
+            }}>
+              Date Range
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  color: '#808080',
+                  marginBottom: '4px'
+                }}>
+                  From Date
+                </label>
+                <input
+                  type="date"
+                  value={dateFromFilter}
+                  onChange={(e) => {
+                    setDateFromFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    fontSize: '14px',
+                    border: '1px solid #404040',
+                    borderRadius: '8px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    outline: 'none',
+                    transition: 'all 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#3b82f6';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#404040';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
               </div>
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  color: '#808080',
+                  marginBottom: '4px'
+                }}>
+                  To Date
+                </label>
+                <input
+                  type="date"
+                  value={dateToFilter}
+                  onChange={(e) => {
+                    setDateToFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    fontSize: '14px',
+                    border: '1px solid #404040',
+                    borderRadius: '8px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    outline: 'none',
+                    transition: 'all 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#3b82f6';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#404040';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Quick Date Filters */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {[
+                { label: 'Today', value: 'today' },
+                { label: 'This Month', value: 'thisMonth' },
+                { label: 'Last Month', value: 'lastMonth' },
+                { label: 'Clear Dates', value: 'clear' }
+              ].map((filter) => (
+                <button
+                  key={filter.value}
+                  onClick={() => handleQuickFilter(filter.value)}
+                  style={{
+                    padding: '8px 12px',
+                    fontSize: '13px',
+                    fontWeight: '500',
+                    backgroundColor: filter.value === 'clear' ? 'rgba(107, 114, 128, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+                    border: `1px solid ${filter.value === 'clear' ? 'rgba(107, 114, 128, 0.3)' : 'rgba(59, 130, 246, 0.3)'}`,
+                    color: filter.value === 'clear' ? '#9ca3af' : '#60a5fa',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    textAlign: 'center'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (filter.value === 'clear') {
+                      e.target.style.backgroundColor = 'rgba(107, 114, 128, 0.2)';
+                      e.target.style.borderColor = 'rgba(107, 114, 128, 0.5)';
+                    } else {
+                      e.target.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+                      e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (filter.value === 'clear') {
+                      e.target.style.backgroundColor = 'rgba(107, 114, 128, 0.1)';
+                      e.target.style.borderColor = 'rgba(107, 114, 128, 0.3)';
+                    } else {
+                      e.target.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+                      e.target.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+                    }
+                  }}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom Row - Sort Options */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: '500',
+                color: '#b3b3b3',
+                marginBottom: '6px'
+              }}>
+                Sort By
+              </label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  fontSize: '14px',
+                  border: '1px solid #404040',
+                  borderRadius: '8px',
+                  backgroundColor: '#1c1c1c',
+                  color: '#ebebeb',
+                  outline: 'none',
+                  transition: 'all 0.2s'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#3b82f6';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#404040';
+                  e.target.style.boxShadow = 'none';
+                }}
+              >
+                <option value="date">Date</option>
+                <option value="amount">Amount</option>
+                <option value="category">Category</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: '500',
+                color: '#b3b3b3',
+                marginBottom: '6px'
+              }}>
+                Sort Order
+              </label>
               <button
                 onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-                className="px-4 sm:px-3 py-2.5 sm:py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base sm:text-sm font-medium mt-5 sm:mt-0"
-                title={`Sort ${sortOrder === 'desc' ? 'ascending' : 'descending'}`}
-              >
-                {sortOrder === 'desc' ? '↓' : '↑'}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Date Range Section */}
-        <div className="space-y-3">
-          <div className="border-t border-gray-200 pt-3 sm:hidden">
-            <label className="block text-xs font-medium text-gray-600 mb-2">Date Range</label>
-          </div>
-          {/* Date inputs - stack on mobile */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 gap-3">
-            <div className="col-span-1">
-              <label className="block text-xs font-medium text-gray-600 mb-1 sm:inline sm:mr-2">From</label>
-              <input
-                type="date"
-                value={dateFromFilter}
-                onChange={(e) => {
-                  setDateFromFilter(e.target.value);
-                  setCurrentPage(1);
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #404040',
+                  borderRadius: '8px',
+                  backgroundColor: '#1c1c1c',
+                  color: '#ebebeb',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  outline: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
                 }}
-                className="w-full px-3 py-2.5 sm:py-1.5 text-base sm:text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div className="col-span-1">
-              <label className="block text-xs font-medium text-gray-600 mb-1 sm:inline sm:mr-2">To</label>
-              <input
-                type="date"
-                value={dateToFilter}
-                onChange={(e) => {
-                  setDateToFilter(e.target.value);
-                  setCurrentPage(1);
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#333333';
+                  e.target.style.borderColor = '#3b82f6';
                 }}
-                className="w-full px-3 py-2.5 sm:py-1.5 text-base sm:text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-          </div>
-          
-          {/* Quick filters and clear button */}
-          <div className="space-y-3">
-            {/* Quick Filter Buttons */}
-            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
-              <button
-                onClick={() => handleQuickFilter('today')}
-                className="px-3 py-2.5 sm:py-1.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 touch-manipulation"
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = '#1c1c1c';
+                  e.target.style.borderColor = '#404040';
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#3b82f6';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#404040';
+                  e.target.style.boxShadow = 'none';
+                }}
               >
-                Today
-              </button>
-              <button
-                onClick={() => handleQuickFilter('thisMonth')}
-                className="px-3 py-2.5 sm:py-1.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 touch-manipulation"
-              >
-                This Month
-              </button>
-              <button
-                onClick={() => handleQuickFilter('lastMonth')}
-                className="px-3 py-2.5 sm:py-1.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 touch-manipulation"
-              >
-                Last Month
-              </button>
-              <button
-                onClick={() => handleQuickFilter('clear')}
-                className="px-3 py-2.5 sm:py-1.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 touch-manipulation"
-              >
-                Clear Dates
+                <span>{sortOrder === 'desc' ? 'Newest First' : 'Oldest First'}</span>
+                <span style={{ fontSize: '16px' }}>{sortOrder === 'desc' ? '↓' : '↑'}</span>
               </button>
             </div>
-
-            {/* Clear All Filters */}
-            {(searchTerm || categoryFilter || dateFromFilter || dateToFilter) && (
-              <div className="flex justify-center sm:justify-end">
-                <button
-                  onClick={() => {
-                    setSearchTerm('');
-                    setCategoryFilter('');
-                    setDateFromFilter('');
-                    setDateToFilter('');
-                  }}
-                  className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 underline"
-                >
-                  Clear All Filters
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -340,67 +584,119 @@ export default function ExpenseHistory({ onEditExpense }) {
       {filteredExpenses.length > 0 ? (
         <>
           {/* Table with horizontal scroll */}
-          <div className="overflow-x-auto rounded-t-lg border border-gray-200 border-b-0">
-            <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <div style={{ overflowX: 'auto', borderTopLeftRadius: '8px', borderTopRightRadius: '8px', border: '1px solid #404040', borderBottom: 0 }}>
+            <table style={{ minWidth: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
+            <thead style={{ backgroundColor: '#333333' }}>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Category
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Description
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Container
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody style={{ backgroundColor: '#2a2a2a' }}>
               {paginatedExpenses.map((expense) => (
-                <tr key={expense.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <tr
+                  key={expense.id}
+                  style={{
+                    transition: 'background-color 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#333333';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                >
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: '#ebebeb' }}>
                     {formatDate(expense.date)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      padding: '4px 10px',
+                      borderRadius: '9999px',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      backgroundColor: 'rgba(96, 165, 250, 0.1)',
+                      color: '#60a5fa'
+                    }}>
                       {expense.category}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900">{expense.description}</div>
+                  <td style={{ padding: '16px 24px' }}>
+                    <div style={{ fontSize: '14px', fontWeight: '500', color: '#ebebeb' }}>{expense.description}</div>
                     {expense.notes && (
-                      <div className="text-sm text-gray-500 truncate max-w-xs" title={expense.notes}>
+                      <div style={{ fontSize: '14px', color: '#b3b3b3', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '20rem' }} title={expense.notes}>
                         {expense.notes}
                       </div>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', fontWeight: '500', color: '#ebebeb' }}>
                     {formatCurrency(expense.amount)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: '#b3b3b3' }}>
                     {expense.containerId || '—'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', fontWeight: '500' }}>
                     <div className="flex space-x-2">
                       <button
                         onClick={() => onEditExpense(expense)}
-                        className="text-blue-600 hover:text-blue-900 p-1 rounded-md hover:bg-blue-50"
+                        style={{
+                          color: '#3b82f6',
+                          padding: '4px',
+                          borderRadius: '6px',
+                          backgroundColor: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+                          e.target.style.color = '#2563eb';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = 'transparent';
+                          e.target.style.color = '#3b82f6';
+                        }}
                         title="Edit expense"
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteExpense(expense)}
-                        className="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50"
+                        style={{
+                          color: '#ef4444',
+                          padding: '4px',
+                          borderRadius: '6px',
+                          backgroundColor: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                          e.target.style.color = '#dc2626';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = 'transparent';
+                          e.target.style.color = '#ef4444';
+                        }}
                         title="Delete expense"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -415,17 +711,24 @@ export default function ExpenseHistory({ onEditExpense }) {
 
         {/* Pagination Controls - Outside scrollable area */}
         {totalPages > 1 && (
-          <div className="bg-gray-50 px-4 py-3 border-t border-gray-200 rounded-b-lg">
+          <div style={{ backgroundColor: '#1c1c1c', padding: '12px 16px', borderTop: '1px solid #404040', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px' }}>
               {/* Mobile Pagination */}
               <div className="sm:hidden">
                 <div className="flex items-center justify-between mb-3">
-                  <div className="text-sm text-gray-700">
+                  <div style={{ fontSize: '14px', color: '#ebebeb' }}>
                     Page {currentPage} of {totalPages}
                   </div>
                   <select
                     value={itemsPerPage}
                     onChange={(e) => handleItemsPerPageChange(e.target.value)}
-                    className="px-2 py-1 text-sm border border-gray-300 rounded"
+                    style={{
+                      padding: '4px 8px',
+                      fontSize: '14px',
+                      border: '1px solid #404040',
+                      borderRadius: '4px',
+                      backgroundColor: '#2a2a2a',
+                      color: '#ebebeb'
+                    }}
                   >
                     <option value="10">10/page</option>
                     <option value="25">25/page</option>
@@ -436,31 +739,65 @@ export default function ExpenseHistory({ onEditExpense }) {
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      padding: '8px 12px',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: currentPage === 1 ? '#808080' : '#ebebeb',
+                      backgroundColor: '#2a2a2a',
+                      border: '1px solid #404040',
+                      borderRadius: '6px',
+                      opacity: currentPage === 1 ? 0.5 : 1,
+                      cursor: currentPage === 1 ? 'not-allowed' : 'pointer'
+                    }}
                   >
                     Previous
                   </button>
                   <div className="flex space-x-1">
                     <button
                       onClick={() => handlePageChange(1)}
-                      className={`px-2 py-1 text-sm rounded ${currentPage === 1 ? 'bg-blue-600 text-white' : 'text-gray-700'}`}
+                      style={{
+                        padding: '4px 8px',
+                        fontSize: '14px',
+                        borderRadius: '4px',
+                        backgroundColor: currentPage === 1 ? '#3b82f6' : 'transparent',
+                        color: currentPage === 1 ? 'white' : '#ebebeb',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
                     >
                       1
                     </button>
-                    {currentPage > 3 && <span className="px-1 text-gray-500">...</span>}
+                    {currentPage > 3 && <span style={{ padding: '4px', color: '#b3b3b3' }}>...</span>}
                     {currentPage > 2 && currentPage < totalPages - 1 && (
                       <button
                         onClick={() => handlePageChange(currentPage)}
-                        className="px-2 py-1 text-sm bg-blue-600 text-white rounded"
+                        style={{
+                          padding: '4px 8px',
+                          fontSize: '14px',
+                          backgroundColor: '#3b82f6',
+                          color: 'white',
+                          borderRadius: '4px',
+                          border: 'none',
+                          cursor: 'pointer'
+                        }}
                       >
                         {currentPage}
                       </button>
                     )}
-                    {currentPage < totalPages - 2 && <span className="px-1 text-gray-500">...</span>}
+                    {currentPage < totalPages - 2 && <span style={{ padding: '4px', color: '#b3b3b3' }}>...</span>}
                     {totalPages > 1 && (
                       <button
                         onClick={() => handlePageChange(totalPages)}
-                        className={`px-2 py-1 text-sm rounded ${currentPage === totalPages ? 'bg-blue-600 text-white' : 'text-gray-700'}`}
+                        style={{
+                          padding: '4px 8px',
+                          fontSize: '14px',
+                          borderRadius: '4px',
+                          backgroundColor: currentPage === totalPages ? '#3b82f6' : 'transparent',
+                          color: currentPage === totalPages ? 'white' : '#ebebeb',
+                          border: 'none',
+                          cursor: 'pointer'
+                        }}
                       >
                         {totalPages}
                       </button>
@@ -469,12 +806,22 @@ export default function ExpenseHistory({ onEditExpense }) {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      padding: '8px 12px',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: currentPage === totalPages ? '#808080' : '#ebebeb',
+                      backgroundColor: '#2a2a2a',
+                      border: '1px solid #404040',
+                      borderRadius: '6px',
+                      opacity: currentPage === totalPages ? 0.5 : 1,
+                      cursor: currentPage === totalPages ? 'not-allowed' : 'pointer'
+                    }}
                   >
                     Next
                   </button>
                 </div>
-                <div className="text-center text-xs text-gray-500 mt-2">
+                <div style={{ textAlign: 'center', fontSize: '12px', color: '#b3b3b3', marginTop: '8px' }}>
                   {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems}
                 </div>
               </div>
@@ -483,11 +830,27 @@ export default function ExpenseHistory({ onEditExpense }) {
               <div className="hidden sm:flex sm:justify-between sm:items-center">
                 {/* Items per page selector */}
                 <div className="flex items-center space-x-2">
-                  <label className="text-sm text-gray-700">Show:</label>
+                  <label style={{ fontSize: '14px', color: '#ebebeb' }}>Show:</label>
                   <select
                     value={itemsPerPage}
                     onChange={(e) => handleItemsPerPageChange(e.target.value)}
-                    className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    style={{
+                      padding: '4px 8px',
+                      fontSize: '14px',
+                      border: '1px solid #404040',
+                      borderRadius: '4px',
+                      backgroundColor: '#2a2a2a',
+                      color: '#ebebeb',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#3b82f6';
+                      e.target.style.boxShadow = '0 0 0 2px rgba(59, 130, 246, 0.2)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#404040';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   >
                     <option value="10">10</option>
                     <option value="25">25</option>
@@ -495,7 +858,7 @@ export default function ExpenseHistory({ onEditExpense }) {
                     <option value="100">100</option>
                     <option value={filteredExpenses.length}>All ({filteredExpenses.length})</option>
                   </select>
-                  <span className="text-sm text-gray-700">per page</span>
+                  <span style={{ fontSize: '14px', color: '#ebebeb' }}>per page</span>
                 </div>
                 
                 {/* Page navigation */}
@@ -504,66 +867,145 @@ export default function ExpenseHistory({ onEditExpense }) {
                   <button
                     onClick={() => handlePageChange(1)}
                     disabled={currentPage === 1}
-                    className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      padding: '6px',
+                      borderRadius: '4px',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      opacity: currentPage === 1 ? 0.5 : 1,
+                      cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (currentPage !== 1) {
+                        e.target.style.backgroundColor = '#333333';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'transparent';
+                    }}
                     title="First page"
                   >
-                    <ChevronsLeft className="h-4 w-4 text-gray-600" />
+                    <ChevronsLeft style={{ height: '16px', width: '16px', color: '#b3b3b3' }} />
                   </button>
-                  
+
                   {/* Previous page */}
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      padding: '6px',
+                      borderRadius: '4px',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      opacity: currentPage === 1 ? 0.5 : 1,
+                      cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (currentPage !== 1) {
+                        e.target.style.backgroundColor = '#333333';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'transparent';
+                    }}
                     title="Previous page"
                   >
-                    <ChevronLeft className="h-4 w-4 text-gray-600" />
+                    <ChevronLeft style={{ height: '16px', width: '16px', color: '#b3b3b3' }} />
                   </button>
-                  
+
                   {/* Page numbers */}
                   <div className="flex items-center space-x-1 mx-2">
                     {getPageNumbers().map((pageNum, index) => (
                       pageNum === '...' ? (
-                        <span key={`dots-${index}`} className="px-2 py-1 text-sm text-gray-500">...</span>
+                        <span key={`dots-${index}`} style={{ padding: '8px', fontSize: '14px', color: '#b3b3b3' }}>...</span>
                       ) : (
                         <button
                           key={pageNum}
                           onClick={() => handlePageChange(pageNum)}
-                          className={`px-3 py-1 text-sm rounded ${
-                            currentPage === pageNum
-                              ? 'bg-blue-600 text-white'
-                              : 'hover:bg-gray-200 text-gray-700'
-                          }`}
+                          style={{
+                            padding: '8px 12px',
+                            fontSize: '14px',
+                            borderRadius: '4px',
+                            backgroundColor: currentPage === pageNum ? '#3b82f6' : 'transparent',
+                            color: currentPage === pageNum ? 'white' : '#ebebeb',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'background-color 0.2s'
+                          }}
+                          onMouseEnter={(e) => {
+                            if (currentPage !== pageNum) {
+                              e.target.style.backgroundColor = '#333333';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (currentPage !== pageNum) {
+                              e.target.style.backgroundColor = 'transparent';
+                            }
+                          }}
                         >
                           {pageNum}
                         </button>
                       )
                     ))}
                   </div>
-                  
+
                   {/* Next page */}
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      padding: '6px',
+                      borderRadius: '4px',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      opacity: currentPage === totalPages ? 0.5 : 1,
+                      cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (currentPage !== totalPages) {
+                        e.target.style.backgroundColor = '#333333';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'transparent';
+                    }}
                     title="Next page"
                   >
-                    <ChevronRight className="h-4 w-4 text-gray-600" />
+                    <ChevronRight style={{ height: '16px', width: '16px', color: '#b3b3b3' }} />
                   </button>
-                  
+
                   {/* Last page */}
                   <button
                     onClick={() => handlePageChange(totalPages)}
                     disabled={currentPage === totalPages}
-                    className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      padding: '6px',
+                      borderRadius: '4px',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      opacity: currentPage === totalPages ? 0.5 : 1,
+                      cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (currentPage !== totalPages) {
+                        e.target.style.backgroundColor = '#333333';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'transparent';
+                    }}
                     title="Last page"
                   >
-                    <ChevronsRight className="h-4 w-4 text-gray-600" />
+                    <ChevronsRight style={{ height: '16px', width: '16px', color: '#b3b3b3' }} />
                   </button>
                 </div>
                 
                 {/* Page info */}
-                <div className="text-sm text-gray-700">
+                <div style={{ fontSize: '14px', color: '#ebebeb' }}>
                   Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} expense{totalItems !== 1 ? 's' : ''}
                 </div>
               </div>
@@ -571,10 +1013,10 @@ export default function ExpenseHistory({ onEditExpense }) {
         )}
         </>
       ) : (
-        <div className="text-center py-12">
-          <FileX className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No Expenses Found</h3>
-          <p className="text-gray-600 mb-4">
+        <div style={{ textAlign: 'center', padding: '48px 0' }}>
+          <FileX style={{ margin: '0 auto 16px', height: '48px', width: '48px', color: '#808080' }} />
+          <h3 style={{ fontSize: '18px', fontWeight: '500', color: '#ebebeb', marginBottom: '8px' }}>No Expenses Found</h3>
+          <p style={{ color: '#b3b3b3', marginBottom: '16px' }}>
             {searchTerm || categoryFilter || dateFromFilter || dateToFilter
               ? 'No expenses match your current filters.'
               : 'No expenses recorded.'}
@@ -587,7 +1029,19 @@ export default function ExpenseHistory({ onEditExpense }) {
                 setDateFromFilter('');
                 setDateToFilter('');
               }}
-              className="text-blue-600 hover:text-blue-500"
+              style={{
+                color: '#3b82f6',
+                backgroundColor: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'color 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.color = '#2563eb';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.color = '#3b82f6';
+              }}
             >
               Clear filters
             </button>

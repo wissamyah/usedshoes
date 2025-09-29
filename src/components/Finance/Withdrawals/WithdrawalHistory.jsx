@@ -56,8 +56,16 @@ export default function WithdrawalHistory({ availableCash }) {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h3 className="text-lg font-medium text-gray-900">Withdrawal History</h3>
-          <p className="text-sm text-gray-600 mt-1">
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: '500',
+            color: '#ebebeb'
+          }}>Withdrawal History</h3>
+          <p style={{
+            fontSize: '14px',
+            color: '#b3b3b3',
+            marginTop: '4px'
+          }}>
             {filteredWithdrawals.length} withdrawals • {formatCurrency(totalWithdrawals)} total
           </p>
         </div>
@@ -81,7 +89,12 @@ export default function WithdrawalHistory({ availableCash }) {
               placeholder="Search withdrawals..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md"
+              className="w-full pl-10 pr-4 py-2 rounded-md"
+              style={{
+                backgroundColor: '#3a3a3a',
+                border: '1px solid #525252',
+                color: '#ebebeb'
+              }}
             />
           </div>
         </div>
@@ -89,7 +102,12 @@ export default function WithdrawalHistory({ availableCash }) {
         <select
           value={filterPartner}
           onChange={(e) => setFilterPartner(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-md"
+          className="px-3 py-2 rounded-md"
+          style={{
+            backgroundColor: '#3a3a3a',
+            border: '1px solid #525252',
+            color: '#ebebeb'
+          }}
         >
           <option value="">All Partners</option>
           {partners.map(partner => (
@@ -102,7 +120,12 @@ export default function WithdrawalHistory({ availableCash }) {
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-md"
+          className="px-3 py-2 rounded-md"
+          style={{
+            backgroundColor: '#3a3a3a',
+            border: '1px solid #525252',
+            color: '#ebebeb'
+          }}
         >
           <option value="">All Types</option>
           <option value="personal">Personal Draw</option>
@@ -114,32 +137,42 @@ export default function WithdrawalHistory({ availableCash }) {
       
       {/* Withdrawals Table */}
       {filteredWithdrawals.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-          <p className="text-gray-500">No withdrawals found</p>
+        <div style={{
+          textAlign: 'center',
+          padding: '48px 0',
+          backgroundColor: '#3a3a3a',
+          border: '1px solid #525252',
+          borderRadius: '8px'
+        }}>
+          <p style={{ color: '#9ca3af' }}>No withdrawals found</p>
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full" style={{ backgroundColor: '#3a3a3a', borderRadius: '8px', overflow: 'hidden' }}>
+            <thead style={{ backgroundColor: '#2a2a2a' }}>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Partner</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Purpose</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: '#9ca3af' }}>Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: '#9ca3af' }}>Partner</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: '#9ca3af' }}>Amount</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: '#9ca3af' }}>Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: '#9ca3af' }}>Purpose</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase" style={{ color: '#9ca3af' }}>Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody>
               {filteredWithdrawals.map(withdrawal => (
-                <tr key={withdrawal.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <tr key={withdrawal.id} style={{ borderBottom: '1px solid #404040' }} onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#4a4a4a';
+                }} onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: '#ebebeb' }}>
                     {formatDate(withdrawal.date)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium" style={{ color: '#ebebeb' }}>
                     {withdrawal.partnerName}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium" style={{ color: '#ebebeb' }}>
                     {formatCurrency(withdrawal.amount)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -147,13 +180,14 @@ export default function WithdrawalHistory({ availableCash }) {
                       {withdrawal.type?.replace('_', ' ')}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
+                  <td className="px-6 py-4 text-sm" style={{ color: '#ebebeb' }}>
                     {withdrawal.purpose}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => handleDeleteWithdrawal(withdrawal)}
-                      className="text-red-600 hover:text-red-900"
+                      className="hover:text-red-400"
+                      style={{ color: '#9ca3af' }}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

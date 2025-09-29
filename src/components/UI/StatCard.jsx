@@ -25,43 +25,87 @@ export default function StatCard({
   const gradientBg = bgColors[iconBgColor] || iconBgColor;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100">
+    <div style={{
+      backgroundColor: '#2a2a2a',
+      borderRadius: '12px',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+      border: '1px solid #404040',
+      transition: 'all 0.2s ease'
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
+      e.currentTarget.style.transform = 'translateY(-1px)';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+      e.currentTarget.style.transform = 'translateY(0)';
+    }}
+    >
       <div className="p-6">
         <div className="flex items-center">
           <div className="flex-shrink-0">
-            <div className={`p-3 rounded-lg ${gradientBg}`}>
-              {Icon && <Icon className={`h-6 w-6 ${iconColor}`} />}
+            <div style={{
+              padding: '12px',
+              borderRadius: '8px',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              {Icon && <Icon style={{ height: '24px', width: '24px', color: '#ebebeb', opacity: 0.7 }} />}
             </div>
           </div>
           <div className="ml-5 w-0 flex-1">
             {loading ? (
               <div className="animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+                <div style={{
+                  height: '16px',
+                  backgroundColor: '#404040',
+                  borderRadius: '4px',
+                  width: '75%',
+                  marginBottom: '8px'
+                }}></div>
+                <div style={{
+                  height: '24px',
+                  backgroundColor: '#404040',
+                  borderRadius: '4px',
+                  width: '50%'
+                }}></div>
               </div>
             ) : (
               <>
-                <dt className="text-sm font-medium text-gray-600 truncate">
+                <dt style={{
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#b3b3b3',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap'
+                }}>
                   {title}
                 </dt>
                 <dd className="mt-1">
-                  <div className="text-2xl font-semibold text-gray-900">
+                  <div style={{
+                    fontSize: '24px',
+                    fontWeight: '600',
+                    color: '#ebebeb'
+                  }}>
                     {value}
                   </div>
                   {(subtitle || trendValue) && (
                     <div className="mt-1 flex items-center text-xs">
                       {trend && (
-                        <span className={`font-medium mr-1 ${
-                          trend === 'up' ? 'text-green-600' :
-                          trend === 'down' ? 'text-red-600' :
-                          'text-gray-500'
-                        }`}>
+                        <span style={{
+                          fontWeight: '500',
+                          marginRight: '4px',
+                          color: trend === 'up' ? '#22c55e' :
+                                 trend === 'down' ? '#ef4444' :
+                                 '#808080'
+                        }}>
                           {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'}
                           {trendValue && ` ${trendValue}`}
                         </span>
                       )}
                       {subtitle && (
-                        <span className="text-gray-500">{subtitle}</span>
+                        <span style={{ color: '#808080' }}>{subtitle}</span>
                       )}
                     </div>
                   )}

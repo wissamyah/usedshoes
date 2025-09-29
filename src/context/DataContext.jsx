@@ -896,6 +896,7 @@ function dataReducer(state, action) {
         id: `CI${currentCashInjectionId}`,
         createdAt: new Date().toISOString()
       };
+      console.log('Adding cash injection to state:', cashInjection);
       
       // If it's a capital contribution, update partner equity
       let updatedPartners = state.partners;
@@ -915,7 +916,7 @@ function dataReducer(state, action) {
         });
       }
       
-      return {
+      const newState = {
         ...state,
         cashInjections: [...state.cashInjections, cashInjection],
         partners: updatedPartners,
@@ -929,6 +930,8 @@ function dataReducer(state, action) {
         },
         unsavedChanges: true,
       };
+      console.log('Cash injection added to state. Total cash injections:', newState.cashInjections.length);
+      return newState;
     }
     
     case DATA_ACTIONS.UPDATE_CASH_INJECTION: {
@@ -1162,14 +1165,44 @@ export function DataProvider({ children }) {
     addExpense: (expenseData) => dispatch({ type: DATA_ACTIONS.ADD_EXPENSE, payload: expenseData }),
     deleteExpense: (expenseId) => dispatch({ type: DATA_ACTIONS.DELETE_EXPENSE, payload: expenseId }),
     
-    // Partner operations
-    addPartner: (partnerData) => dispatch({ type: DATA_ACTIONS.ADD_PARTNER, payload: partnerData }),
-    updatePartner: (id, data) => dispatch({ type: DATA_ACTIONS.UPDATE_PARTNER, payload: { id, data } }),
-    deletePartner: (partnerId) => dispatch({ type: DATA_ACTIONS.DELETE_PARTNER, payload: partnerId }),
-    
-    // Withdrawal operations
-    addWithdrawal: (withdrawalData) => dispatch({ type: DATA_ACTIONS.ADD_WITHDRAWAL, payload: withdrawalData }),
-    deleteWithdrawal: (withdrawalId) => dispatch({ type: DATA_ACTIONS.DELETE_WITHDRAWAL, payload: withdrawalId }),
+    // Partner operations with immediate save
+    addPartner: async (partnerData) => {
+      dispatch({ type: DATA_ACTIONS.ADD_PARTNER, payload: partnerData });
+      // Trigger immediate save after addition
+      if (saveCallbackRef.current) {
+        await saveCallbackRef.current();
+      }
+    },
+    updatePartner: async (id, data) => {
+      dispatch({ type: DATA_ACTIONS.UPDATE_PARTNER, payload: { id, data } });
+      // Trigger immediate save after update
+      if (saveCallbackRef.current) {
+        await saveCallbackRef.current();
+      }
+    },
+    deletePartner: async (partnerId) => {
+      dispatch({ type: DATA_ACTIONS.DELETE_PARTNER, payload: partnerId });
+      // Trigger immediate save after deletion
+      if (saveCallbackRef.current) {
+        await saveCallbackRef.current();
+      }
+    },
+
+    // Withdrawal operations with immediate save
+    addWithdrawal: async (withdrawalData) => {
+      dispatch({ type: DATA_ACTIONS.ADD_WITHDRAWAL, payload: withdrawalData });
+      // Trigger immediate save after addition
+      if (saveCallbackRef.current) {
+        await saveCallbackRef.current();
+      }
+    },
+    deleteWithdrawal: async (withdrawalId) => {
+      dispatch({ type: DATA_ACTIONS.DELETE_WITHDRAWAL, payload: withdrawalId });
+      // Trigger immediate save after deletion
+      if (saveCallbackRef.current) {
+        await saveCallbackRef.current();
+      }
+    },
     
     // Cash Flow operations
     addCashFlow: (cashFlowData) => dispatch({ type: DATA_ACTIONS.ADD_CASH_FLOW, payload: cashFlowData }),
@@ -1182,21 +1215,51 @@ export function DataProvider({ children }) {
       dispatch({ type: DATA_ACTIONS.ADD_CASH_INJECTION, payload: injectionData });
       // Trigger immediate save after addition
       if (saveCallbackRef.current) {
-        await saveCallbackRef.current();
+        try {
+          const result = await saveCallbackRef.current();
+          if (!result || !result.success) {
+            console.error('Cash injection save failed:', result?.error);
+            throw new Error(result?.error || 'Failed to save cash injection');
+          }
+          console.log('Cash injection saved successfully');
+        } catch (error) {
+          console.error('Cash injection save error:', error);
+          throw error;
+        }
       }
     },
     updateCashInjection: async (id, data) => {
       dispatch({ type: DATA_ACTIONS.UPDATE_CASH_INJECTION, payload: { id, ...data } });
       // Trigger immediate save after update
       if (saveCallbackRef.current) {
-        await saveCallbackRef.current();
+        try {
+          const result = await saveCallbackRef.current();
+          if (!result || !result.success) {
+            console.error('Cash injection update save failed:', result?.error);
+            throw new Error(result?.error || 'Failed to save cash injection update');
+          }
+          console.log('Cash injection updated and saved successfully');
+        } catch (error) {
+          console.error('Cash injection update save error:', error);
+          throw error;
+        }
       }
     },
     deleteCashInjection: async (injectionId) => {
       dispatch({ type: DATA_ACTIONS.DELETE_CASH_INJECTION, payload: injectionId });
       // Trigger immediate save after deletion
       if (saveCallbackRef.current) {
-        await saveCallbackRef.current();
+        try {
+          const result = await saveCallbackRef.current();
+          if (!result || !result.success) {
+            console.error('Cash injection deletion save failed:', result?.error);
+            throw new Error(result?.error || 'Failed to save cash injection deletion');
+          }
+          console.log('Cash injection deleted and saved successfully');
+        } catch (error) {
+          console.error('Cash injection deletion save error:', error);
+          throw error;
+        }
       }
     },
     

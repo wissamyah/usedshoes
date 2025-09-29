@@ -104,14 +104,22 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="py-6">
         <div className="sm:max-w-7xl sm:mx-auto sm:px-6 lg:px-8">
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Products & Inventory</h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <h2 style={{
+                fontSize: '24px',
+                fontWeight: 'bold',
+                color: '#ebebeb'
+              }}>Products & Inventory</h2>
+              <p style={{
+                fontSize: '14px',
+                color: '#b3b3b3',
+                marginTop: '4px'
+              }}>
                 Manage your product catalog and track inventory levels
               </p>
             </div>
@@ -164,24 +172,24 @@ export default function ProductsPage() {
           </div>
 
           {/* Filters and Search */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+          <div style={{ backgroundColor: '#2a2a2a', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', border: '1px solid #404040' }} className="mb-6">
             <div className="p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900">Filter Products</h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#ebebeb' }}>Filter Products</h3>
+                  <p style={{ fontSize: '14px', color: '#b3b3b3', marginTop: '4px' }}>
                     {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} found
                   </p>
                 </div>
               </div>
 
               {/* Filters Section */}
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div style={{ backgroundColor: '#333333', borderRadius: '8px' }} className="p-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                   {/* Search - full width on mobile, spans 2 columns on desktop */}
                   <div className="col-span-1 sm:col-span-2 lg:col-span-2">
                     <div className="relative">
-                      <svg className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#808080' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                       </svg>
                       <input
@@ -189,7 +197,28 @@ export default function ProductsPage() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search by name or description..."
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        style={{
+                          width: '100%',
+                          paddingLeft: '2.5rem',
+                          paddingRight: '1rem',
+                          paddingTop: '0.5rem',
+                          paddingBottom: '0.5rem',
+                          border: '1px solid #404040',
+                          borderRadius: '6px',
+                          fontSize: '14px',
+                          backgroundColor: '#1c1c1c',
+                          color: '#ebebeb',
+                          outline: 'none',
+                          transition: 'border-color 0.2s, box-shadow 0.2s'
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = '#60a5fa';
+                          e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = '#404040';
+                          e.target.style.boxShadow = 'none';
+                        }}
                       />
                     </div>
                   </div>
@@ -199,7 +228,25 @@ export default function ProductsPage() {
                     <select
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem 0.75rem',
+                        border: '1px solid #404040',
+                        borderRadius: '6px',
+                        fontSize: '14px',
+                        backgroundColor: '#1c1c1c',
+                        color: '#ebebeb',
+                        outline: 'none',
+                        transition: 'border-color 0.2s, box-shadow 0.2s'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = '#60a5fa';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = '#404040';
+                        e.target.style.boxShadow = 'none';
+                      }}
                     >
                       <option value="">All Categories</option>
                       {categories.map(category => (
@@ -215,21 +262,58 @@ export default function ProductsPage() {
                     <div className="flex rounded-md shadow-sm flex-1">
                       <button
                         onClick={() => setViewMode('list')}
-                        className={`flex-1 px-3 py-2 text-sm font-medium rounded-l-md border ${
-                          viewMode === 'list'
-                            ? 'bg-blue-50 border-blue-200 text-blue-700'
-                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
+                        style={{
+                          flex: 1,
+                          padding: '0.5rem 0.75rem',
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          borderTopLeftRadius: '6px',
+                          borderBottomLeftRadius: '6px',
+                          border: '1px solid #404040',
+                          backgroundColor: viewMode === 'list' ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                          color: viewMode === 'list' ? '#60a5fa' : '#b3b3b3',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (viewMode !== 'list') {
+                            e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (viewMode !== 'list') {
+                            e.target.style.backgroundColor = 'transparent';
+                          }
+                        }}
                       >
                         List
                       </button>
                       <button
                         onClick={() => setViewMode('grid')}
-                        className={`flex-1 px-3 py-2 text-sm font-medium rounded-r-md border-l-0 border ${
-                          viewMode === 'grid'
-                            ? 'bg-blue-50 border-blue-200 text-blue-700'
-                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
+                        style={{
+                          flex: 1,
+                          padding: '0.5rem 0.75rem',
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          borderTopRightRadius: '6px',
+                          borderBottomRightRadius: '6px',
+                          borderLeft: '0',
+                          border: '1px solid #404040',
+                          backgroundColor: viewMode === 'grid' ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                          color: viewMode === 'grid' ? '#60a5fa' : '#b3b3b3',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (viewMode !== 'grid') {
+                            e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (viewMode !== 'grid') {
+                            e.target.style.backgroundColor = 'transparent';
+                          }
+                        }}
                       >
                         Grid
                       </button>
@@ -241,14 +325,40 @@ export default function ProductsPage() {
                 <div className="flex flex-wrap gap-2 items-center">
                   {/* Quick Filter Buttons */}
                   <div className="flex flex-wrap gap-2">
-                    <label className="flex items-center px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer">
+                    <label
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '0.5rem 0.75rem',
+                        fontSize: '14px',
+                        backgroundColor: showLowStock ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                        border: '1px solid #404040',
+                        borderRadius: '6px',
+                        color: showLowStock ? '#60a5fa' : '#b3b3b3',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!showLowStock) {
+                          e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!showLowStock) {
+                          e.target.style.backgroundColor = 'transparent';
+                        }
+                      }}
+                    >
                       <input
                         type="checkbox"
                         checked={showLowStock}
                         onChange={(e) => setShowLowStock(e.target.checked)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2"
+                        style={{
+                          marginRight: '8px',
+                          accentColor: '#60a5fa'
+                        }}
                       />
-                      <span className="text-gray-700">Low Stock Only</span>
+                      <span>Low Stock Only</span>
                     </label>
                   </div>
 
@@ -256,7 +366,23 @@ export default function ProductsPage() {
                   {(searchQuery || selectedCategory || showLowStock) && (
                     <button
                       onClick={clearFilters}
-                      className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 underline sm:ml-auto"
+                      style={{
+                        padding: '0.5rem 0.75rem',
+                        fontSize: '14px',
+                        color: '#808080',
+                        textDecoration: 'underline',
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'color 0.2s',
+                        marginLeft: 'auto'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.color = '#ebebeb';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.color = '#808080';
+                      }}
                     >
                       Clear All
                     </button>
@@ -265,13 +391,13 @@ export default function ProductsPage() {
               </div>
 
               {/* Results Summary */}
-              <div className="mt-4 pt-4 border-t border-gray-200">
+              <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #404040' }}>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-700">
+                  <span style={{ fontSize: '14px', color: '#b3b3b3' }}>
                     Showing {filteredProducts.length} of {totalProducts} products
                   </span>
                   {filteredProducts.length > 0 && (
-                    <span className="text-sm text-gray-500">
+                    <span style={{ fontSize: '14px', color: '#808080' }}>
                       Total Value: ${totalValue.toLocaleString()}
                     </span>
                   )}
@@ -282,11 +408,11 @@ export default function ProductsPage() {
 
           {/* Products Display */}
           {filteredProducts.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-lg shadow">
+            <div className="text-center py-12" style={{ backgroundColor: '#2a2a2a', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
               <Package className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No products found</h3>
-              <p className="mt-1 text-sm text-gray-500">
-                {totalProducts === 0 
+              <h3 className="mt-2 text-sm font-medium" style={{ color: '#ebebeb' }}>No products found</h3>
+              <p className="mt-1 text-sm" style={{ color: '#b3b3b3' }}>
+                {totalProducts === 0
                   ? "No products added."
                   : "Try adjusting your search or filter criteria."
                 }

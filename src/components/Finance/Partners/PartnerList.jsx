@@ -89,8 +89,16 @@ export default function PartnerList() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h3 className="text-lg font-medium text-gray-900">Partners</h3>
-          <p className="text-sm text-gray-600 mt-1">
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: '500',
+            color: '#ebebeb'
+          }}>Partners</h3>
+          <p style={{
+            fontSize: '14px',
+            color: '#b3b3b3',
+            marginTop: '4px'
+          }}>
             Manage partner profiles and equity accounts
           </p>
         </div>
@@ -105,10 +113,16 @@ export default function PartnerList() {
       
       {/* Partners Grid */}
       {partners.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-300">
-          <User className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No Partners</h3>
-          <p className="mt-1 text-sm text-gray-500">
+        <div style={{
+          textAlign: 'center',
+          padding: '48px 0',
+          backgroundColor: '#3a3a3a',
+          border: '2px dashed #525252',
+          borderRadius: '8px'
+        }}>
+          <User className="mx-auto h-12 w-12" style={{ color: '#6b7280' }} />
+          <h3 className="mt-2 text-sm font-medium" style={{ color: '#ebebeb' }}>No Partners</h3>
+          <p className="mt-1 text-sm" style={{ color: '#9ca3af' }}>
             No partners added.
           </p>
         </div>
@@ -119,7 +133,17 @@ export default function PartnerList() {
             const isPositive = metrics.currentEquity >= 0;
             
             return (
-              <div key={partner.id} className="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+              <div key={partner.id} style={{
+                backgroundColor: '#3a3a3a',
+                border: '1px solid #525252',
+                borderRadius: '8px',
+                boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.2)',
+                transition: 'box-shadow 0.3s'
+              }} onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.4)';
+              }} onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 1px 3px 0 rgba(0, 0, 0, 0.2)';
+              }}>
                 <div className="p-6">
                   {/* Partner Header */}
                   <div className="flex items-start justify-between mb-4">
@@ -128,28 +152,31 @@ export default function PartnerList() {
                         <User className="h-6 w-6 text-blue-600" />
                       </div>
                       <div className="ml-4">
-                        <h4 className="text-lg font-medium text-gray-900">{partner.name}</h4>
-                        <p className="text-sm text-gray-500">{partner.ownershipPercent}% ownership</p>
+                        <h4 className="text-lg font-medium" style={{ color: '#ebebeb' }}>{partner.name}</h4>
+                        <p className="text-sm" style={{ color: '#9ca3af' }}>{partner.ownershipPercent}% ownership</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-1">
                       <button
                         onClick={() => handleViewPartner(partner)}
-                        className="text-blue-600 hover:text-blue-800 p-1"
+                        className="hover:text-blue-400 p-1"
+                        style={{ color: '#2563eb' }}
                         title="View details"
                       >
                         <TrendingUp className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleEditPartner(partner)}
-                        className="text-gray-600 hover:text-gray-800 p-1"
+                        className="hover:text-gray-400 p-1"
+                        style={{ color: '#9ca3af' }}
                         title="Edit partner"
                       >
                         <Edit2 className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDeletePartner(partner)}
-                        className="text-red-600 hover:text-red-800 p-1"
+                        className="hover:text-red-400 p-1"
+                        style={{ color: '#dc2626' }}
                         title="Delete partner"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -161,7 +188,7 @@ export default function PartnerList() {
                   <div className="space-y-3">
                     {/* Current Equity */}
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Current Equity</span>
+                      <span className="text-sm" style={{ color: '#b3b3b3' }}>Current Equity</span>
                       <div className="flex items-center">
                         <span className={`text-lg font-semibold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
                           {formatCurrency(metrics.currentEquity)}
@@ -173,27 +200,27 @@ export default function PartnerList() {
                         )}
                       </div>
                     </div>
-                    
+
                     {/* Initial Investment */}
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Initial Investment</span>
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm" style={{ color: '#b3b3b3' }}>Initial Investment</span>
+                      <span className="text-sm font-medium" style={{ color: '#ebebeb' }}>
                         {formatCurrency(partner.capitalAccount?.initialInvestment || 0)}
                       </span>
                     </div>
-                    
+
                     {/* Total Withdrawn */}
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Total Withdrawn</span>
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm" style={{ color: '#b3b3b3' }}>Total Withdrawn</span>
+                      <span className="text-sm font-medium" style={{ color: '#ebebeb' }}>
                         {formatCurrency(metrics.totalWithdrawn)}
                       </span>
                     </div>
-                    
+
                     {/* Last Withdrawal */}
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Last Withdrawal</span>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm" style={{ color: '#b3b3b3' }}>Last Withdrawal</span>
+                      <span className="text-sm" style={{ color: '#9ca3af' }}>
                         {formatDateOrNever(metrics.lastWithdrawal?.date)}
                       </span>
                     </div>
@@ -201,14 +228,14 @@ export default function PartnerList() {
                   
                   {/* Contact Info */}
                   {(partner.email || partner.phoneNumber) && (
-                    <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="mt-4 pt-4" style={{ borderTop: '1px solid #404040' }}>
                       {partner.email && (
-                        <p className="text-sm text-gray-600 truncate">
+                        <p className="text-sm truncate" style={{ color: '#b3b3b3' }}>
                           📧 {partner.email}
                         </p>
                       )}
                       {partner.phoneNumber && (
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm mt-1" style={{ color: '#b3b3b3' }}>
                           📱 {partner.phoneNumber}
                         </p>
                       )}

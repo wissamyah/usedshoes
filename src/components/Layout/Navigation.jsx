@@ -84,62 +84,62 @@ function Navigation({ activeTab, onTabChange }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const getColorClasses = (color, isActive) => {
-    const colors = {
-      blue: isActive ? 'bg-blue-50 text-blue-700 border-blue-500' : 'hover:bg-blue-50/50',
-      purple: isActive ? 'bg-purple-50 text-purple-700 border-purple-500' : 'hover:bg-purple-50/50',
-      indigo: isActive ? 'bg-indigo-50 text-indigo-700 border-indigo-500' : 'hover:bg-indigo-50/50',
-      green: isActive ? 'bg-green-50 text-green-700 border-green-500' : 'hover:bg-green-50/50',
-      red: isActive ? 'bg-red-50 text-red-700 border-red-500' : 'hover:bg-red-50/50',
-      yellow: isActive ? 'bg-yellow-50 text-yellow-700 border-yellow-500' : 'hover:bg-yellow-50/50',
-      cyan: isActive ? 'bg-cyan-50 text-cyan-700 border-cyan-500' : 'hover:bg-cyan-50/50',
-      gray: isActive ? 'bg-gray-100 text-gray-700 border-gray-500' : 'hover:bg-gray-50',
-    };
-    return colors[color] || colors.gray;
-  };
-
-  const getIconColorClasses = (color, isActive) => {
-    const colors = {
-      blue: isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-blue-500',
-      purple: isActive ? 'text-purple-600' : 'text-gray-400 group-hover:text-purple-500',
-      indigo: isActive ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-500',
-      green: isActive ? 'text-green-600' : 'text-gray-400 group-hover:text-green-500',
-      red: isActive ? 'text-red-600' : 'text-gray-400 group-hover:text-red-500',
-      yellow: isActive ? 'text-yellow-600' : 'text-gray-400 group-hover:text-yellow-500',
-      cyan: isActive ? 'text-cyan-600' : 'text-gray-400 group-hover:text-cyan-500',
-      gray: isActive ? 'text-gray-600' : 'text-gray-400 group-hover:text-gray-500',
-    };
-    return colors[color] || colors.gray;
-  };
 
   return (
     <>
       {/* Mobile menu button - sticky on mobile */}
-      <div className="sm:hidden sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
+      <div className="sm:hidden sticky top-0 z-40" style={{
+        backgroundColor: '#2a2a2a',
+        borderBottom: '1px solid #404040',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+      }}>
         <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center">
               {navigationTabs.find(tab => tab.id === activeTab)?.icon && (() => {
                 const Icon = navigationTabs.find(tab => tab.id === activeTab).icon;
                 const activeTabData = navigationTabs.find(tab => tab.id === activeTab);
                 return (
-                  <div className={`p-2 rounded-lg mr-3 bg-${activeTabData.color}-100`}>
-                    <Icon className={`h-5 w-5 text-${activeTabData.color}-600`} />
+                  <div style={{
+                    padding: '8px',
+                    borderRadius: '8px',
+                    marginRight: '12px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                  }}>
+                    <Icon style={{ height: '20px', width: '20px', color: '#60a5fa' }} />
                   </div>
                 );
               })()}
               <div>
-                <div className="text-sm font-semibold text-gray-900">
+                <div style={{
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: '#ebebeb'
+                }}>
                   {navigationTabs.find(tab => tab.id === activeTab)?.name || 'Menu'}
                 </div>
               </div>
             </div>
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`p-2 rounded-lg transition-all duration-200 ${
-                isMobileMenuOpen
-                  ? 'bg-gray-100 text-gray-700'
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
+              style={{
+                padding: '8px',
+                borderRadius: '8px',
+                transition: 'all 0.2s',
+                backgroundColor: isMobileMenuOpen ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                color: isMobileMenuOpen ? '#ebebeb' : '#b3b3b3',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                if (!isMobileMenuOpen) {
+                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isMobileMenuOpen) {
+                  e.target.style.backgroundColor = 'transparent';
+                }
+              }}
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
@@ -163,18 +163,43 @@ function Navigation({ activeTab, onTabChange }) {
         />
 
         {/* Slide-out menu */}
-        <div className={`fixed inset-0 z-50 bg-white overflow-y-auto transition-transform duration-300 ease-out ${
+        <div className={`fixed inset-0 z-50 overflow-y-auto transition-transform duration-300 ease-out ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}>
+        }`} style={{ backgroundColor: '#1c1c1c' }}>
             {/* Menu header */}
-            <div className="py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between px-4">
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Navigation</p>
+            <div style={{
+              padding: '12px 0',
+              borderBottom: '1px solid #404040',
+              background: 'linear-gradient(135deg, rgba(42, 42, 42, 0.95) 0%, rgba(28, 28, 28, 0.95) 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingLeft: '16px',
+              paddingRight: '16px'
+            }}>
+              <p style={{
+                fontSize: '12px',
+                fontWeight: '500',
+                color: '#808080',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>Navigation</p>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+                style={{
+                  padding: '6px',
+                  borderRadius: '8px',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  color: '#b3b3b3',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
                 aria-label="Close menu"
               >
-                <X className="h-5 w-5 text-gray-600" />
+                <X className="h-5 w-5" />
               </button>
             </div>
 
@@ -184,6 +209,23 @@ function Navigation({ activeTab, onTabChange }) {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
 
+                // Get tab-specific colors for mobile menu
+                const getTabColors = (color) => {
+                  const colorMap = {
+                    blue: { active: '#3b82f6', bg: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1))', icon: '#60a5fa' },
+                    purple: { active: '#8b5cf6', bg: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.1))', icon: '#a78bfa' },
+                    indigo: { active: '#6366f1', bg: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.1))', icon: '#818cf8' },
+                    green: { active: '#10b981', bg: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1))', icon: '#34d399' },
+                    red: { active: '#ef4444', bg: 'linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1))', icon: '#f87171' },
+                    yellow: { active: '#f59e0b', bg: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1))', icon: '#fbbf24' },
+                    cyan: { active: '#06b6d4', bg: 'linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(6, 182, 212, 0.1))', icon: '#22d3ee' },
+                    gray: { active: '#6b7280', bg: 'linear-gradient(135deg, rgba(107, 114, 128, 0.2), rgba(107, 114, 128, 0.1))', icon: '#9ca3af' }
+                  };
+                  return colorMap[color] || colorMap.gray;
+                };
+
+                const colors = getTabColors(tab.color);
+
                 return (
                   <div key={tab.id}>
                     <button
@@ -191,35 +233,87 @@ function Navigation({ activeTab, onTabChange }) {
                         onTabChange(tab.id);
                         setIsMobileMenuOpen(false);
                       }}
-                      className={`w-full group flex items-center py-4 text-left transition-all duration-200 relative overflow-hidden ${
-                        isActive
-                          ? 'bg-gradient-to-r from-white to-gray-50'
-                          : 'hover:bg-gray-50'
-                      } px-4`}
+                      className="w-full group flex items-center py-4 text-left transition-all duration-200 relative overflow-hidden px-4"
+                      style={{
+                        background: isActive
+                          ? 'linear-gradient(to right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))'
+                          : 'transparent'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+
+                          // Brighten icon on hover
+                          const icon = e.currentTarget.querySelector('.tab-icon');
+                          if (icon) {
+                            icon.style.color = colors.icon;
+                          }
+
+                          // Brighten text on hover
+                          const textElement = e.currentTarget.querySelector('.tab-text');
+                          if (textElement) {
+                            textElement.style.color = '#ebebeb';
+                          }
+
+                          // Brighten icon container on hover
+                          const iconContainer = e.currentTarget.querySelector('.icon-container');
+                          if (iconContainer) {
+                            iconContainer.style.background = 'rgba(255, 255, 255, 0.15)';
+                          }
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.background = 'transparent';
+
+                          // Reset icon color
+                          const icon = e.currentTarget.querySelector('.tab-icon');
+                          if (icon) {
+                            icon.style.color = '#808080';
+                          }
+
+                          // Reset text color
+                          const textElement = e.currentTarget.querySelector('.tab-text');
+                          if (textElement) {
+                            textElement.style.color = '#b3b3b3';
+                          }
+
+                          // Reset icon container
+                          const iconContainer = e.currentTarget.querySelector('.icon-container');
+                          if (iconContainer) {
+                            iconContainer.style.background = 'rgba(255, 255, 255, 0.1)';
+                          }
+                        }
+                      }}
                     >
                       {/* Active indicator bar */}
                       {isActive && (
-                        <div className={`absolute left-0 top-0 bottom-0 w-1 bg-${tab.color}-500`} />
+                        <div className="absolute left-0 top-0 bottom-0 w-1" style={{
+                          backgroundColor: colors.active
+                        }} />
                       )}
 
                       {/* Icon container */}
-                      <div className={`relative p-2.5 rounded-xl mr-4 transition-all duration-300 ${
-                        isActive
-                          ? `bg-gradient-to-br from-${tab.color}-100 to-${tab.color}-50 shadow-sm`
-                          : 'bg-gray-100 group-hover:bg-gray-200'
-                      }`}>
-                        <Icon className={`h-5 w-5 transition-colors duration-200 ${
-                          isActive
-                            ? `text-${tab.color}-600`
-                            : 'text-gray-500 group-hover:text-gray-700'
-                        }`} />
+                      <div
+                        className="relative p-2.5 rounded-xl mr-4 transition-all duration-300 icon-container"
+                        style={{
+                          background: isActive ? colors.bg : 'rgba(255, 255, 255, 0.1)',
+                          boxShadow: isActive ? '0 1px 3px rgba(0, 0, 0, 0.2)' : 'none'
+                        }}
+                      >
+                        <Icon
+                          className="h-5 w-5 transition-colors duration-200 tab-icon"
+                          style={{
+                            color: isActive ? colors.icon : '#808080'
+                          }}
+                        />
                       </div>
 
                       {/* Text content */}
                       <div className="flex-1">
-                        <div className={`font-medium text-sm ${
-                          isActive ? 'text-gray-900' : 'text-gray-700 group-hover:text-gray-900'
-                        }`}>
+                        <div className="font-medium text-sm tab-text" style={{
+                          color: isActive ? '#ebebeb' : '#b3b3b3'
+                        }}>
                           {tab.name}
                         </div>
                       </div>
@@ -228,7 +322,7 @@ function Navigation({ activeTab, onTabChange }) {
 
                     {/* Separator - except for last item */}
                     {index < navigationTabs.length - 1 && (
-                      <div className="border-b border-gray-100" />
+                      <div style={{ borderBottom: '1px solid #404040' }} />
                     )}
                   </div>
                 );
@@ -239,35 +333,66 @@ function Navigation({ activeTab, onTabChange }) {
       </div>
 
       {/* Desktop navigation */}
-      <nav className={`hidden sm:block sticky top-0 z-40 transition-all duration-300 ${
-        isScrolled ? 'bg-white/95 backdrop-blur-sm shadow-md' : 'bg-white'
-      }`}>
-        <div className="border-b border-gray-200">
+      <nav className="hidden sm:block sticky top-0 z-40" style={{
+        backgroundColor: isScrolled ? 'rgba(42, 42, 42, 0.95)' : '#2a2a2a',
+        backdropFilter: isScrolled ? 'blur(8px)' : 'none',
+        boxShadow: isScrolled ? '0 4px 6px -1px rgba(0, 0, 0, 0.3)' : 'none',
+        transition: 'all 0.3s'
+      }}>
+        <div style={{ borderBottom: '1px solid #404040' }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex overflow-x-auto scrollbar-hide">
             {navigationTabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
 
+              // Get tab-specific colors for dark theme
+              const getTabColors = (color) => {
+                const colorMap = {
+                  blue: { active: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)', icon: '#60a5fa' },
+                  purple: { active: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.1)', icon: '#a78bfa' },
+                  indigo: { active: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)', icon: '#818cf8' },
+                  green: { active: '#10b981', bg: 'rgba(16, 185, 129, 0.1)', icon: '#34d399' },
+                  red: { active: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)', icon: '#f87171' },
+                  yellow: { active: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)', icon: '#fbbf24' },
+                  cyan: { active: '#06b6d4', bg: 'rgba(6, 182, 212, 0.1)', icon: '#22d3ee' },
+                  gray: { active: '#6b7280', bg: 'rgba(107, 114, 128, 0.1)', icon: '#9ca3af' }
+                };
+                return colorMap[color] || colorMap.gray;
+              };
+
+              const colors = getTabColors(tab.color);
+
               return (
                 <button
                   key={tab.id}
                   onClick={() => onTabChange(tab.id)}
-                  className={`group relative flex items-center py-4 px-6 font-medium text-sm whitespace-nowrap transition-all duration-200 border-b-3 ${
-                    isActive
-                      ? `border-${tab.color}-500 text-gray-900 bg-gradient-to-t from-${tab.color}-50/50 to-transparent`
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50/50'
-                  }`}
+                  className="group relative flex items-center py-4 px-6 font-medium text-sm whitespace-nowrap transition-all duration-200"
+                  style={{
+                    borderBottom: isActive ? `3px solid ${colors.active}` : '3px solid transparent',
+                    color: isActive ? '#ebebeb' : '#b3b3b3',
+                    background: isActive ? colors.bg : 'transparent'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.target.style.color = '#ebebeb';
+                      e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.target.style.color = '#b3b3b3';
+                      e.target.style.backgroundColor = 'transparent';
+                    }
+                  }}
                 >
-                  <div className={`relative flex items-center`}>
-                    <div className={`p-1.5 rounded-lg mr-2.5 transition-all duration-200 ${
-                      isActive
-                        ? `bg-${tab.color}-100`
-                        : 'bg-transparent group-hover:bg-gray-100'
-                    }`}>
-                      <Icon className={`h-4 w-4 transition-colors duration-200 ${
-                        getIconColorClasses(tab.color, isActive)
-                      }`} />
+                  <div className="relative flex items-center">
+                    <div className="p-1.5 rounded-lg mr-2.5 transition-all duration-200" style={{
+                      backgroundColor: isActive ? colors.bg : 'transparent'
+                    }}>
+                      <Icon className="h-4 w-4 transition-colors duration-200" style={{
+                        color: isActive ? colors.icon : '#808080'
+                      }} />
                     </div>
                     <span>
                       {tab.name}

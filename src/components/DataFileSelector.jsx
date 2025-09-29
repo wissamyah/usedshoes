@@ -117,50 +117,157 @@ export default function DataFileSelector() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '8px 12px',
+          fontSize: '14px',
+          fontWeight: '500',
+          borderRadius: '6px',
+          border: '1px solid #404040',
+          backgroundColor: '#1c1c1c',
+          color: '#ebebeb',
+          cursor: 'pointer',
+          transition: 'all 0.2s',
+          outline: 'none'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = '#2a2a2a';
+          e.currentTarget.style.borderColor = '#555555';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = '#1c1c1c';
+          e.currentTarget.style.borderColor = '#404040';
+        }}
+        onFocus={(e) => {
+          e.currentTarget.style.boxShadow = '0 0 0 2px rgba(59, 130, 246, 0.2)';
+          e.currentTarget.style.borderColor = '#3b82f6';
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.boxShadow = 'none';
+          e.currentTarget.style.borderColor = '#404040';
+        }}
       >
-        <Database className="h-4 w-4" />
-        <span>{currentDataFile || 'data.json'}</span>
-        <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <Database style={{
+          height: '16px',
+          width: '16px',
+          color: '#b3b3b3',
+          pointerEvents: 'none'
+        }} />
+        <span style={{ pointerEvents: 'none' }}>{currentDataFile || 'data.json'}</span>
+        <ChevronDown style={{
+          height: '16px',
+          width: '16px',
+          color: '#b3b3b3',
+          transition: 'transform 0.2s',
+          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+          pointerEvents: 'none'
+        }} />
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200">
-          <div className="p-2">
-            <div className="px-2 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <div style={{
+          position: 'absolute',
+          bottom: '100%',
+          left: 0,
+          marginBottom: '8px',
+          width: '256px',
+          backgroundColor: '#2a2a2a',
+          borderRadius: '8px',
+          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
+          border: '1px solid #404040',
+          zIndex: 999999
+        }}>
+          <div style={{ padding: '8px' }}>
+            <div style={{
+              padding: '8px',
+              fontSize: '12px',
+              fontWeight: '600',
+              color: '#808080',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em'
+            }}>
               Data Files
             </div>
             
             {loading ? (
-              <div className="px-2 py-3 text-sm text-gray-500">Loading...</div>
+              <div style={{ padding: '8px 12px', fontSize: '14px', color: '#b3b3b3' }}>Loading...</div>
             ) : error ? (
-              <div className="px-2 py-3 text-sm text-red-600 flex items-center gap-2">
-                <AlertCircle className="h-4 w-4" />
+              <div style={{
+                padding: '8px 12px',
+                fontSize: '14px',
+                color: '#ef4444',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <AlertCircle style={{ height: '16px', width: '16px' }} />
                 {error}
               </div>
             ) : (
-              <div className="mt-1 max-h-60 overflow-y-auto">
+              <div style={{ marginTop: '4px', maxHeight: '240px', overflowY: 'auto' }}>
                 {availableFiles.map((file) => (
                   <button
                     key={file}
                     onClick={() => handleSelectFile(file)}
-                    className="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded flex items-center justify-between group"
+                    style={{
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: '8px 12px',
+                      fontSize: '14px',
+                      color: '#ebebeb',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'transparent';
+                    }}
                   >
                     <span>{file}</span>
                     {file === currentDataFile && (
-                      <Check className="h-4 w-4 text-green-600" />
+                      <Check style={{ height: '16px', width: '16px', color: '#22c55e' }} />
                     )}
                   </button>
                 ))}
               </div>
             )}
 
-            <div className="mt-2 pt-2 border-t border-gray-200">
+            <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #404040' }}>
               <button
                 onClick={() => setShowNewFileDialog(true)}
-                className="w-full text-left px-2 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded flex items-center gap-2"
+                style={{
+                  width: '100%',
+                  textAlign: 'left',
+                  padding: '8px 12px',
+                  fontSize: '14px',
+                  color: '#3b82f6',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                }}
               >
-                <Plus className="h-4 w-4" />
+                <Plus style={{ height: '16px', width: '16px' }} />
                 Create New Data File
               </button>
             </div>
@@ -170,12 +277,34 @@ export default function DataFileSelector() {
 
       {/* New File Dialog */}
       {showNewFileDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-96">
-            <h3 className="text-lg font-semibold mb-4">Create New Data File</h3>
-            
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 999999
+        }}>
+          <div style={{
+            backgroundColor: '#2a2a2a',
+            borderRadius: '8px',
+            padding: '24px',
+            width: '384px',
+            border: '1px solid #404040'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px', color: '#ebebeb' }}>
+              Create New Data File
+            </h3>
+
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#b3b3b3',
+                marginBottom: '8px'
+              }}>
                 File Name
               </label>
               <input
@@ -183,35 +312,108 @@ export default function DataFileSelector() {
                 value={newFileName}
                 onChange={(e) => setNewFileName(e.target.value)}
                 placeholder="e.g., data-2 or inventory-2025"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  fontSize: '14px',
+                  border: '1px solid #404040',
+                  borderRadius: '6px',
+                  backgroundColor: '#1c1c1c',
+                  color: '#ebebeb',
+                  outline: 'none'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#3b82f6';
+                  e.target.style.boxShadow = '0 0 0 2px rgba(59, 130, 246, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#404040';
+                  e.target.style.boxShadow = 'none';
+                }}
                 disabled={creating}
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p style={{ marginTop: '4px', fontSize: '12px', color: '#808080' }}>
                 .json will be added automatically if not provided
               </p>
             </div>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+              <div style={{
+                marginBottom: '16px',
+                padding: '12px',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: '6px',
+                fontSize: '14px',
+                color: '#ef4444'
+              }}>
                 {error}
               </div>
             )}
 
-            <div className="flex gap-3 justify-end">
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
               <button
                 onClick={() => {
                   setShowNewFileDialog(false);
                   setNewFileName('');
                   setError(null);
                 }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#b3b3b3',
+                  backgroundColor: 'transparent',
+                  border: '1px solid #404040',
+                  borderRadius: '6px',
+                  cursor: creating ? 'not-allowed' : 'pointer',
+                  opacity: creating ? '0.5' : '1',
+                  transition: 'all 0.2s',
+                  outline: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  if (!creating) {
+                    e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                    e.target.style.borderColor = '#555555';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!creating) {
+                    e.target.style.backgroundColor = 'transparent';
+                    e.target.style.borderColor = '#404040';
+                  }
+                }}
                 disabled={creating}
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateNewFile}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ffffff',
+                  backgroundColor: '#3b82f6',
+                  border: '1px solid #3b82f6',
+                  borderRadius: '6px',
+                  cursor: (creating || !newFileName.trim()) ? 'not-allowed' : 'pointer',
+                  opacity: (creating || !newFileName.trim()) ? '0.5' : '1',
+                  transition: 'all 0.2s',
+                  outline: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  if (!creating && newFileName.trim()) {
+                    e.target.style.backgroundColor = '#2563eb';
+                    e.target.style.borderColor = '#2563eb';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!creating && newFileName.trim()) {
+                    e.target.style.backgroundColor = '#3b82f6';
+                    e.target.style.borderColor = '#3b82f6';
+                  }
+                }}
                 disabled={creating || !newFileName.trim()}
               >
                 {creating ? 'Creating...' : 'Create File'}

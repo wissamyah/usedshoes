@@ -89,7 +89,7 @@ function Layout() {
   const ActiveComponent = components[activeTab];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: '#1c1c1c' }}>
       <Header
         onSyncData={handleSyncData}
         syncStatus={syncStatus}

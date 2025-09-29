@@ -185,12 +185,12 @@ export default function SalesHistory({ onEditSale }) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
-          <h3 className="text-lg font-medium text-gray-900">Sales History</h3>
-          <p className="text-sm text-gray-600 mt-1">
+          <h3 style={{ fontSize: '18px', fontWeight: '500', color: '#ebebeb' }}>Sales History</h3>
+          <p style={{ fontSize: '14px', color: '#b3b3b3', marginTop: '4px' }}>
             {filteredSales.length} total sales • {formatCurrency(totalRevenue)} total revenue • {formatCurrency(totalProfit)} total profit
           </p>
           {totalPages > 1 && (
-            <p className="text-xs text-gray-500 mt-1">
+            <p style={{ fontSize: '12px', color: '#808080', marginTop: '4px' }}>
               Page {currentPage}: {paginatedSales.length} sales • {formatCurrency(pageRevenue)} revenue • {formatCurrency(pageProfit)} profit
             </p>
           )}
@@ -198,13 +198,13 @@ export default function SalesHistory({ onEditSale }) {
       </div>
 
       {/* Enhanced Filters Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+      <div style={{ backgroundColor: '#333333', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', border: '1px solid #404040' }} className="overflow-hidden mb-6">
         {/* Header */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+        <div style={{ backgroundColor: '#2a2a2a', borderBottom: '1px solid #404040' }} className="px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Filter className="h-4 sm:h-5 w-4 sm:w-5 text-gray-600" />
-              <h3 className="text-sm sm:text-base font-semibold text-gray-900">Sales Filters</h3>
+              <Filter style={{ height: '16px', width: '16px', color: '#b3b3b3' }} className="sm:h-5 sm:w-5" />
+              <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#ebebeb' }} className="sm:text-base">Sales Filters</h3>
             </div>
             {(searchTerm || dateFilter || startDate || endDate) && (
               <button
@@ -215,9 +215,23 @@ export default function SalesHistory({ onEditSale }) {
                   setEndDate('');
                   setCurrentPage(1);
                 }}
-                className="text-xs sm:text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1 transition-colors"
+                style={{
+                  fontSize: '12px',
+                  color: '#808080',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'color 0.2s'
+                }}
+                className="sm:text-sm flex items-center gap-1"
+                onMouseEnter={(e) => {
+                  e.target.style.color = '#ebebeb';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.color = '#808080';
+                }}
               >
-                <X className="h-3 sm:h-4 w-3 sm:w-4" />
+                <X style={{ height: '12px', width: '12px' }} className="sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">Clear all</span>
               </button>
             )}
@@ -230,17 +244,39 @@ export default function SalesHistory({ onEditSale }) {
             {/* Search Bar */}
             <div>
               <div className="flex items-center mb-2">
-                <Search className="h-4 w-4 text-gray-500 mr-2" />
-                <label className="text-sm font-medium text-gray-700">Search</label>
+                <Search style={{ height: '16px', width: '16px', color: '#808080', marginRight: '8px' }} />
+                <label style={{ fontSize: '14px', fontWeight: '500', color: '#b3b3b3' }}>Search</label>
               </div>
               <div className="relative">
-                <Search className="h-4 sm:h-5 w-4 sm:w-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Search style={{ height: '16px', width: '16px', color: '#808080' }} className="sm:h-5 sm:w-5 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Search products or notes..."
                   value={searchTerm}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="w-full pl-9 sm:pl-10 pr-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm bg-white"
+                  style={{
+                    width: '100%',
+                    paddingLeft: '2.25rem',
+                    paddingRight: '1rem',
+                    paddingTop: '0.5rem',
+                    paddingBottom: '0.5rem',
+                    border: '1px solid #404040',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s'
+                  }}
+                  className="sm:py-2.5 sm:pl-10"
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#22c55e';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(34, 197, 94, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#404040';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
             </div>
@@ -248,14 +284,33 @@ export default function SalesHistory({ onEditSale }) {
             {/* Sort Options */}
             <div>
               <div className="flex items-center mb-2">
-                <SlidersHorizontal className="h-4 w-4 text-gray-500 mr-2" />
-                <label className="text-sm font-medium text-gray-700">Sort Options</label>
+                <SlidersHorizontal style={{ height: '16px', width: '16px', color: '#808080', marginRight: '8px' }} />
+                <label style={{ fontSize: '14px', fontWeight: '500', color: '#b3b3b3' }}>Sort Options</label>
               </div>
               <div className="flex flex-col sm:flex-row gap-2">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="flex-1 px-3 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm bg-white"
+                  style={{
+                    flex: 1,
+                    padding: '0.5rem 0.75rem',
+                    border: '1px solid #404040',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s'
+                  }}
+                  className="sm:py-2.5"
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#22c55e';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(34, 197, 94, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#404040';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 >
                   <option value="date">Sort by Date</option>
                   <option value="amount">Sort by Amount</option>
@@ -264,17 +319,34 @@ export default function SalesHistory({ onEditSale }) {
 
                 <button
                   onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-                  className={`px-4 py-2 sm:py-2.5 border rounded-lg font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
-                    sortOrder === 'desc'
-                      ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100'
-                      : 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
-                  }`}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    border: '1px solid #404040',
+                    borderRadius: '8px',
+                    fontWeight: '500',
+                    fontSize: '14px',
+                    backgroundColor: sortOrder === 'desc' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+                    color: sortOrder === 'desc' ? '#22c55e' : '#3b82f6',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
+                  }}
+                  className="sm:py-2.5"
                   title={`Sort ${sortOrder === 'desc' ? 'ascending' : 'descending'}`}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = sortOrder === 'desc' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(59, 130, 246, 0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = sortOrder === 'desc' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(59, 130, 246, 0.1)';
+                  }}
                 >
                   {sortOrder === 'desc' ? (
-                    <><TrendingDown className="h-4 w-4" /><span>Descending</span></>
+                    <><TrendingDown style={{ height: '16px', width: '16px' }} /><span>Descending</span></>
                   ) : (
-                    <><TrendingUp className="h-4 w-4" /><span>Ascending</span></>
+                    <><TrendingUp style={{ height: '16px', width: '16px' }} /><span>Ascending</span></>
                   )}
                 </button>
               </div>
@@ -284,15 +356,15 @@ export default function SalesHistory({ onEditSale }) {
           {/* Date Range Section */}
           <div>
             <div className="flex items-center mb-2">
-              <Calendar className="h-4 w-4 text-gray-500 mr-2" />
-              <label className="text-sm font-medium text-gray-700">Date Range</label>
+              <Calendar style={{ height: '16px', width: '16px', color: '#808080', marginRight: '8px' }} />
+              <label style={{ fontSize: '14px', fontWeight: '500', color: '#b3b3b3' }}>Date Range</label>
             </div>
-            <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
+            <div style={{ backgroundColor: '#1c1c1c', borderRadius: '8px', padding: '12px 16px' }}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="relative">
-                  <label htmlFor="startDate" className="block text-xs font-medium text-gray-600 mb-1.5">From</label>
+                  <label htmlFor="startDate" style={{ display: 'block', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', marginBottom: '6px' }}>From</label>
                   <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Calendar style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', height: '16px', width: '16px', color: '#808080' }} />
                     <input
                       type="date"
                       id="startDate"
@@ -302,14 +374,35 @@ export default function SalesHistory({ onEditSale }) {
                         setDateFilter('');
                         setCurrentPage(1);
                       }}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white text-sm"
+                      style={{
+                        width: '100%',
+                        paddingLeft: '2.5rem',
+                        paddingRight: '12px',
+                        paddingTop: '8px',
+                        paddingBottom: '8px',
+                        border: '1px solid #404040',
+                        borderRadius: '8px',
+                        backgroundColor: '#2a2a2a',
+                        color: '#ebebeb',
+                        fontSize: '14px',
+                        outline: 'none',
+                        transition: 'border-color 0.2s, box-shadow 0.2s'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = '#22c55e';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(34, 197, 94, 0.1)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = '#404040';
+                        e.target.style.boxShadow = 'none';
+                      }}
                     />
                   </div>
                 </div>
                 <div className="relative">
-                  <label htmlFor="endDate" className="block text-xs font-medium text-gray-600 mb-1.5">To</label>
+                  <label htmlFor="endDate" style={{ display: 'block', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', marginBottom: '6px' }}>To</label>
                   <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Calendar style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', height: '16px', width: '16px', color: '#808080' }} />
                     <input
                       type="date"
                       id="endDate"
@@ -319,7 +412,28 @@ export default function SalesHistory({ onEditSale }) {
                         setDateFilter('');
                         setCurrentPage(1);
                       }}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white text-sm"
+                      style={{
+                        width: '100%',
+                        paddingLeft: '2.5rem',
+                        paddingRight: '12px',
+                        paddingTop: '8px',
+                        paddingBottom: '8px',
+                        border: '1px solid #404040',
+                        borderRadius: '8px',
+                        backgroundColor: '#2a2a2a',
+                        color: '#ebebeb',
+                        fontSize: '14px',
+                        outline: 'none',
+                        transition: 'border-color 0.2s, box-shadow 0.2s'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = '#22c55e';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(34, 197, 94, 0.1)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = '#404040';
+                        e.target.style.boxShadow = 'none';
+                      }}
                     />
                   </div>
                 </div>
@@ -333,9 +447,27 @@ export default function SalesHistory({ onEditSale }) {
                     setEndDate('');
                     setCurrentPage(1);
                   }}
-                  className="mt-3 text-sm text-green-600 hover:text-green-800 font-medium flex items-center gap-1 transition-colors"
+                  style={{
+                    marginTop: '12px',
+                    fontSize: '14px',
+                    color: '#22c55e',
+                    fontWeight: '500',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    transition: 'color 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.color = '#16a34a';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.color = '#22c55e';
+                  }}
                 >
-                  <X className="h-3 w-3" />
+                  <X style={{ height: '12px', width: '12px' }} />
                   Clear date range
                 </button>
               )}
@@ -344,22 +476,22 @@ export default function SalesHistory({ onEditSale }) {
 
           {/* Active Filters Summary */}
           {(searchTerm || startDate || endDate) && (
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 sm:p-4 border border-green-200">
+            <div style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: '8px', padding: '12px 16px', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <div className="text-xs sm:text-sm font-medium text-gray-700">
+                <div style={{ fontSize: '12px', fontWeight: '500', color: '#b3b3b3' }} className="sm:text-sm">
                   Active Filters:
                   {searchTerm && (
-                    <span className="ml-2 px-2 py-1 bg-white rounded-md text-green-700 border border-green-300">
+                    <span style={{ marginLeft: '8px', padding: '4px 8px', backgroundColor: '#2a2a2a', borderRadius: '6px', color: '#22c55e', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
                       Search: "{searchTerm}"
                     </span>
                   )}
                   {(startDate || endDate) && (
-                    <span className="ml-2 px-2 py-1 bg-white rounded-md text-green-700 border border-green-300">
+                    <span style={{ marginLeft: '8px', padding: '4px 8px', backgroundColor: '#2a2a2a', borderRadius: '6px', color: '#22c55e', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
                       {startDate && endDate ? `${startDate} to ${endDate}` : startDate ? `From ${startDate}` : `Until ${endDate}`}
                     </span>
                   )}
                 </div>
-                <div className="text-xs sm:text-sm text-gray-600">
+                <div style={{ fontSize: '12px', color: '#808080' }} className="sm:text-sm">
                   {filteredSales.length} results
                 </div>
               </div>
@@ -368,82 +500,127 @@ export default function SalesHistory({ onEditSale }) {
         </div>
       </div>
 
-      {/* Sales Table */}
+      {/* Sales Table Container */}
       {filteredSales.length > 0 ? (
         <>
-          <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          {/* Table with horizontal scroll */}
+          <div style={{ overflowX: 'auto', borderTopLeftRadius: '8px', borderTopRightRadius: '8px', border: '1px solid #404040', borderBottom: 0 }}>
+            <table style={{ minWidth: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
+            <thead style={{ backgroundColor: '#333333' }}>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Date & Time
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Product
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Quantity
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Price/Unit
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Total
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Profit
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody style={{ backgroundColor: '#2a2a2a' }}>
               {paginatedSales.map((sale) => (
-                <tr key={sale.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <tr
+                  key={sale.id}
+                  style={{
+                    borderBottom: '1px solid #404040',
+                    transition: 'background-color 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                >
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: '#ebebeb' }}>
                     <div>
-                      <div className="font-medium">{formatDate(sale.date)}</div>
-                      <div className="text-gray-500">{formatTime(sale.time)}</div>
+                      <div style={{ fontWeight: '500' }}>{formatDate(sale.date)}</div>
+                      <div style={{ color: '#b3b3b3' }}>{formatTime(sale.time)}</div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{sale.productName}</div>
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: '14px', fontWeight: '500', color: '#ebebeb' }}>{sale.productName}</div>
                     {sale.notes && (
-                      <div className="text-sm text-gray-500 truncate max-w-xs" title={sale.notes}>
+                      <div style={{ fontSize: '14px', color: '#b3b3b3', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '300px' }} title={sale.notes}>
                         {sale.notes}
                       </div>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: '#ebebeb' }}>
                     {sale.quantity}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: '#ebebeb' }}>
                     {formatCurrency(sale.pricePerUnit)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', fontWeight: '500', color: '#ebebeb' }}>
                     {formatCurrency(sale.totalAmount)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <span className={`${sale.profit > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', fontWeight: '500' }}>
+                    <span style={{ color: sale.profit > 0 ? '#22c55e' : '#ef4444' }}>
                       {formatCurrency(sale.profit)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', fontWeight: '500' }}>
                     <div className="flex space-x-2">
                       <button
                         onClick={() => onEditSale(sale)}
-                        className="text-blue-600 hover:text-blue-900 p-1 rounded-md hover:bg-blue-50"
+                        style={{
+                          color: '#3b82f6',
+                          padding: '4px',
+                          borderRadius: '6px',
+                          backgroundColor: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+                          e.target.style.color = '#2563eb';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = 'transparent';
+                          e.target.style.color = '#3b82f6';
+                        }}
                         title="Edit sale"
                       >
-                        <Pencil className="h-4 w-4" />
+                        <Pencil style={{ height: '16px', width: '16px' }} />
                       </button>
                       <button
                         onClick={() => handleDeleteSale(sale)}
-                        className="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50"
+                        style={{
+                          color: '#ef4444',
+                          padding: '4px',
+                          borderRadius: '6px',
+                          backgroundColor: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                          e.target.style.color = '#dc2626';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = 'transparent';
+                          e.target.style.color = '#ef4444';
+                        }}
                         title="Delete sale"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 style={{ height: '16px', width: '16px' }} />
                       </button>
                     </div>
                   </td>
@@ -451,21 +628,28 @@ export default function SalesHistory({ onEditSale }) {
               ))}
             </tbody>
           </table>
-          </div>
+        </div>
           
           {/* Pagination Controls */}
           {totalPages > 1 && (
-          <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
+          <div style={{ backgroundColor: '#1c1c1c', padding: '12px 16px', borderTop: '1px solid #404040', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px' }}>
             {/* Mobile Pagination */}
             <div className="sm:hidden">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-sm text-gray-700">
+                <div style={{ fontSize: '14px', color: '#b3b3b3' }}>
                   Page {currentPage} of {totalPages}
                 </div>
                 <select
                   value={itemsPerPage}
                   onChange={(e) => handleItemsPerPageChange(e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded"
+                  style={{
+                    padding: '4px 8px',
+                    fontSize: '14px',
+                    border: '1px solid #404040',
+                    borderRadius: '4px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb'
+                  }}
                 >
                   <option value="5">5/page</option>
                   <option value="10">10/page</option>
@@ -476,31 +660,87 @@ export default function SalesHistory({ onEditSale }) {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    padding: '8px 12px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: currentPage === 1 ? '#808080' : '#ebebeb',
+                    backgroundColor: '#2a2a2a',
+                    border: '1px solid #404040',
+                    borderRadius: '6px',
+                    opacity: currentPage === 1 ? 0.5 : 1,
+                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer'
+                  }}
                 >
                   Previous
                 </button>
                 <div className="flex space-x-1">
                   <button
                     onClick={() => handlePageChange(1)}
-                    className={`px-2 py-1 text-sm rounded ${currentPage === 1 ? 'bg-green-600 text-white' : 'text-gray-700'}`}
+                    style={{
+                      padding: '4px 8px',
+                      fontSize: '14px',
+                      borderRadius: '4px',
+                      backgroundColor: currentPage === 1 ? '#3b82f6' : 'transparent',
+                      color: currentPage === 1 ? 'white' : '#ebebeb',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (currentPage !== 1) {
+                        e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (currentPage !== 1) {
+                        e.target.style.backgroundColor = 'transparent';
+                      }
+                    }}
                   >
                     1
                   </button>
-                  {currentPage > 3 && <span className="px-1 text-gray-500">...</span>}
+                  {currentPage > 3 && <span style={{ padding: '4px', color: '#b3b3b3' }}>...</span>}
                   {currentPage > 2 && currentPage < totalPages - 1 && (
                     <button
                       onClick={() => handlePageChange(currentPage)}
-                      className="px-2 py-1 text-sm bg-green-600 text-white rounded"
+                      style={{
+                        padding: '4px 8px',
+                        fontSize: '14px',
+                        backgroundColor: '#3b82f6',
+                        color: 'white',
+                        borderRadius: '4px',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
                     >
                       {currentPage}
                     </button>
                   )}
-                  {currentPage < totalPages - 2 && <span className="px-1 text-gray-500">...</span>}
+                  {currentPage < totalPages - 2 && <span style={{ padding: '4px', color: '#b3b3b3' }}>...</span>}
                   {totalPages > 1 && (
                     <button
                       onClick={() => handlePageChange(totalPages)}
-                      className={`px-2 py-1 text-sm rounded ${currentPage === totalPages ? 'bg-green-600 text-white' : 'text-gray-700'}`}
+                      style={{
+                        padding: '4px 8px',
+                        fontSize: '14px',
+                        borderRadius: '4px',
+                        backgroundColor: currentPage === totalPages ? '#3b82f6' : 'transparent',
+                        color: currentPage === totalPages ? 'white' : '#ebebeb',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (currentPage !== totalPages) {
+                          e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (currentPage !== totalPages) {
+                          e.target.style.backgroundColor = 'transparent';
+                        }
+                      }}
                     >
                       {totalPages}
                     </button>
@@ -509,12 +749,22 @@ export default function SalesHistory({ onEditSale }) {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    padding: '8px 12px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: currentPage === totalPages ? '#808080' : '#ebebeb',
+                    backgroundColor: '#2a2a2a',
+                    border: '1px solid #404040',
+                    borderRadius: '6px',
+                    opacity: currentPage === totalPages ? 0.5 : 1,
+                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer'
+                  }}
                 >
                   Next
                 </button>
               </div>
-              <div className="text-center text-xs text-gray-500 mt-2">
+              <div style={{ textAlign: 'center', fontSize: '12px', color: '#b3b3b3', marginTop: '8px' }}>
                 {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems}
               </div>
             </div>
@@ -523,11 +773,27 @@ export default function SalesHistory({ onEditSale }) {
             <div className="hidden sm:flex sm:items-center sm:justify-between">
               {/* Items per page selector */}
               <div className="flex items-center space-x-2">
-                <label className="text-sm text-gray-700">Show:</label>
+                <label style={{ fontSize: '14px', color: '#ebebeb' }}>Show:</label>
                 <select
                   value={itemsPerPage}
                   onChange={(e) => handleItemsPerPageChange(e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  style={{
+                    padding: '4px 8px',
+                    fontSize: '14px',
+                    border: '1px solid #404040',
+                    borderRadius: '4px',
+                    backgroundColor: '#2a2a2a',
+                    color: '#ebebeb',
+                    outline: 'none'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#3b82f6';
+                    e.target.style.boxShadow = '0 0 0 2px rgba(59, 130, 246, 0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#404040';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 >
                   <option value="5">5</option>
                   <option value="10">10</option>
@@ -535,7 +801,7 @@ export default function SalesHistory({ onEditSale }) {
                   <option value="50">50</option>
                   <option value="100">100</option>
                 </select>
-                <span className="text-sm text-gray-700">per page</span>
+                <span style={{ fontSize: '14px', color: '#ebebeb' }}>per page</span>
               </div>
               
               {/* Pagination info and controls */}
@@ -544,36 +810,83 @@ export default function SalesHistory({ onEditSale }) {
                 <button
                   onClick={() => handlePageChange(1)}
                   disabled={currentPage === 1}
-                  className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    padding: '6px',
+                    borderRadius: '4px',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    opacity: currentPage === 1 ? 0.5 : 1,
+                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                    transition: 'background-color 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (currentPage !== 1) {
+                      e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = 'transparent';
+                  }}
                   title="First page"
                 >
-                  <ChevronsLeft className="h-4 w-4 text-gray-600" />
+                  <ChevronsLeft style={{ height: '16px', width: '16px', color: '#b3b3b3' }} />
                 </button>
-                
+
                 {/* Previous page */}
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    padding: '6px',
+                    borderRadius: '4px',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    opacity: currentPage === 1 ? 0.5 : 1,
+                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                    transition: 'background-color 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (currentPage !== 1) {
+                      e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = 'transparent';
+                  }}
                   title="Previous page"
                 >
-                  <ChevronLeft className="h-4 w-4 text-gray-600" />
+                  <ChevronLeft style={{ height: '16px', width: '16px', color: '#b3b3b3' }} />
                 </button>
                 
                 {/* Page numbers */}
                 <div className="flex items-center space-x-1 mx-2">
                   {getPageNumbers().map((pageNum, index) => (
                     pageNum === '...' ? (
-                      <span key={`dots-${index}`} className="px-2 py-1 text-sm text-gray-500">...</span>
+                      <span key={`dots-${index}`} style={{ padding: '8px', fontSize: '14px', color: '#b3b3b3' }}>...</span>
                     ) : (
                       <button
                         key={pageNum}
                         onClick={() => handlePageChange(pageNum)}
-                        className={`px-3 py-1 text-sm rounded ${
-                          currentPage === pageNum
-                            ? 'bg-green-600 text-white'
-                            : 'hover:bg-gray-200 text-gray-700'
-                        }`}
+                        style={{
+                          padding: '8px 12px',
+                          fontSize: '14px',
+                          borderRadius: '4px',
+                          backgroundColor: currentPage === pageNum ? '#3b82f6' : 'transparent',
+                          color: currentPage === pageNum ? 'white' : '#ebebeb',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'background-color 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (currentPage !== pageNum) {
+                            e.target.style.backgroundColor = '#333333';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (currentPage !== pageNum) {
+                            e.target.style.backgroundColor = 'transparent';
+                          }
+                        }}
                       >
                         {pageNum}
                       </button>
@@ -585,25 +898,57 @@ export default function SalesHistory({ onEditSale }) {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    padding: '6px',
+                    borderRadius: '4px',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    opacity: currentPage === totalPages ? 0.5 : 1,
+                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                    transition: 'background-color 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (currentPage !== totalPages) {
+                      e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = 'transparent';
+                  }}
                   title="Next page"
                 >
-                  <ChevronRight className="h-4 w-4 text-gray-600" />
+                  <ChevronRight style={{ height: '16px', width: '16px', color: '#b3b3b3' }} />
                 </button>
-                
+
                 {/* Last page */}
                 <button
                   onClick={() => handlePageChange(totalPages)}
                   disabled={currentPage === totalPages}
-                  className="p-1.5 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    padding: '6px',
+                    borderRadius: '4px',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    opacity: currentPage === totalPages ? 0.5 : 1,
+                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                    transition: 'background-color 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (currentPage !== totalPages) {
+                      e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = 'transparent';
+                  }}
                   title="Last page"
                 >
-                  <ChevronsRight className="h-4 w-4 text-gray-600" />
+                  <ChevronsRight style={{ height: '16px', width: '16px', color: '#b3b3b3' }} />
                 </button>
               </div>
               
               {/* Results info */}
-              <div className="text-sm text-gray-700">
+              <div style={{ fontSize: '14px', color: '#ebebeb' }}>
                 Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} results
               </div>
             </div>

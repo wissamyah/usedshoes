@@ -275,14 +275,14 @@ export default function SettingsPage() {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="py-6">
         <div className="sm:max-w-7xl sm:mx-auto sm:px-6 lg:px-8">
           <div className="mb-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
-                <p className="text-sm text-gray-600 mt-1">
+                <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#ebebeb' }}>Settings</h2>
+                <p style={{ fontSize: '14px', color: '#b3b3b3', marginTop: '4px' }}>
                   Configure your application settings and integrations.
                 </p>
               </div>
@@ -291,29 +291,29 @@ export default function SettingsPage() {
 
           <div className="space-y-6">
             {/* Data Management Section */}
-            <div className="bg-white shadow rounded-lg">
-              <div className="px-6 py-4 border-b border-gray-200">
+            <div style={{ backgroundColor: '#2a2a2a', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', borderRadius: '8px', border: '1px solid #404040' }}>
+              <div className="px-6 py-4" style={{ borderBottom: '1px solid #404040' }}>
                 <div className="flex items-center">
-                  <Database className="h-5 w-5 text-gray-600 mr-2" />
-                  <h3 className="text-lg font-medium text-gray-900">Data Management</h3>
+                  <Database className="h-5 w-5 mr-2" style={{ color: '#b3b3b3' }} />
+                  <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#ebebeb' }}>Data Management</h3>
                 </div>
-                <p className="mt-1 text-sm text-gray-600">
+                <p style={{ fontSize: '14px', color: '#b3b3b3', marginTop: '4px' }}>
                   Backup your data or import from a previous backup
                 </p>
               </div>
 
               <div className="p-6 space-y-6">
                 {/* Backup Section */}
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between pb-6 border-b border-gray-200">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between pb-6" style={{ borderBottom: '1px solid #404040' }}>
                   <div className="mb-4 sm:mb-0">
                     <div className="flex items-center mb-2">
                       <Shield className="h-5 w-5 text-green-500 mr-2" />
-                      <h4 className="text-base font-medium text-gray-900">Backup Data</h4>
+                      <h4 style={{ fontSize: '14px', fontWeight: '500', color: '#ebebeb' }}>Backup Data</h4>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p style={{ fontSize: '14px', color: '#b3b3b3' }}>
                       Download all your data as a JSON file for safekeeping
                     </p>
-                    <div className="mt-2 text-xs text-gray-500">
+                    <div style={{ marginTop: '8px', fontSize: '12px', color: '#808080' }}>
                       <p>• Products: {products.length} items</p>
                       <p>• Sales: {sales.length} records</p>
                       <p>• Expenses: {expenses.length} records</p>
@@ -330,26 +330,25 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Fix IDs Section */}
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between pb-6 border-b border-gray-200">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between pb-6" style={{ borderBottom: '1px solid #404040' }}>
                   <div className="mb-4 sm:mb-0">
                     <div className="flex items-center mb-2">
                       <Wrench className="h-5 w-5 text-orange-500 mr-2" />
-                      <h4 className="text-base font-medium text-gray-900">Fix Malformed IDs</h4>
+                      <h4 style={{ fontSize: '14px', fontWeight: '500', color: '#ebebeb' }}>Fix Malformed IDs</h4>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p style={{ fontSize: '14px', color: '#b3b3b3' }}>
                       Repair partner, withdrawal, and cash injection IDs that contain undefined or NaN
                     </p>
-                    <div className="mt-2 bg-blue-50 border border-blue-200 rounded-md p-3">
-                      <div className="flex">
-                        <CheckCircle className="h-4 w-4 text-blue-400 mt-0.5" />
-                        <div className="ml-2">
-                          <p className="text-xs text-blue-700">
-                            This will automatically fix IDs like "Pundefined", "WNaN", etc.
-                          </p>
-                          <p className="text-xs text-blue-700">
-                            All relationships between entities will be preserved.
-                          </p>
-                        </div>
+                    <div style={{ marginTop: '8px', backgroundColor: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '8px', padding: '16px', display: 'flex', alignItems: 'center' }}>
+                      <CheckCircle style={{ height: '20px', width: '20px', color: '#3b82f6', marginRight: '12px' }} />
+                      <div>
+                        <p style={{ fontSize: '14px', fontWeight: '500', color: '#3b82f6' }}>Auto-Fix Available</p>
+                        <p style={{ fontSize: '14px', color: '#2563eb' }}>
+                          This will automatically fix IDs like "Pundefined", "WNaN", etc.
+                        </p>
+                        <p style={{ fontSize: '14px', color: '#2563eb' }}>
+                          All relationships between entities will be preserved.
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -377,26 +376,24 @@ export default function SettingsPage() {
                   <div className="mb-4 sm:mb-0">
                     <div className="flex items-center mb-2">
                       <Upload className="h-5 w-5 text-blue-500 mr-2" />
-                      <h4 className="text-base font-medium text-gray-900">Import Data</h4>
+                      <h4 style={{ fontSize: '14px', fontWeight: '500', color: '#ebebeb' }}>Import Data</h4>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p style={{ fontSize: '14px', color: '#b3b3b3' }}>
                       Import and merge data from a backup file
                     </p>
-                    <div className="mt-2 bg-yellow-50 border border-yellow-200 rounded-md p-3">
-                      <div className="flex">
-                        <AlertTriangle className="h-4 w-4 text-yellow-400 mt-0.5" />
-                        <div className="ml-2">
-                          <h5 className="text-xs font-medium text-yellow-800">Important:</h5>
-                          <p className="text-xs text-yellow-700 mt-1">
-                            • Import will merge data with existing records
-                          </p>
-                          <p className="text-xs text-yellow-700">
-                            • Duplicate IDs will be automatically reassigned
-                          </p>
-                          <p className="text-xs text-yellow-700">
-                            • This action cannot be undone
-                          </p>
-                        </div>
+                    <div style={{ marginTop: '8px', backgroundColor: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '8px', padding: '16px', display: 'flex', alignItems: 'center' }}>
+                      <AlertTriangle style={{ height: '20px', width: '20px', color: '#f59e0b', marginRight: '12px' }} />
+                      <div>
+                        <p style={{ fontSize: '14px', fontWeight: '500', color: '#f59e0b' }}>Important:</p>
+                        <p style={{ fontSize: '14px', color: '#d97706', marginTop: '4px' }}>
+                          • Import will merge data with existing records
+                        </p>
+                        <p style={{ fontSize: '14px', color: '#d97706' }}>
+                          • Duplicate IDs will be automatically reassigned
+                        </p>
+                        <p style={{ fontSize: '14px', color: '#d97706' }}>
+                          • This action cannot be undone
+                        </p>
                       </div>
                     </div>
                   </div>

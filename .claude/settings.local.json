@@ -24,7 +24,10 @@
       "Bash(cat:*)",
       "Bash(git restore:*)",
       "Bash(gh run list:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(npm run lint)",
+      "Bash(npm ci:*)",
+      "Bash(start https://github.com/wissamyah/usedshoes/actions)"
     ],
     "deny": [],
     "ask": []

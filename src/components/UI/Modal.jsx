@@ -109,7 +109,15 @@ export default function Modal({
 export function AnimatedModal({ isOpen, onClose, children, title, size = 'medium' }) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size={size}>
-      <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+      <div style={{
+        backgroundColor: '#2a2a2a',
+        borderRadius: '8px',
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1)',
+        overflow: 'hidden',
+        border: '1px solid #404040',
+        backdropFilter: 'blur(10px)',
+        background: 'linear-gradient(135deg, rgba(42, 42, 42, 0.95) 0%, rgba(28, 28, 28, 0.95) 100%)'
+      }}>
         {children}
       </div>
     </Modal>

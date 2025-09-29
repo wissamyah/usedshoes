@@ -67,14 +67,22 @@ export default function FinancePage() {
   ];
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="py-6">
         <div className="sm:max-w-7xl sm:mx-auto sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Finance Management</h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <h2 style={{
+                fontSize: '24px',
+                fontWeight: 'bold',
+                color: '#ebebeb'
+              }}>Finance Management</h2>
+              <p style={{
+                fontSize: '14px',
+                color: '#b3b3b3',
+                marginTop: '4px'
+              }}>
                 Manage cash flow, partner withdrawals, and equity distributions
               </p>
             </div>
@@ -121,8 +129,13 @@ export default function FinancePage() {
           </div>
           
           {/* Tabs */}
-          <div className="bg-white shadow rounded-lg">
-            <div className="border-b border-gray-200">
+          <div style={{
+            backgroundColor: '#2a2a2a',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            borderRadius: '8px',
+            border: '1px solid #404040'
+          }}>
+            <div style={{ borderBottom: '1px solid #404040' }}>
               <nav className="-mb-px flex space-x-8 px-6" aria-label="Tabs">
                 {tabs.map(tab => {
                   const Icon = tab.icon;
@@ -134,9 +147,12 @@ export default function FinancePage() {
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center justify-center sm:justify-start
                         ${activeTab === tab.id
                           ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          : 'border-transparent hover:border-gray-300'
                         }
                       `}
+                      style={{
+                        color: activeTab === tab.id ? '#2563eb' : '#b3b3b3'
+                      }}
                       title={tab.name}
                     >
                       <Icon className="h-5 w-5 sm:mr-2" />

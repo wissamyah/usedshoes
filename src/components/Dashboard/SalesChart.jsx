@@ -35,11 +35,11 @@ export default function SalesChart() {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-100">
-          <p className="text-sm font-medium text-gray-900 mb-2">{label}</p>
+        <div style={{ backgroundColor: '#2a2a2a', border: '1px solid #404040' }} className="p-3 rounded-lg shadow-lg">
+          <p style={{ color: '#ebebeb' }} className="text-sm font-medium mb-2">{label}</p>
           {payload.map((entry, index) => (
             <div key={index} className="flex items-center justify-between gap-4">
-              <span className="text-xs text-gray-600">{entry.name}:</span>
+              <span style={{ color: '#b3b3b3' }} className="text-xs">{entry.name}:</span>
               <span className="text-xs font-semibold" style={{ color: entry.color }}>
                 {formatCurrency(entry.value)}
               </span>
@@ -69,23 +69,23 @@ export default function SalesChart() {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
-      <div className="absolute inset-0 bg-gradient-to-br from-transparent to-blue-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+    <div style={{ backgroundColor: '#2a2a2a', border: '1px solid #404040' }} className="rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent to-gray-800/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
       <div className="p-6 relative">
         <div className="flex items-center justify-between mb-6">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <div className="p-1.5 bg-blue-50 rounded-lg">
-                <TrendingUp className="h-4 w-4 text-blue-600" />
+              <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }} className="p-1.5 rounded-lg">
+                <TrendingUp style={{ color: '#ebebeb', opacity: 0.7 }} className="h-4 w-4" />
               </div>
-              <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Sales Performance</h3>
+              <h3 style={{ color: '#b3b3b3' }} className="text-sm font-medium uppercase tracking-wider">Sales Performance</h3>
             </div>
-            <p className="text-xs text-gray-500 ml-8">Last 30 days trend analysis</p>
+            <p style={{ color: '#808080' }} className="text-xs ml-8">Last 30 days trend analysis</p>
           </div>
-          <div className="flex items-center text-xs text-gray-400">
+          <div style={{ color: '#808080' }} className="flex items-center text-xs">
             <span className="relative flex h-2 w-2 mr-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gray-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-gray-500"></span>
             </span>
             <span>Live</span>
           </div>
@@ -96,31 +96,31 @@ export default function SalesChart() {
             <AreaChart data={last30Days} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
               <defs>
                 <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#666666" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#666666" stopOpacity={0}/>
                 </linearGradient>
                 <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#888888" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#888888" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#404040" vertical={false} />
               <XAxis
                 dataKey="displayDate"
-                stroke="#9ca3af"
+                stroke="#808080"
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
                 interval="preserveStartEnd"
               />
               <YAxis
-                stroke="#9ca3af"
+                stroke="#808080"
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={formatCurrency}
               />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(59, 130, 246, 0.05)' }} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }} />
               <Legend
                 verticalAlign="top"
                 height={36}
@@ -133,7 +133,7 @@ export default function SalesChart() {
               <Area
                 type="monotone"
                 dataKey="revenue"
-                stroke="#10b981"
+                stroke="#666666"
                 strokeWidth={2}
                 fill="url(#colorRevenue)"
                 name="Revenue"
@@ -142,7 +142,7 @@ export default function SalesChart() {
               <Area
                 type="monotone"
                 dataKey="profit"
-                stroke="#3b82f6"
+                stroke="#888888"
                 strokeWidth={2}
                 fill="url(#colorProfit)"
                 name="Profit"
@@ -153,33 +153,33 @@ export default function SalesChart() {
         </div>
 
         {/* Summary Stats */}
-        <div className="mt-6 grid grid-cols-3 gap-4 pt-4 border-t border-gray-100">
+        <div style={{ borderTop: '1px solid #404040' }} className="mt-6 grid grid-cols-3 gap-4 pt-4">
           <div className="group cursor-default">
             <div className="flex items-center justify-center mb-1">
-              <Calendar className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+              <Calendar style={{ color: '#ebebeb', opacity: 0.7 }} className="h-4 w-4 transition-colors" />
             </div>
-            <div className="text-2xl font-light text-gray-900 text-center group-hover:text-blue-600 transition-colors">
+            <div style={{ color: '#ebebeb' }} className="text-2xl font-light text-center transition-colors">
               {last30Days.reduce((sum, day) => sum + day.salesCount, 0)}
             </div>
-            <div className="text-xs text-gray-500 text-center">Total Sales</div>
+            <div style={{ color: '#808080' }} className="text-xs text-center">Total Sales</div>
           </div>
           <div className="group cursor-default">
             <div className="flex items-center justify-center mb-1">
-              <DollarSign className="h-4 w-4 text-green-400 group-hover:text-green-600 transition-colors" />
+              <DollarSign style={{ color: '#ebebeb', opacity: 0.7 }} className="h-4 w-4 transition-colors" />
             </div>
-            <div className="text-2xl font-light text-green-600 text-center group-hover:text-green-700 transition-colors">
+            <div style={{ color: '#b3b3b3' }} className="text-2xl font-light text-center transition-colors">
               {formatCurrency(last30Days.reduce((sum, day) => sum + day.revenue, 0))}
             </div>
-            <div className="text-xs text-gray-500 text-center">Total Revenue</div>
+            <div style={{ color: '#808080' }} className="text-xs text-center">Total Revenue</div>
           </div>
           <div className="group cursor-default">
             <div className="flex items-center justify-center mb-1">
-              <TrendingUp className="h-4 w-4 text-blue-400 group-hover:text-blue-600 transition-colors" />
+              <TrendingUp style={{ color: '#ebebeb', opacity: 0.7 }} className="h-4 w-4 transition-colors" />
             </div>
-            <div className="text-2xl font-light text-blue-600 text-center group-hover:text-blue-700 transition-colors">
+            <div style={{ color: '#b3b3b3' }} className="text-2xl font-light text-center transition-colors">
               {formatCurrency(last30Days.reduce((sum, day) => sum + day.profit, 0))}
             </div>
-            <div className="text-xs text-gray-500 text-center">Total Profit</div>
+            <div style={{ color: '#808080' }} className="text-xs text-center">Total Profit</div>
           </div>
         </div>
       </div>

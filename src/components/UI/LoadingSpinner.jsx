@@ -11,7 +11,7 @@ export default function LoadingSpinner({ size = 'md', text = '', className = '' 
   return (
     <div className={`flex flex-col items-center justify-center ${className}`}>
       <div className="relative">
-        <div className={`${sizeClasses[size]} animate-spin`}>
+        <div className={`${sizeClasses[size]} animate-spin`} style={{ color: '#60a5fa' }}>
           <svg
             className="w-full h-full"
             viewBox="0 0 24 24"
@@ -44,7 +44,12 @@ export default function LoadingSpinner({ size = 'md', text = '', className = '' 
         </div>
       </div>
       {text && (
-        <p className="mt-3 text-sm text-gray-600 animate-pulse">
+        <p style={{
+          marginTop: '12px',
+          fontSize: '14px',
+          color: '#b3b3b3',
+          animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+        }}>
           {text}
         </p>
       )}
@@ -55,13 +60,16 @@ export default function LoadingSpinner({ size = 'md', text = '', className = '' 
 // Skeleton loading components for different content types
 export function SkeletonCard({ className = '' }) {
   return (
-    <div className={`bg-white p-6 rounded-lg shadow-sm border border-gray-200 animate-pulse ${className}`}>
+    <div className={`p-6 rounded-lg shadow-sm animate-pulse ${className}`} style={{
+      backgroundColor: '#2a2a2a',
+      border: '1px solid #404040'
+    }}>
       <div className="flex items-center">
-        <div className="flex-shrink-0 p-3 rounded-lg bg-gray-200 w-14 h-14"></div>
+        <div className="flex-shrink-0 p-3 rounded-lg w-14 h-14" style={{ backgroundColor: '#404040' }}></div>
         <div className="ml-4 flex-1">
-          <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
-          <div className="h-6 bg-gray-200 rounded w-32 mb-2"></div>
-          <div className="h-3 bg-gray-200 rounded w-20"></div>
+          <div className="h-4 rounded w-24 mb-2" style={{ backgroundColor: '#404040' }}></div>
+          <div className="h-6 rounded w-32 mb-2" style={{ backgroundColor: '#404040' }}></div>
+          <div className="h-3 rounded w-20" style={{ backgroundColor: '#404040' }}></div>
         </div>
       </div>
     </div>
@@ -70,13 +78,19 @@ export function SkeletonCard({ className = '' }) {
 
 export function SkeletonTable({ rows = 5, columns = 4, className = '' }) {
   return (
-    <div className={`bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden ${className}`}>
-      <div className="divide-y divide-gray-200">
+    <div className={`shadow-sm rounded-lg overflow-hidden ${className}`} style={{
+      backgroundColor: '#2a2a2a',
+      border: '1px solid #404040'
+    }}>
+      <div style={{ borderColor: '#404040' }} className="divide-y">
         {/* Header */}
-        <div className="bg-gray-50 px-6 py-3">
+        <div className="px-6 py-3" style={{ backgroundColor: '#333333' }}>
           <div className="flex space-x-4">
             {Array.from({ length: columns }, (_, i) => (
-              <div key={i} className="h-4 bg-gray-200 rounded animate-pulse" style={{ width: `${100 / columns}%` }}></div>
+              <div key={i} className="h-4 rounded animate-pulse" style={{
+                width: `${100 / columns}%`,
+                backgroundColor: '#404040'
+              }}></div>
             ))}
           </div>
         </div>
@@ -87,8 +101,11 @@ export function SkeletonTable({ rows = 5, columns = 4, className = '' }) {
               {Array.from({ length: columns }, (_, colIndex) => (
                 <div
                   key={colIndex}
-                  className="h-4 bg-gray-200 rounded animate-pulse"
-                  style={{ width: `${100 / columns}%` }}
+                  className="h-4 rounded animate-pulse"
+                  style={{
+                    width: `${100 / columns}%`,
+                    backgroundColor: '#404040'
+                  }}
                 ></div>
               ))}
             </div>
@@ -101,21 +118,27 @@ export function SkeletonTable({ rows = 5, columns = 4, className = '' }) {
 
 export function SkeletonChart({ className = '' }) {
   return (
-    <div className={`bg-white p-6 rounded-lg shadow-sm border border-gray-200 animate-pulse ${className}`}>
-      <div className="h-6 bg-gray-200 rounded w-48 mb-6"></div>
+    <div className={`p-6 rounded-lg shadow-sm animate-pulse ${className}`} style={{
+      backgroundColor: '#2a2a2a',
+      border: '1px solid #404040'
+    }}>
+      <div className="h-6 rounded w-48 mb-6" style={{ backgroundColor: '#404040' }}></div>
       <div className="space-y-3">
         <div className="flex items-end space-x-2 h-32">
           {Array.from({ length: 7 }, (_, i) => (
             <div
               key={i}
-              className="bg-gray-200 rounded-t flex-1"
-              style={{ height: `${Math.random() * 80 + 20}%` }}
+              className="rounded-t flex-1"
+              style={{
+                height: `${Math.random() * 80 + 20}%`,
+                backgroundColor: '#404040'
+              }}
             ></div>
           ))}
         </div>
         <div className="flex justify-between text-sm">
           {Array.from({ length: 7 }, (_, i) => (
-            <div key={i} className="h-4 bg-gray-200 rounded w-8"></div>
+            <div key={i} className="h-4 rounded w-8" style={{ backgroundColor: '#404040' }}></div>
           ))}
         </div>
       </div>
@@ -129,11 +152,14 @@ export function LoadingOverlay({ text = 'Loading...', isVisible = true }) {
 
   return (
     <Modal isOpen={isVisible} preventClose={true} size="small">
-      <div className="bg-white rounded-lg shadow-xl p-8 w-full">
+      <div className="rounded-lg shadow-xl p-8 w-full" style={{
+        backgroundColor: '#2a2a2a',
+        border: '1px solid #404040'
+      }}>
         <div className="text-center">
           <LoadingSpinner size="lg" />
-          <h3 className="mt-4 text-lg font-medium text-gray-900">{text}</h3>
-          <p className="mt-2 text-sm text-gray-600">
+          <h3 className="mt-4 text-lg font-medium" style={{ color: '#ebebeb' }}>{text}</h3>
+          <p className="mt-2 text-sm" style={{ color: '#b3b3b3' }}>
             Please wait while we process your request...
           </p>
         </div>

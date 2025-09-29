@@ -233,20 +233,54 @@ export default function SalesForm({ sale, onClose }) {
 
   return (
     <Modal isOpen={true} onClose={onClose} size="xlarge">
-      <div className="bg-white rounded-lg shadow-xl">
+      <div className="rounded-lg shadow-xl" style={{
+        backgroundColor: '#2a2a2a',
+        border: '1px solid #404040'
+      }}>
         {/* Header */}
-        <div className="flex items-start justify-between px-4 sm:px-6 py-4 border-b border-gray-200">
+        <div className="flex items-start justify-between px-4 sm:px-6 py-4" style={{
+          borderBottom: '1px solid #404040'
+        }}>
           <div className="flex-1 pr-2">
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '500',
+              color: '#ebebeb'
+            }}>
               {sale ? 'Edit Sale' : 'Record Sales'}
             </h3>
-            <p className="text-sm text-gray-500 mt-1 hidden sm:block">
+            <p style={{
+              fontSize: '14px',
+              color: '#b3b3b3',
+              marginTop: '4px'
+            }} className="hidden sm:block">
               Add multiple products for the same date and time
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+            style={{
+              color: '#b3b3b3',
+              padding: '4px',
+              borderRadius: '6px',
+              minHeight: '44px',
+              minWidth: '44px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.color = '#ebebeb';
+              e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.color = '#b3b3b3';
+              e.target.style.backgroundColor = 'transparent';
+            }}
           >
             <span className="sr-only">Close</span>
             <X className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -257,37 +291,88 @@ export default function SalesForm({ sale, onClose }) {
 
           <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
             {/* Common Date and Time */}
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <div className="rounded-lg p-4" style={{
+              backgroundColor: '#1c1c1c',
+              border: '1px solid #404040'
+            }}>
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                 <div className="flex-1">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                    <Calendar className="h-4 w-4 text-gray-500" />
+                  <label className="flex items-center gap-2 mb-2" style={{
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#ebebeb'
+                  }}>
+                    <Calendar className="h-4 w-4" style={{ color: '#b3b3b3' }} />
                     Sale Date
                   </label>
                   <input
                     type="date"
                     value={commonDate}
                     onChange={(e) => setCommonDate(e.target.value)}
-                    className={`w-full px-3 py-3 sm:py-2 text-base sm:text-sm border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                      errors.date ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-green-500'
-                    }`}
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      fontSize: '16px',
+                      backgroundColor: '#1c1c1c',
+                      color: '#ebebeb',
+                      border: errors.date ? '1px solid #ef4444' : '1px solid #404040',
+                      borderRadius: '6px',
+                      outline: 'none',
+                      transition: 'border-color 0.2s, box-shadow 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = errors.date ? '#ef4444' : '#60a5fa';
+                      e.target.style.boxShadow = errors.date ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = errors.date ? '#ef4444' : '#404040';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   />
-                  {errors.date && <p className="mt-1 text-sm text-red-600">{errors.date}</p>}
+                  {errors.date && <p style={{
+                    marginTop: '4px',
+                    fontSize: '14px',
+                    color: '#ef4444'
+                  }}>{errors.date}</p>}
                 </div>
                 <div className="flex-1">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                    <Clock className="h-4 w-4 text-gray-500" />
+                  <label className="flex items-center gap-2 mb-2" style={{
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#ebebeb'
+                  }}>
+                    <Clock className="h-4 w-4" style={{ color: '#b3b3b3' }} />
                     Sale Time
                   </label>
                   <input
                     type="time"
                     value={commonTime}
                     onChange={(e) => setCommonTime(e.target.value)}
-                    className={`w-full px-3 py-3 sm:py-2 text-base sm:text-sm border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                      errors.time ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-green-500'
-                    }`}
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      fontSize: '16px',
+                      backgroundColor: '#1c1c1c',
+                      color: '#ebebeb',
+                      border: errors.time ? '1px solid #ef4444' : '1px solid #404040',
+                      borderRadius: '6px',
+                      outline: 'none',
+                      transition: 'border-color 0.2s, box-shadow 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = errors.time ? '#ef4444' : '#60a5fa';
+                      e.target.style.boxShadow = errors.time ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = errors.time ? '#ef4444' : '#404040';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   />
-                  {errors.time && <p className="mt-1 text-sm text-red-600">{errors.time}</p>}
+                  {errors.time && <p style={{
+                    marginTop: '4px',
+                    fontSize: '14px',
+                    color: '#ef4444'
+                  }}>{errors.time}</p>}
                 </div>
               </div>
             </div>
@@ -295,12 +380,34 @@ export default function SalesForm({ sale, onClose }) {
             {/* Sale Entries */}
             <div className="space-y-3">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-base sm:text-sm font-medium text-gray-700">Sale Items</h4>
+                <h4 style={{
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  color: '#ebebeb'
+                }}>Sale Items</h4>
                 {!sale && (
                   <button
                     type="button"
                     onClick={addNewEntry}
-                    className="inline-flex items-center px-3 py-2 sm:py-1.5 text-sm font-medium text-green-700 bg-green-50 border border-green-300 rounded-md hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 touch-manipulation"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      padding: '8px 16px',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: '#10b981',
+                      backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                      border: '1px solid rgba(16, 185, 129, 0.3)',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+                    }}
                   >
                     <Plus className="h-4 w-4 mr-1" />
                     Add Item
@@ -309,8 +416,15 @@ export default function SalesForm({ sale, onClose }) {
               </div>
               
               {/* Desktop Table Header */}
-              <div className="hidden md:block bg-gray-50 border border-gray-200 rounded-t-lg">
-                <div className="grid grid-cols-12 gap-4 px-4 py-3 text-sm font-medium text-gray-700">
+              <div className="hidden md:block rounded-t-lg" style={{
+                backgroundColor: '#1c1c1c',
+                border: '1px solid #404040'
+              }}>
+                <div className="grid grid-cols-12 gap-4 px-4 py-3" style={{
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ebebeb'
+                }}>
                   <div className="col-span-4">Product</div>
                   <div className="col-span-2">Quantity</div>
                   <div className="col-span-2">Price/Unit</div>
@@ -321,21 +435,34 @@ export default function SalesForm({ sale, onClose }) {
               </div>
               
               {/* Sale Entry Rows - Desktop */}
-              <div className="hidden md:block border border-t-0 border-gray-200 rounded-b-lg overflow-hidden">
+              <div className="hidden md:block rounded-b-lg overflow-hidden" style={{
+                border: '1px solid #404040',
+                borderTop: 'none'
+              }}>
                 {saleEntries.map((entry, index) => {
                   const product = products.find(p => p.id === parseInt(entry.productId));
                   const entryTotal = (parseInt(entry.quantity) || 0) * (parseFloat(entry.pricePerUnit) || 0);
 
                   return (
-                    <div key={entry.id} className={`grid grid-cols-12 gap-4 px-4 py-3 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b border-gray-100 last:border-b-0`}>
+                    <div key={entry.id} className="grid grid-cols-12 gap-4 px-4 py-3" style={{
+                      backgroundColor: index % 2 === 0 ? '#2a2a2a' : '#1c1c1c',
+                      borderBottom: '1px solid #404040'
+                    }}>
                       {/* Product Selection */}
                       <div className="col-span-4">
                         <select
                           value={entry.productId}
                           onChange={(e) => handleEntryChange(entry.id, 'productId', e.target.value)}
-                          className={`w-full px-2 py-1.5 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                            errors[`entry_${entry.id}_productId`] ? 'border-red-300' : 'border-gray-300'
-                          }`}
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            fontSize: '14px',
+                            backgroundColor: '#1c1c1c',
+                            color: '#ebebeb',
+                            border: errors[`entry_${entry.id}_productId`] ? '1px solid #ef4444' : '1px solid #404040',
+                            borderRadius: '6px',
+                            outline: 'none'
+                          }}
                         >
                           <option value="">Select product...</option>
                           {availableProducts.map(product => {
@@ -349,7 +476,11 @@ export default function SalesForm({ sale, onClose }) {
                           })}
                         </select>
                         {errors[`entry_${entry.id}_productId`] && (
-                          <p className="mt-1 text-xs text-red-600">{errors[`entry_${entry.id}_productId`]}</p>
+                          <p style={{
+                            marginTop: '4px',
+                            fontSize: '12px',
+                            color: '#ef4444'
+                          }}>{errors[`entry_${entry.id}_productId`]}</p>
                         )}
                       </div>
                       
@@ -361,16 +492,31 @@ export default function SalesForm({ sale, onClose }) {
                           onChange={(e) => handleEntryChange(entry.id, 'quantity', e.target.value)}
                           min="1"
                           step="1"
-                          className={`w-full px-2 py-1.5 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                            errors[`entry_${entry.id}_quantity`] ? 'border-red-300' : 'border-gray-300'
-                          }`}
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            fontSize: '14px',
+                            backgroundColor: '#1c1c1c',
+                            color: '#ebebeb',
+                            border: errors[`entry_${entry.id}_quantity`] ? '1px solid #ef4444' : '1px solid #404040',
+                            borderRadius: '6px',
+                            outline: 'none'
+                          }}
                           placeholder="0"
                         />
                         {errors[`entry_${entry.id}_quantity`] && (
-                          <p className="mt-1 text-xs text-red-600">{errors[`entry_${entry.id}_quantity`]}</p>
+                          <p style={{
+                            marginTop: '4px',
+                            fontSize: '12px',
+                            color: '#ef4444'
+                          }}>{errors[`entry_${entry.id}_quantity`]}</p>
                         )}
                         {product && (
-                          <p className="mt-1 text-xs text-gray-500">Stock: {product.currentStock}</p>
+                          <p style={{
+                            marginTop: '4px',
+                            fontSize: '12px',
+                            color: '#b3b3b3'
+                          }}>Stock: {product.currentStock}</p>
                         )}
                       </div>
                       
@@ -382,19 +528,34 @@ export default function SalesForm({ sale, onClose }) {
                           onChange={(e) => handleEntryChange(entry.id, 'pricePerUnit', e.target.value)}
                           min="0"
                           step="0.01"
-                          className={`w-full px-2 py-1.5 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                            errors[`entry_${entry.id}_pricePerUnit`] ? 'border-red-300' : 'border-gray-300'
-                          }`}
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            fontSize: '14px',
+                            backgroundColor: '#1c1c1c',
+                            color: '#ebebeb',
+                            border: errors[`entry_${entry.id}_pricePerUnit`] ? '1px solid #ef4444' : '1px solid #404040',
+                            borderRadius: '6px',
+                            outline: 'none'
+                          }}
                           placeholder="0.00"
                         />
                         {errors[`entry_${entry.id}_pricePerUnit`] && (
-                          <p className="mt-1 text-xs text-red-600">{errors[`entry_${entry.id}_pricePerUnit`]}</p>
+                          <p style={{
+                            marginTop: '4px',
+                            fontSize: '12px',
+                            color: '#ef4444'
+                          }}>{errors[`entry_${entry.id}_pricePerUnit`]}</p>
                         )}
                       </div>
                       
                       {/* Total */}
                       <div className="col-span-2 flex items-center">
-                        <span className="text-sm font-medium text-gray-900">
+                        <span style={{
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          color: '#ebebeb'
+                        }}>
                           {formatCurrency(entryTotal)}
                         </span>
                       </div>
@@ -405,7 +566,16 @@ export default function SalesForm({ sale, onClose }) {
                           type="text"
                           value={entry.notes}
                           onChange={(e) => handleEntryChange(entry.id, 'notes', e.target.value)}
-                          className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            fontSize: '14px',
+                            backgroundColor: '#1c1c1c',
+                            color: '#ebebeb',
+                            border: '1px solid #404040',
+                            borderRadius: '6px',
+                            outline: 'none'
+                          }}
                           placeholder="Notes..."
                         />
                       </div>
@@ -416,7 +586,15 @@ export default function SalesForm({ sale, onClose }) {
                           <button
                             type="button"
                             onClick={() => removeEntry(entry.id)}
-                            className="text-red-600 hover:text-red-800 transition-colors"
+                            style={{
+                              color: '#ef4444',
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              transition: 'color 0.2s'
+                            }}
+                            onMouseEnter={(e) => e.target.style.color = '#dc2626'}
+                            onMouseLeave={(e) => e.target.style.color = '#ef4444'}
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -434,15 +612,32 @@ export default function SalesForm({ sale, onClose }) {
                   const entryTotal = (parseInt(entry.quantity) || 0) * (parseFloat(entry.pricePerUnit) || 0);
 
                   return (
-                    <div key={entry.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <div key={entry.id} className="rounded-lg p-4" style={{
+                      backgroundColor: '#2a2a2a',
+                      border: '1px solid #404040'
+                    }}>
                       {/* Mobile Card Header */}
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-gray-500">Item #{index + 1}</span>
+                        <span style={{
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          color: '#b3b3b3'
+                        }}>Item #{index + 1}</span>
                         {!sale && saleEntries.length > 1 && (
                           <button
                             type="button"
                             onClick={() => removeEntry(entry.id)}
-                            className="text-red-600 hover:text-red-800 transition-colors p-1"
+                            style={{
+                              color: '#ef4444',
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              padding: '4px',
+                              borderRadius: '4px',
+                              transition: 'all 0.2s'
+                            }}
+                            onMouseEnter={(e) => e.target.style.color = '#dc2626'}
+                            onMouseLeave={(e) => e.target.style.color = '#ef4444'}
                           >
                             <Trash2 className="h-5 w-5" />
                           </button>
@@ -451,13 +646,35 @@ export default function SalesForm({ sale, onClose }) {
 
                       {/* Product Selection */}
                       <div className="mb-3">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Product</label>
+                        <label style={{
+                          display: 'block',
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          color: '#ebebeb',
+                          marginBottom: '4px'
+                        }}>Product</label>
                         <select
                           value={entry.productId}
                           onChange={(e) => handleEntryChange(entry.id, 'productId', e.target.value)}
-                          className={`w-full px-3 py-2.5 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                            errors[`entry_${entry.id}_productId`] ? 'border-red-300' : 'border-gray-300'
-                          }`}
+                          style={{
+                            width: '100%',
+                            padding: '12px',
+                            fontSize: '16px',
+                            backgroundColor: '#1c1c1c',
+                            color: '#ebebeb',
+                            border: errors[`entry_${entry.id}_productId`] ? '1px solid #ef4444' : '1px solid #404040',
+                            borderRadius: '6px',
+                            outline: 'none',
+                            transition: 'border-color 0.2s, box-shadow 0.2s'
+                          }}
+                          onFocus={(e) => {
+                            e.target.style.borderColor = errors[`entry_${entry.id}_productId`] ? '#ef4444' : '#60a5fa';
+                            e.target.style.boxShadow = errors[`entry_${entry.id}_productId`] ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                          }}
+                          onBlur={(e) => {
+                            e.target.style.borderColor = errors[`entry_${entry.id}_productId`] ? '#ef4444' : '#404040';
+                            e.target.style.boxShadow = 'none';
+                          }}
                         >
                           <option value="">Select product...</option>
                           {availableProducts.map(product => {
@@ -471,7 +688,11 @@ export default function SalesForm({ sale, onClose }) {
                           })}
                         </select>
                         {errors[`entry_${entry.id}_productId`] && (
-                          <p className="mt-1 text-sm text-red-600">{errors[`entry_${entry.id}_productId`]}</p>
+                          <p style={{
+                            marginTop: '4px',
+                            fontSize: '14px',
+                            color: '#ef4444'
+                          }}>{errors[`entry_${entry.id}_productId`]}</p>
                         )}
                       </div>
 
@@ -479,7 +700,13 @@ export default function SalesForm({ sale, onClose }) {
                       <div className="grid grid-cols-2 gap-3 mb-3">
                         {/* Quantity */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                          <label style={{
+                            display: 'block',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            color: '#ebebeb',
+                            marginBottom: '4px'
+                          }}>Quantity</label>
                           <input
                             type="number"
                             value={entry.quantity}
@@ -487,22 +714,52 @@ export default function SalesForm({ sale, onClose }) {
                             min="1"
                             step="1"
                             inputMode="numeric"
-                            className={`w-full px-3 py-2.5 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                              errors[`entry_${entry.id}_quantity`] ? 'border-red-300' : 'border-gray-300'
-                            }`}
+                            style={{
+                              width: '100%',
+                              padding: '12px',
+                              fontSize: '16px',
+                              backgroundColor: '#1c1c1c',
+                              color: '#ebebeb',
+                              border: errors[`entry_${entry.id}_quantity`] ? '1px solid #ef4444' : '1px solid #404040',
+                              borderRadius: '6px',
+                              outline: 'none',
+                              transition: 'border-color 0.2s, box-shadow 0.2s'
+                            }}
+                            onFocus={(e) => {
+                              e.target.style.borderColor = errors[`entry_${entry.id}_quantity`] ? '#ef4444' : '#60a5fa';
+                              e.target.style.boxShadow = errors[`entry_${entry.id}_quantity`] ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                            }}
+                            onBlur={(e) => {
+                              e.target.style.borderColor = errors[`entry_${entry.id}_quantity`] ? '#ef4444' : '#404040';
+                              e.target.style.boxShadow = 'none';
+                            }}
                             placeholder="0"
                           />
                           {errors[`entry_${entry.id}_quantity`] && (
-                            <p className="mt-1 text-xs text-red-600">{errors[`entry_${entry.id}_quantity`]}</p>
+                            <p style={{
+                              marginTop: '4px',
+                              fontSize: '12px',
+                              color: '#ef4444'
+                            }}>{errors[`entry_${entry.id}_quantity`]}</p>
                           )}
                           {product && (
-                            <p className="mt-1 text-xs text-gray-500">Stock: {product.currentStock}</p>
+                            <p style={{
+                              marginTop: '4px',
+                              fontSize: '12px',
+                              color: '#b3b3b3'
+                            }}>Stock: {product.currentStock}</p>
                           )}
                         </div>
 
                         {/* Price per Unit */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Price/Unit</label>
+                          <label style={{
+                            display: 'block',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            color: '#ebebeb',
+                            marginBottom: '4px'
+                          }}>Price/Unit</label>
                           <input
                             type="number"
                             value={entry.pricePerUnit}
@@ -510,34 +767,86 @@ export default function SalesForm({ sale, onClose }) {
                             min="0"
                             step="0.01"
                             inputMode="decimal"
-                            className={`w-full px-3 py-2.5 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                              errors[`entry_${entry.id}_pricePerUnit`] ? 'border-red-300' : 'border-gray-300'
-                            }`}
+                            style={{
+                              width: '100%',
+                              padding: '12px',
+                              fontSize: '16px',
+                              backgroundColor: '#1c1c1c',
+                              color: '#ebebeb',
+                              border: errors[`entry_${entry.id}_pricePerUnit`] ? '1px solid #ef4444' : '1px solid #404040',
+                              borderRadius: '6px',
+                              outline: 'none',
+                              transition: 'border-color 0.2s, box-shadow 0.2s'
+                            }}
+                            onFocus={(e) => {
+                              e.target.style.borderColor = errors[`entry_${entry.id}_pricePerUnit`] ? '#ef4444' : '#60a5fa';
+                              e.target.style.boxShadow = errors[`entry_${entry.id}_pricePerUnit`] ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                            }}
+                            onBlur={(e) => {
+                              e.target.style.borderColor = errors[`entry_${entry.id}_pricePerUnit`] ? '#ef4444' : '#404040';
+                              e.target.style.boxShadow = 'none';
+                            }}
                             placeholder="0.00"
                           />
                           {errors[`entry_${entry.id}_pricePerUnit`] && (
-                            <p className="mt-1 text-xs text-red-600">{errors[`entry_${entry.id}_pricePerUnit`]}</p>
+                            <p style={{
+                              marginTop: '4px',
+                              fontSize: '12px',
+                              color: '#ef4444'
+                            }}>{errors[`entry_${entry.id}_pricePerUnit`]}</p>
                           )}
                         </div>
                       </div>
 
                       {/* Notes */}
                       <div className="mb-3">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
+                        <label style={{
+                          display: 'block',
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          color: '#ebebeb',
+                          marginBottom: '4px'
+                        }}>Notes (Optional)</label>
                         <input
                           type="text"
                           value={entry.notes}
                           onChange={(e) => handleEntryChange(entry.id, 'notes', e.target.value)}
-                          className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                          style={{
+                            width: '100%',
+                            padding: '12px',
+                            fontSize: '16px',
+                            backgroundColor: '#1c1c1c',
+                            color: '#ebebeb',
+                            border: '1px solid #404040',
+                            borderRadius: '6px',
+                            outline: 'none',
+                            transition: 'border-color 0.2s, box-shadow 0.2s'
+                          }}
+                          onFocus={(e) => {
+                            e.target.style.borderColor = '#60a5fa';
+                            e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                          }}
+                          onBlur={(e) => {
+                            e.target.style.borderColor = '#404040';
+                            e.target.style.boxShadow = 'none';
+                          }}
                           placeholder="Add notes..."
                         />
                       </div>
 
                       {/* Total */}
-                      <div className="pt-3 border-t border-gray-100">
+                      <div className="pt-3" style={{ borderTop: '1px solid #404040' }}>
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-gray-600">Item Total:</span>
-                          <span className="text-lg font-bold text-green-600">
+                          <span style={{
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            color: '#b3b3b3'
+                          }}>Item Total:</span>
+                          <span style={{
+                            fontSize: '18px',
+                            fontWeight: 'bold',
+                            color: '#10b981'
+                          }}>
                             {formatCurrency(entryTotal)}
                           </span>
                         </div>
@@ -548,7 +857,10 @@ export default function SalesForm({ sale, onClose }) {
               </div>
               
               {availableProducts.length === 0 && (
-                <div className="text-center py-4 text-sm text-orange-600">
+                <div className="text-center py-4" style={{
+                fontSize: '14px',
+                color: '#f59e0b'
+              }}>
                   No products with stock available. Add inventory first.
                 </div>
               )}
@@ -556,30 +868,68 @@ export default function SalesForm({ sale, onClose }) {
 
             {/* Sale Summary */}
             {totals.totalAmount > 0 && (
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 md:p-5 border border-green-200">
-                <h4 className="text-base font-semibold text-green-900 mb-3">Order Summary</h4>
+              <div className="rounded-lg p-4 md:p-5" style={{
+                background: 'linear-gradient(to right, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))',
+                border: '1px solid rgba(16, 185, 129, 0.3)'
+              }}>
+                <h4 style={{
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  color: '#10b981',
+                  marginBottom: '12px'
+                }}>Order Summary</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                   <div className="flex justify-between sm:block">
-                    <p className="text-sm text-green-700">Total Items</p>
+                    <p style={{
+                      fontSize: '14px',
+                      color: '#10b981'
+                    }}>Total Items</p>
                     <div className="text-right sm:text-left">
-                      <p className="text-xl font-bold text-green-900">{totals.totalQuantity}</p>
-                      <p className="text-xs text-green-600">{saleEntries.length} product{saleEntries.length > 1 ? 's' : ''}</p>
+                      <p style={{
+                        fontSize: '20px',
+                        fontWeight: 'bold',
+                        color: '#ebebeb'
+                      }}>{totals.totalQuantity}</p>
+                      <p style={{
+                        fontSize: '12px',
+                        color: '#10b981'
+                      }}>{saleEntries.length} product{saleEntries.length > 1 ? 's' : ''}</p>
                     </div>
                   </div>
                   <div className="flex justify-between sm:block">
-                    <p className="text-sm text-green-700">Total Revenue</p>
+                    <p style={{
+                      fontSize: '14px',
+                      color: '#10b981'
+                    }}>Total Revenue</p>
                     <div className="text-right sm:text-left">
-                      <p className="text-xl font-bold text-green-900">{formatCurrency(totals.totalAmount)}</p>
-                      <p className="text-xs text-green-600">Before expenses</p>
+                      <p style={{
+                        fontSize: '20px',
+                        fontWeight: 'bold',
+                        color: '#ebebeb'
+                      }}>{formatCurrency(totals.totalAmount)}</p>
+                      <p style={{
+                        fontSize: '12px',
+                        color: '#10b981'
+                      }}>Before expenses</p>
                     </div>
                   </div>
                   <div className="flex justify-between sm:block">
-                    <p className="text-sm text-green-700">Est. Profit</p>
+                    <p style={{
+                      fontSize: '14px',
+                      color: '#10b981'
+                    }}>Est. Profit</p>
                     <div className="text-right sm:text-left">
-                      <p className={`text-xl font-bold ${totals.totalProfit >= 0 ? 'text-green-900' : 'text-red-600'}`}>
+                      <p style={{
+                        fontSize: '20px',
+                        fontWeight: 'bold',
+                        color: totals.totalProfit >= 0 ? '#ebebeb' : '#ef4444'
+                      }}>
                         {formatCurrency(totals.totalProfit)}
                       </p>
-                      <p className="text-xs text-green-600">
+                      <p style={{
+                        fontSize: '12px',
+                        color: '#10b981'
+                      }}>
                         {totals.totalAmount > 0 ? `${((totals.totalProfit / totals.totalAmount) * 100).toFixed(1)}% margin` : '0% margin'}
                       </p>
                     </div>
@@ -589,10 +939,17 @@ export default function SalesForm({ sale, onClose }) {
             )}
 
             {/* Form Actions */}
-            <div className="flex flex-col sm:flex-row sm:justify-between items-stretch sm:items-center gap-3 pt-4 border-t border-gray-200">
-              <div className="text-sm text-gray-500 text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row sm:justify-between items-stretch sm:items-center gap-3 pt-4" style={{
+              borderTop: '1px solid #404040'
+            }}>
+              <div className="text-center sm:text-left" style={{
+                fontSize: '14px',
+                color: '#b3b3b3'
+              }}>
                 {!sale && saleEntries.length > 1 && (
-                  <span className="hidden sm:inline">Recording {saleEntries.length} sales for {commonDate}</span>
+                  <span className="hidden sm:inline" style={{
+                    color: '#b3b3b3'
+                  }}>Recording {saleEntries.length} sales for {commonDate}</span>
                 )}
               </div>
               <div className="flex flex-col-reverse sm:flex-row gap-3 sm:space-x-0">
@@ -600,14 +957,61 @@ export default function SalesForm({ sale, onClose }) {
                   type="button"
                   onClick={onClose}
                   disabled={isSubmitting}
-                  className="w-full sm:w-auto px-5 py-3 sm:py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
+                  style={{
+                    width: '100%',
+                    padding: '12px 20px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#ebebeb',
+                    backgroundColor: '#404040',
+                    border: '1px solid #525252',
+                    borderRadius: '6px',
+                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                    opacity: isSubmitting ? 0.5 : 1,
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isSubmitting) {
+                      e.target.style.backgroundColor = '#525252';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isSubmitting) {
+                      e.target.style.backgroundColor = '#404040';
+                    }
+                  }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting || availableProducts.length === 0}
-                  className="w-full sm:w-auto inline-flex justify-center items-center px-5 py-3 sm:py-2.5 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 border border-transparent rounded-md shadow-sm hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all touch-manipulation"
+                  style={{
+                    width: '100%',
+                    display: 'inline-flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '12px 20px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#ffffff',
+                    background: 'linear-gradient(to right, #10b981, #059669)',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: (isSubmitting || availableProducts.length === 0) ? 'not-allowed' : 'pointer',
+                    opacity: (isSubmitting || availableProducts.length === 0) ? 0.5 : 1,
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isSubmitting && availableProducts.length > 0) {
+                      e.target.style.background = 'linear-gradient(to right, #059669, #047857)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isSubmitting && availableProducts.length > 0) {
+                      e.target.style.background = 'linear-gradient(to right, #10b981, #059669)';
+                    }
+                  }}
                 >
                   {isSubmitting ? (
                     <>

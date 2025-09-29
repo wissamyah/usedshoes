@@ -65,24 +65,24 @@ export default function TopProductsChart() {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-100">
-          <p className="text-sm font-medium text-gray-900 mb-2">{label}</p>
+        <div style={{ backgroundColor: '#2a2a2a', border: '1px solid #404040' }} className="p-3 rounded-lg shadow-lg">
+          <p style={{ color: '#ebebeb' }} className="text-sm font-medium mb-2">{label}</p>
           <div className="space-y-1">
             <div className="flex justify-between gap-4">
-              <span className="text-xs text-gray-600">Units Sold:</span>
-              <span className="text-xs font-semibold text-gray-900">{data.totalQuantity}</span>
+              <span style={{ color: '#b3b3b3' }} className="text-xs">Units Sold:</span>
+              <span style={{ color: '#ebebeb' }} className="text-xs font-semibold">{data.totalQuantity}</span>
             </div>
             <div className="flex justify-between gap-4">
-              <span className="text-xs text-gray-600">Revenue:</span>
-              <span className="text-xs font-semibold text-green-600">{formatCurrency(data.totalRevenue)}</span>
+              <span style={{ color: '#b3b3b3' }} className="text-xs">Revenue:</span>
+              <span style={{ color: '#b3b3b3' }} className="text-xs font-semibold">{formatCurrency(data.totalRevenue)}</span>
             </div>
             <div className="flex justify-between gap-4">
-              <span className="text-xs text-gray-600">Profit:</span>
-              <span className="text-xs font-semibold text-blue-600">{formatCurrency(data.totalProfit)}</span>
+              <span style={{ color: '#b3b3b3' }} className="text-xs">Profit:</span>
+              <span style={{ color: '#b3b3b3' }} className="text-xs font-semibold">{formatCurrency(data.totalProfit)}</span>
             </div>
             <div className="flex justify-between gap-4">
-              <span className="text-xs text-gray-600">Stock Left:</span>
-              <span className="text-xs font-semibold text-gray-900">{data.currentStock} bags</span>
+              <span style={{ color: '#b3b3b3' }} className="text-xs">Stock Left:</span>
+              <span style={{ color: '#ebebeb' }} className="text-xs font-semibold">{data.currentStock} bags</span>
             </div>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function TopProductsChart() {
       <text
         x={x + width / 2}
         y={y - 5}
-        fill="#6b7280"
+        fill="#808080"
         textAnchor="middle"
         dominantBaseline="middle"
         className="text-xs font-medium"
@@ -109,22 +109,22 @@ export default function TopProductsChart() {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
-      <div className="absolute inset-0 bg-gradient-to-br from-transparent to-purple-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+    <div style={{ backgroundColor: '#2a2a2a', border: '1px solid #404040' }} className="rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent to-gray-800/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
       <div className="p-6 relative">
         <div className="flex items-center justify-between mb-6">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <div className="p-1.5 bg-purple-50 rounded-lg">
-                <Award className="h-4 w-4 text-purple-600" />
+              <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }} className="p-1.5 rounded-lg">
+                <Award style={{ color: '#ebebeb', opacity: 0.7 }} className="h-4 w-4" />
               </div>
-              <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Top Performers</h3>
+              <h3 style={{ color: '#b3b3b3' }} className="text-sm font-medium uppercase tracking-wider">Top Performers</h3>
             </div>
-            <p className="text-xs text-gray-500 ml-8">Best selling products by volume</p>
+            <p style={{ color: '#808080' }} className="text-xs ml-8">Best selling products by volume</p>
           </div>
           <div className="flex items-center gap-2">
-            <div className="flex items-center text-xs text-gray-400">
-              <Package className="h-3 w-3 mr-1" />
+            <div style={{ color: '#808080' }} className="flex items-center text-xs">
+              <Package style={{ color: '#ebebeb', opacity: 0.7 }} className="h-3 w-3 mr-1" />
               <span>{chartData.length} Products</span>
             </div>
           </div>
@@ -146,10 +146,10 @@ export default function TopProductsChart() {
                     </linearGradient>
                   ))}
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#404040" vertical={false} />
                 <XAxis
                   dataKey="productName"
-                  stroke="#9ca3af"
+                  stroke="#808080"
                   fontSize={11}
                   angle={-45}
                   textAnchor="end"
@@ -159,12 +159,12 @@ export default function TopProductsChart() {
                   axisLine={false}
                 />
                 <YAxis
-                  stroke="#9ca3af"
+                  stroke="#808080"
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
                 />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(139, 92, 246, 0.05)' }} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }} />
                 <Bar dataKey="totalQuantity" radius={[8, 8, 0, 0]} animationDuration={1000}>
                   <LabelList dataKey="totalQuantity" position="top" content={renderCustomLabel} />
                   {chartData.map((entry, index) => (
@@ -176,44 +176,44 @@ export default function TopProductsChart() {
           </div>
 
           {/* Product Details Table */}
-          <div className="mt-6 overflow-x-auto border-t border-gray-100 pt-4">
+          <div style={{ borderTop: '1px solid #404040' }} className="mt-6 overflow-x-auto pt-4">
             <div className="flex items-center gap-2 mb-3">
-              <ShoppingBag className="h-4 w-4 text-gray-400" />
-              <h4 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Performance Details</h4>
+              <ShoppingBag style={{ color: '#ebebeb', opacity: 0.7 }} className="h-4 w-4" />
+              <h4 style={{ color: '#b3b3b3' }} className="text-sm font-medium uppercase tracking-wider">Performance Details</h4>
             </div>
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th style={{ color: '#808080' }} className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     Rank
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th style={{ color: '#808080' }} className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     Product
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th style={{ color: '#808080' }} className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider">
                     Units
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th style={{ color: '#808080' }} className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider">
                     Revenue
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th style={{ color: '#808080' }} className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider">
                     Profit
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th style={{ color: '#808080' }} className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider">
                     Stock
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody style={{ backgroundColor: 'transparent' }} className="divide-y divide-gray-600">
                 {chartData.map((product, index) => (
-                  <tr key={product.productId} className="hover:bg-gray-50 transition-colors duration-150 cursor-default group">
+                  <tr key={product.productId} className="hover:bg-white/5 transition-colors duration-150 cursor-default group">
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="flex items-center">
                         <div
                           className="w-3 h-3 rounded-full mr-2 ring-2 ring-white shadow-sm"
                           style={{ backgroundColor: colors[index % colors.length] }}
                         ></div>
-                        <span className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+                        <span style={{ color: '#ebebeb' }} className="text-sm font-medium transition-colors">
                           {index + 1 === 1 && '🥇'}
                           {index + 1 === 2 && '🥈'}
                           {index + 1 === 3 && '🥉'}
@@ -223,31 +223,35 @@ export default function TopProductsChart() {
                     </td>
                     <td className="px-4 py-3">
                       <div>
-                        <div className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{product.productName}</div>
-                        <div className="text-xs text-gray-500">{product.category}</div>
+                        <div style={{ color: '#ebebeb' }} className="text-sm font-medium transition-colors">{product.productName}</div>
+                        <div style={{ color: '#808080' }} className="text-xs">{product.category}</div>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <span className="text-sm font-medium text-gray-900">{product.totalQuantity}</span>
+                      <span style={{ color: '#ebebeb' }} className="text-sm font-medium">{product.totalQuantity}</span>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <span className="text-sm font-medium text-green-600 group-hover:text-green-700 transition-colors">
+                      <span style={{ color: '#b3b3b3' }} className="text-sm font-medium transition-colors">
                         {formatCurrency(product.totalRevenue)}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <span className="text-sm font-medium text-blue-600 group-hover:text-blue-700 transition-colors">
+                      <span style={{ color: '#b3b3b3' }} className="text-sm font-medium transition-colors">
                         {formatCurrency(product.totalProfit)}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center">
                       <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                         product.currentStock > 10
-                          ? 'bg-green-50 text-green-700 ring-1 ring-green-600/20'
+                          ? 'text-green-400'
                           : product.currentStock > 0
-                          ? 'bg-yellow-50 text-yellow-700 ring-1 ring-yellow-600/20'
-                          : 'bg-red-50 text-red-700 ring-1 ring-red-600/20'
-                      }`}>
+                          ? 'text-yellow-400'
+                          : 'text-red-400'
+                      }`}
+                      style={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)'
+                      }}>
                         {product.currentStock}
                       </span>
                     </td>
@@ -260,11 +264,11 @@ export default function TopProductsChart() {
       ) : (
         <div className="h-80 flex items-center justify-center">
           <div className="text-center">
-            <div className="mx-auto h-16 w-16 text-gray-300 mb-4 bg-gray-50 rounded-full flex items-center justify-center">
+            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', color: '#808080' }} className="mx-auto h-16 w-16 mb-4 rounded-full flex items-center justify-center">
               <Award className="h-8 w-8" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Sales Data</h3>
-            <p className="text-sm text-gray-500">Start making sales to see your top performers</p>
+            <h3 style={{ color: '#ebebeb' }} className="text-lg font-medium mb-2">No Sales Data</h3>
+            <p style={{ color: '#808080' }} className="text-sm">Start making sales to see your top performers</p>
           </div>
         </div>
       )}
