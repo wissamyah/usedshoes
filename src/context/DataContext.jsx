@@ -14,6 +14,7 @@ const initialState = {
       withdrawal: 1,
       cashFlow: 1,
       cashInjection: 1,
+      priceAdjustment: 1,
     },
   },
   containers: [],
@@ -24,6 +25,7 @@ const initialState = {
   withdrawals: [],
   cashFlows: [],
   cashInjections: [],
+  priceAdjustments: [],
   // UI state
   loading: false,
   error: null,
@@ -40,6 +42,7 @@ export const DATA_ACTIONS = {
   ADD_CONTAINER: 'ADD_CONTAINER',
   UPDATE_CONTAINER: 'UPDATE_CONTAINER',
   DELETE_CONTAINER: 'DELETE_CONTAINER',
+  ADJUST_CONTAINER_PRICES: 'ADJUST_CONTAINER_PRICES',
   
   // Product actions
   ADD_PRODUCT: 'ADD_PRODUCT',
@@ -106,6 +109,7 @@ function dataReducer(state, action) {
         withdrawal: loadedMetadata.nextIds?.withdrawal || 1,
         cashFlow: loadedMetadata.nextIds?.cashFlow || 1,
         cashInjection: loadedMetadata.nextIds?.cashInjection || 1,
+        priceAdjustment: loadedMetadata.nextIds?.priceAdjustment || 1,
       };
 
       const newState = {
@@ -621,6 +625,162 @@ function dataReducer(state, action) {
         products: updatedProducts,
         metadata: {
           ...state.metadata,
+          lastUpdated: new Date().toISOString(),
+        },
+        unsavedChanges: true,
+      };
+    }
+
+    case DATA_ACTIONS.ADJUST_CONTAINER_PRICES: {
+      console.log('Adjusting container prices for container ID:', action.payload.containerId);
+
+      const { containerId, productAdjustments, reason, adjustedBy } = action.payload;
+
+      // Find the container to adjust
+      const containerToAdjust = state.containers.find(c => c.id === containerId);
+      if (!containerToAdjust) {
+        console.error('Container not found for price adjustment:', containerId);
+        return {
+          ...state,
+          error: 'Container not found',
+        };
+      }
+
+      let updatedProducts = [...state.products];
+      const adjustmentEntries = [];
+
+      // Process each product adjustment
+      productAdjustments.forEach(adjustment => {
+        const { productId, oldPricePerKg, newPricePerKg } = adjustment;
+
+        // Find the product
+        const productIndex = updatedProducts.findIndex(p =>
+          p.id == productId ||
+          p.id === parseInt(productId) ||
+          p.id === productId.toString()
+        );
+
+        if (productIndex >= 0) {
+          const product = updatedProducts[productIndex];
+
+          // Find the container product details
+          const containerProduct = containerToAdjust.products.find(cp =>
+            cp.productId == productId ||
+            cp.productId === parseInt(productId) ||
+            cp.productId === productId.toString()
+          );
+
+          if (containerProduct) {
+            // Calculate price difference per kg
+            const priceDifferencePerKg = newPricePerKg - oldPricePerKg;
+
+            // Calculate total kg affected by this container for this product
+            const bagWeight = containerProduct.bagWeight || product.bagWeight || 25;
+            const containerKg = containerProduct.bagQuantity * bagWeight;
+
+            let newCostPerKg;
+
+            if (product.currentStock === 0) {
+              // If current stock is 0, the product cost should be 0 (no stock = no cost)
+              // Price adjustment doesn't affect cost when there's no stock
+              newCostPerKg = 0;
+              console.log(`Price adjustment for ${product.name}: No current stock, cost remains 0`);
+            } else {
+              // Calculate current total kg for this product
+              const totalCurrentKg = product.currentStock * bagWeight;
+
+              // Calculate weighted adjustment to current cost
+              const adjustmentWeight = containerKg / totalCurrentKg;
+              const costAdjustmentPerKg = priceDifferencePerKg * adjustmentWeight;
+
+              // Apply adjustment to current cost
+              newCostPerKg = (product.costPerKg || product.costPerUnit || 0) + costAdjustmentPerKg;
+
+              console.log(`Price adjustment for ${product.name}:
+                Container contribution: ${containerKg}kg out of ${totalCurrentKg}kg total (${(adjustmentWeight * 100).toFixed(2)}%)
+                Price change: $${oldPricePerKg}/kg → $${newPricePerKg}/kg (${priceDifferencePerKg >= 0 ? '+' : ''}$${priceDifferencePerKg}/kg)
+                Cost adjustment: ${costAdjustmentPerKg >= 0 ? '+' : ''}$${costAdjustmentPerKg.toFixed(4)}/kg
+                New cost: $${product.costPerKg || product.costPerUnit || 0}/kg → $${newCostPerKg.toFixed(4)}/kg`);
+            }
+
+            // Update product with new cost
+            updatedProducts[productIndex] = {
+              ...product,
+              costPerKg: newCostPerKg,
+              costPerUnit: newCostPerKg,
+            };
+
+            // Create adjustment entry for audit trail
+            adjustmentEntries.push({
+              id: `PA${state.metadata.nextIds.priceAdjustment || 1}`,
+              containerId,
+              productId,
+              productName: product.name,
+              oldPricePerKg,
+              newPricePerKg,
+              priceDifferencePerKg,
+              containerKg,
+              totalCurrentKg,
+              adjustmentWeight,
+              costAdjustmentPerKg,
+              oldCostPerKg: product.costPerKg || product.costPerUnit || 0,
+              newCostPerKg,
+              reason,
+              adjustedBy,
+              adjustmentDate: new Date().toISOString(),
+            });
+          }
+        }
+      });
+
+      // Update container products with new prices
+      const updatedContainers = state.containers.map(container => {
+        if (container.id === containerId) {
+          const updatedContainerProducts = container.products.map(containerProduct => {
+            const adjustment = productAdjustments.find(adj =>
+              adj.productId == containerProduct.productId ||
+              adj.productId === parseInt(containerProduct.productId) ||
+              adj.productId === containerProduct.productId.toString()
+            );
+
+            if (adjustment) {
+              return {
+                ...containerProduct,
+                costPerKg: adjustment.newPricePerKg,
+                originalCostPerKg: containerProduct.costPerKg || containerProduct.originalCostPerKg, // Preserve original if first adjustment
+              };
+            }
+            return containerProduct;
+          });
+
+          return {
+            ...container,
+            products: updatedContainerProducts,
+            priceAdjustments: [...(container.priceAdjustments || []), {
+              adjustmentDate: new Date().toISOString(),
+              reason,
+              adjustedBy,
+              adjustments: productAdjustments,
+            }],
+            updatedAt: new Date().toISOString(),
+          };
+        }
+        return container;
+      });
+
+      console.log(`Price adjustment completed for ${adjustmentEntries.length} products`);
+
+      return {
+        ...state,
+        containers: updatedContainers,
+        products: updatedProducts,
+        priceAdjustments: [...(state.priceAdjustments || []), ...adjustmentEntries],
+        metadata: {
+          ...state.metadata,
+          nextIds: {
+            ...state.metadata.nextIds,
+            priceAdjustment: (state.metadata.nextIds.priceAdjustment || 1) + adjustmentEntries.length,
+          },
           lastUpdated: new Date().toISOString(),
         },
         unsavedChanges: true,
@@ -1156,6 +1316,7 @@ export function DataProvider({ children }) {
     addContainer: (containerData) => dispatch({ type: DATA_ACTIONS.ADD_CONTAINER, payload: containerData }),
     updateContainer: (id, data) => dispatch({ type: DATA_ACTIONS.UPDATE_CONTAINER, payload: { id, data } }),
     deleteContainer: (containerId) => dispatch({ type: DATA_ACTIONS.DELETE_CONTAINER, payload: containerId }),
+    adjustContainerPrices: (adjustmentData) => dispatch({ type: DATA_ACTIONS.ADJUST_CONTAINER_PRICES, payload: adjustmentData }),
     
     addProduct: (productData) => dispatch({ type: DATA_ACTIONS.ADD_PRODUCT, payload: productData }),
     updateProduct: (id, data) => dispatch({ type: DATA_ACTIONS.UPDATE_PRODUCT, payload: { id, data } }),

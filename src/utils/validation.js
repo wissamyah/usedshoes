@@ -439,3 +439,91 @@ export function validateDataIntegrity(data) {
     errors
   };
 }
+
+// Price adjustment validation
+export function validatePriceAdjustment(adjustmentData) {
+  const errors = [];
+
+  if (!adjustmentData.containerId || !isValidString(adjustmentData.containerId)) {
+    errors.push('Container ID is required and must be a valid string');
+  }
+
+  if (!adjustmentData.reason || !isValidString(adjustmentData.reason, 3)) {
+    errors.push('Reason is required and must be at least 3 characters long');
+  }
+
+  if (!adjustmentData.adjustedBy || !isValidString(adjustmentData.adjustedBy)) {
+    errors.push('Adjusted by field is required');
+  }
+
+  if (!Array.isArray(adjustmentData.productAdjustments) || adjustmentData.productAdjustments.length === 0) {
+    errors.push('At least one product adjustment is required');
+  } else {
+    adjustmentData.productAdjustments.forEach((adjustment, index) => {
+      if (!adjustment.productId) {
+        errors.push(`Product ID is required for adjustment ${index + 1}`);
+      }
+
+      if (!isValidNumber(parseFloat(adjustment.oldPricePerKg), 0)) {
+        errors.push(`Valid old price per kg is required for adjustment ${index + 1}`);
+      }
+
+      if (!isValidNumber(parseFloat(adjustment.newPricePerKg), 0)) {
+        errors.push(`Valid new price per kg is required for adjustment ${index + 1}`);
+      }
+
+      if (parseFloat(adjustment.oldPricePerKg) === parseFloat(adjustment.newPricePerKg)) {
+        errors.push(`Old and new prices cannot be the same for adjustment ${index + 1}`);
+      }
+
+      const priceDifference = Math.abs(parseFloat(adjustment.newPricePerKg) - parseFloat(adjustment.oldPricePerKg));
+      const oldPrice = parseFloat(adjustment.oldPricePerKg);
+      const changePercentage = oldPrice > 0 ? (priceDifference / oldPrice) * 100 : 0;
+
+      // Warn for large price changes (>50%)
+      if (changePercentage > 50) {
+        errors.push(`Price change of ${changePercentage.toFixed(1)}% for adjustment ${index + 1} seems unusually large. Please verify.`);
+      }
+    });
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
+
+// Validate price adjustment form data
+export function validatePriceAdjustmentForm(formData) {
+  const errors = {};
+
+  if (!formData.reason?.trim()) {
+    errors.reason = 'Reason for price adjustment is required';
+  } else if (formData.reason.trim().length < 3) {
+    errors.reason = 'Reason must be at least 3 characters long';
+  }
+
+  if (!formData.adjustedBy?.trim()) {
+    errors.adjustedBy = 'Name of person making adjustment is required';
+  }
+
+  // Validate individual product adjustments
+  if (formData.productAdjustments) {
+    formData.productAdjustments.forEach((adjustment, index) => {
+      const fieldKey = `adjustment_${index}`;
+
+      if (!adjustment.newPricePerKg || isNaN(parseFloat(adjustment.newPricePerKg))) {
+        errors[`${fieldKey}_price`] = 'Valid new price is required';
+      } else if (parseFloat(adjustment.newPricePerKg) < 0) {
+        errors[`${fieldKey}_price`] = 'Price cannot be negative';
+      } else if (parseFloat(adjustment.newPricePerKg) === parseFloat(adjustment.oldPricePerKg)) {
+        errors[`${fieldKey}_price`] = 'New price must be different from current price';
+      }
+    });
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors
+  };
+}

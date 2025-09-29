@@ -1,10 +1,23 @@
 import { useState } from 'react';
-import { X, Pencil, Package, DollarSign, Truck, Calendar, FileText, BarChart3, MapPin, Clock } from 'lucide-react';
+import { X, Pencil, Package, DollarSign, Truck, Calendar, FileText, BarChart3, MapPin, Clock, Edit3 } from 'lucide-react';
 import { formatDate } from '../../utils/dateFormatter';
+import { validatePriceAdjustmentForm } from '../../utils/validation';
+import { useData } from '../../context/DataContext';
+import { useUI } from '../../context/UIContext';
 import Modal from '../UI/Modal';
 
 export default function ContainerDetails({ container, onClose, onEdit }) {
   const [activeTab, setActiveTab] = useState('overview');
+  const [showPriceAdjustment, setShowPriceAdjustment] = useState(false);
+  const [adjustmentForm, setAdjustmentForm] = useState({
+    reason: '',
+    adjustedBy: '',
+    productAdjustments: []
+  });
+  const [formErrors, setFormErrors] = useState({});
+
+  const { adjustContainerPrices, products } = useData();
+  const { showSuccessMessage, showErrorMessage } = useUI();
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -36,6 +49,7 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'products', label: 'Products', icon: Package },
     { id: 'costs', label: 'Costs', icon: DollarSign },
+    { id: 'adjustments', label: 'Price Adjustments', icon: Edit3 },
     { id: 'timeline', label: 'Timeline', icon: Clock }
   ];
 
@@ -75,6 +89,380 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
       <span className="sm:hidden">{tab.label.charAt(0)}</span>
     </button>
   );
+
+  // Price adjustment functions
+  const initializePriceAdjustment = () => {
+    const productAdjustments = container.products?.map(cp => {
+      const product = products.find(p =>
+        p.id == cp.productId ||
+        p.id === parseInt(cp.productId) ||
+        p.id === cp.productId.toString()
+      );
+
+      return {
+        productId: cp.productId,
+        productName: product?.name || 'Unknown Product',
+        oldPricePerKg: cp.costPerKg || 0,
+        newPricePerKg: cp.costPerKg || 0,
+        bagQuantity: cp.bagQuantity,
+        bagWeight: cp.bagWeight || 25,
+        currentStock: product?.currentStock || 0
+      };
+    }) || [];
+
+    setAdjustmentForm({
+      reason: '',
+      adjustedBy: '',
+      productAdjustments
+    });
+    setFormErrors({});
+    setShowPriceAdjustment(true);
+  };
+
+  const handleAdjustmentFormChange = (field, value) => {
+    setAdjustmentForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+
+    // Clear error for this field
+    if (formErrors[field]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }));
+    }
+  };
+
+  const handleProductAdjustmentChange = (index, newPrice) => {
+    setAdjustmentForm(prev => ({
+      ...prev,
+      productAdjustments: prev.productAdjustments.map((adj, i) =>
+        i === index ? { ...adj, newPricePerKg: parseFloat(newPrice) || 0 } : adj
+      )
+    }));
+
+    // Clear error for this adjustment
+    const fieldKey = `adjustment_${index}_price`;
+    if (formErrors[fieldKey]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [fieldKey]: ''
+      }));
+    }
+  };
+
+  const submitPriceAdjustment = async () => {
+    try {
+      // Validate form
+      const validation = validatePriceAdjustmentForm(adjustmentForm);
+      if (!validation.isValid) {
+        setFormErrors(validation.errors);
+        showErrorMessage('Validation Error', 'Please fix the errors before submitting');
+        return;
+      }
+
+      // Filter out adjustments with no price change
+      const changedAdjustments = adjustmentForm.productAdjustments.filter(adj =>
+        adj.oldPricePerKg !== adj.newPricePerKg
+      );
+
+      if (changedAdjustments.length === 0) {
+        showErrorMessage('No Changes', 'No price changes detected');
+        return;
+      }
+
+      // Prepare adjustment data
+      const adjustmentData = {
+        containerId: container.id,
+        productAdjustments: changedAdjustments,
+        reason: adjustmentForm.reason.trim(),
+        adjustedBy: adjustmentForm.adjustedBy.trim()
+      };
+
+      // Submit adjustment
+      await adjustContainerPrices(adjustmentData);
+
+      showSuccessMessage(
+        'Price Adjustment Applied',
+        `Successfully adjusted prices for ${changedAdjustments.length} product(s). Product costs have been recalculated using weighted average method.`
+      );
+
+      setShowPriceAdjustment(false);
+
+      // Switch to the adjustments tab to show the changes
+      setActiveTab('adjustments');
+
+    } catch (error) {
+      console.error('Price adjustment error:', error);
+      showErrorMessage('Adjustment Failed', error.message || 'Failed to apply price adjustment');
+    }
+  };
+
+  const renderPriceAdjustmentModal = () => {
+    if (!showPriceAdjustment) return null;
+
+    return (
+      <Modal isOpen={true} onClose={() => setShowPriceAdjustment(false)} size="large">
+        <div style={{
+          backgroundColor: '#2a2a2a',
+          border: '1px solid #404040',
+          borderRadius: '8px',
+          padding: '24px',
+          maxHeight: '80vh',
+          overflowY: 'auto'
+        }}>
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: '600',
+            color: '#ebebeb',
+            marginBottom: '16px'
+          }}>
+            Adjust Container Prices
+          </h3>
+
+          <p style={{
+            color: '#b3b3b3',
+            fontSize: '14px',
+            marginBottom: '24px',
+            lineHeight: '1.5'
+          }}>
+            Adjust prices negotiated with supplier after container creation. This will recalculate your product costs using the weighted average method based on current stock levels.
+          </p>
+
+          {/* Reason and Adjuster */}
+          <div style={{ marginBottom: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ebebeb',
+                  marginBottom: '8px'
+                }}>
+                  Reason for Adjustment *
+                </label>
+                <input
+                  type="text"
+                  value={adjustmentForm.reason}
+                  onChange={(e) => handleAdjustmentFormChange('reason', e.target.value)}
+                  placeholder="e.g., Negotiated discount due to quality issues"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    backgroundColor: '#1c1c1c',
+                    border: formErrors.reason ? '1px solid #ef4444' : '1px solid #404040',
+                    borderRadius: '8px',
+                    color: '#ebebeb',
+                    fontSize: '14px'
+                  }}
+                />
+                {formErrors.reason && (
+                  <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                    {formErrors.reason}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ebebeb',
+                  marginBottom: '8px'
+                }}>
+                  Adjusted By *
+                </label>
+                <input
+                  type="text"
+                  value={adjustmentForm.adjustedBy}
+                  onChange={(e) => handleAdjustmentFormChange('adjustedBy', e.target.value)}
+                  placeholder="Your name"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    backgroundColor: '#1c1c1c',
+                    border: formErrors.adjustedBy ? '1px solid #ef4444' : '1px solid #404040',
+                    borderRadius: '8px',
+                    color: '#ebebeb',
+                    fontSize: '14px'
+                  }}
+                />
+                {formErrors.adjustedBy && (
+                  <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                    {formErrors.adjustedBy}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Product Adjustments */}
+          <div style={{ marginBottom: '24px' }}>
+            <h4 style={{
+              fontSize: '16px',
+              fontWeight: '500',
+              color: '#ebebeb',
+              marginBottom: '16px'
+            }}>
+              Product Price Adjustments
+            </h4>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {adjustmentForm.productAdjustments.map((adjustment, index) => {
+                const fieldKey = `adjustment_${index}_price`;
+                const hasChange = adjustment.oldPricePerKg !== adjustment.newPricePerKg;
+                const changeAmount = adjustment.newPricePerKg - adjustment.oldPricePerKg;
+                const changePercent = adjustment.oldPricePerKg > 0 ?
+                  ((changeAmount / adjustment.oldPricePerKg) * 100).toFixed(1) : '0';
+
+                return (
+                  <div key={adjustment.productId} style={{
+                    backgroundColor: '#1c1c1c',
+                    border: '1px solid #404040',
+                    borderRadius: '8px',
+                    padding: '16px'
+                  }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '16px', alignItems: 'center' }}>
+                      <div>
+                        <p style={{
+                          color: '#ebebeb',
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          marginBottom: '4px'
+                        }}>
+                          {adjustment.productName}
+                        </p>
+                        <p style={{
+                          color: '#b3b3b3',
+                          fontSize: '12px'
+                        }}>
+                          {adjustment.bagQuantity} bags × {adjustment.bagWeight}kg | Stock: {adjustment.currentStock} bags
+                        </p>
+                      </div>
+
+                      <div>
+                        <label style={{
+                          display: 'block',
+                          fontSize: '12px',
+                          color: '#b3b3b3',
+                          marginBottom: '4px'
+                        }}>
+                          Current Price
+                        </label>
+                        <p style={{
+                          color: '#ebebeb',
+                          fontSize: '14px',
+                          fontWeight: '500'
+                        }}>
+                          ${adjustment.oldPricePerKg.toFixed(2)}/kg
+                        </p>
+                      </div>
+
+                      <div>
+                        <label style={{
+                          display: 'block',
+                          fontSize: '12px',
+                          color: '#b3b3b3',
+                          marginBottom: '4px'
+                        }}>
+                          New Price/kg *
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={adjustment.newPricePerKg}
+                          onChange={(e) => handleProductAdjustmentChange(index, e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            backgroundColor: '#2a2a2a',
+                            border: formErrors[fieldKey] ? '1px solid #ef4444' : '1px solid #404040',
+                            borderRadius: '4px',
+                            color: '#ebebeb',
+                            fontSize: '14px'
+                          }}
+                        />
+                        {formErrors[fieldKey] && (
+                          <p style={{ color: '#ef4444', fontSize: '11px', marginTop: '2px' }}>
+                            {formErrors[fieldKey]}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        {hasChange && (
+                          <div style={{
+                            padding: '8px',
+                            backgroundColor: changeAmount > 0 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(34, 197, 94, 0.1)',
+                            border: `1px solid ${changeAmount > 0 ? '#ef4444' : '#22c55e'}`,
+                            borderRadius: '4px',
+                            textAlign: 'center'
+                          }}>
+                            <p style={{
+                              color: changeAmount > 0 ? '#ef4444' : '#22c55e',
+                              fontSize: '12px',
+                              fontWeight: '500',
+                              margin: 0
+                            }}>
+                              {changeAmount > 0 ? '+' : ''}${changeAmount.toFixed(2)}
+                            </p>
+                            <p style={{
+                              color: changeAmount > 0 ? '#ef4444' : '#22c55e',
+                              fontSize: '11px',
+                              margin: 0
+                            }}>
+                              ({changeAmount > 0 ? '+' : ''}{changePercent}%)
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+            <button
+              onClick={() => setShowPriceAdjustment(false)}
+              style={{
+                padding: '12px 20px',
+                backgroundColor: 'transparent',
+                border: '1px solid #404040',
+                borderRadius: '8px',
+                color: '#b3b3b3',
+                fontSize: '14px',
+                cursor: 'pointer'
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={submitPriceAdjustment}
+              style={{
+                padding: '12px 20px',
+                backgroundColor: '#2563eb',
+                border: 'none',
+                borderRadius: '8px',
+                color: '#ffffff',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: 'pointer'
+              }}
+            >
+              Apply Adjustments
+            </button>
+          </div>
+        </div>
+      </Modal>
+    );
+  };
 
   const renderOverviewTab = () => (
     <div className="space-y-6">
@@ -882,6 +1270,300 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
     </div>
   );
 
+  const renderAdjustmentsTab = () => (
+    <div className="space-y-6">
+      <div style={{
+        backgroundColor: '#2a2a2a',
+        border: '1px solid #404040',
+        borderRadius: '12px',
+        padding: '24px'
+      }}>
+        <div className="flex items-center justify-between mb-6">
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: '600',
+            color: '#ebebeb'
+          }}>
+            Price Adjustments
+          </h3>
+          <button
+            onClick={initializePriceAdjustment}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 16px',
+              backgroundColor: '#2563eb',
+              border: 'none',
+              borderRadius: '8px',
+              color: '#ffffff',
+              fontSize: '14px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#1d4ed8';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#2563eb';
+            }}
+          >
+            <Edit3 className="h-4 w-4" />
+            Adjust Prices
+          </button>
+        </div>
+
+        <p style={{
+          color: '#b3b3b3',
+          fontSize: '14px',
+          marginBottom: '24px',
+          lineHeight: '1.5'
+        }}>
+          Make price adjustments after negotiating with suppliers. This will recalculate your product costs using the weighted average method based on current stock levels.
+        </p>
+
+        {/* Current Container Prices */}
+        <div style={{ marginBottom: '24px' }}>
+          <h4 style={{
+            fontSize: '16px',
+            fontWeight: '500',
+            color: '#ebebeb',
+            marginBottom: '16px'
+          }}>
+            Current Container Prices
+          </h4>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {container.products?.map((cp, index) => {
+              const product = products.find(p =>
+                p.id == cp.productId ||
+                p.id === parseInt(cp.productId) ||
+                p.id === cp.productId.toString()
+              );
+
+              return (
+                <div key={cp.productId || index} style={{
+                  backgroundColor: '#1c1c1c',
+                  border: '1px solid #404040',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '16px', alignItems: 'center' }}>
+                    <div>
+                      <p style={{
+                        color: '#ebebeb',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        marginBottom: '4px'
+                      }}>
+                        {product?.name || 'Unknown Product'}
+                      </p>
+                      <p style={{
+                        color: '#b3b3b3',
+                        fontSize: '12px'
+                      }}>
+                        {cp.bagQuantity} bags × {cp.bagWeight || 25}kg
+                      </p>
+                    </div>
+
+                    <div>
+                      <label style={{
+                        display: 'block',
+                        fontSize: '12px',
+                        color: '#b3b3b3',
+                        marginBottom: '4px'
+                      }}>
+                        Container Price
+                      </label>
+                      <p style={{
+                        color: '#ebebeb',
+                        fontSize: '14px',
+                        fontWeight: '500'
+                      }}>
+                        ${(cp.costPerKg || 0).toFixed(2)}/kg
+                      </p>
+                      {cp.originalCostPerKg && cp.originalCostPerKg !== cp.costPerKg && (
+                        <p style={{
+                          color: '#b3b3b3',
+                          fontSize: '11px',
+                          textDecoration: 'line-through'
+                        }}>
+                          Original: ${cp.originalCostPerKg.toFixed(2)}/kg
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label style={{
+                        display: 'block',
+                        fontSize: '12px',
+                        color: '#b3b3b3',
+                        marginBottom: '4px'
+                      }}>
+                        Current Stock
+                      </label>
+                      <p style={{
+                        color: '#ebebeb',
+                        fontSize: '14px',
+                        fontWeight: '500'
+                      }}>
+                        {product?.currentStock || 0} bags
+                      </p>
+                    </div>
+
+                    <div>
+                      <label style={{
+                        display: 'block',
+                        fontSize: '12px',
+                        color: '#b3b3b3',
+                        marginBottom: '4px'
+                      }}>
+                        Current Product Cost
+                      </label>
+                      <p style={{
+                        color: '#ebebeb',
+                        fontSize: '14px',
+                        fontWeight: '500'
+                      }}>
+                        ${(product?.costPerKg || product?.costPerUnit || 0).toFixed(2)}/kg
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Price Adjustment History */}
+        {container.priceAdjustments && container.priceAdjustments.length > 0 && (
+          <div>
+            <h4 style={{
+              fontSize: '16px',
+              fontWeight: '500',
+              color: '#ebebeb',
+              marginBottom: '16px'
+            }}>
+              Adjustment History
+            </h4>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {container.priceAdjustments.map((adjustment, index) => (
+                <div key={index} style={{
+                  backgroundColor: '#1c1c1c',
+                  border: '1px solid #404040',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}>
+                  <div style={{ marginBottom: '12px' }}>
+                    <div className="flex items-center justify-between">
+                      <p style={{
+                        color: '#ebebeb',
+                        fontSize: '14px',
+                        fontWeight: '500'
+                      }}>
+                        {formatDate(adjustment.adjustmentDate)}
+                      </p>
+                      <p style={{
+                        color: '#b3b3b3',
+                        fontSize: '12px'
+                      }}>
+                        by {adjustment.adjustedBy}
+                      </p>
+                    </div>
+                    <p style={{
+                      color: '#b3b3b3',
+                      fontSize: '13px',
+                      marginTop: '4px'
+                    }}>
+                      {adjustment.reason}
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {adjustment.adjustments?.map((adj, adjIndex) => {
+                      const product = products.find(p =>
+                        p.id == adj.productId ||
+                        p.id === parseInt(adj.productId) ||
+                        p.id === adj.productId.toString()
+                      );
+                      const changeAmount = adj.newPricePerKg - adj.oldPricePerKg;
+                      const changePercent = adj.oldPricePerKg > 0 ?
+                        ((changeAmount / adj.oldPricePerKg) * 100).toFixed(1) : '0';
+
+                      return (
+                        <div key={adjIndex} style={{
+                          display: 'grid',
+                          gridTemplateColumns: '2fr 1fr 1fr 1fr',
+                          gap: '12px',
+                          alignItems: 'center',
+                          padding: '8px',
+                          backgroundColor: '#2a2a2a',
+                          borderRadius: '4px'
+                        }}>
+                          <p style={{
+                            color: '#ebebeb',
+                            fontSize: '13px'
+                          }}>
+                            {product?.name || 'Unknown Product'}
+                          </p>
+                          <p style={{
+                            color: '#b3b3b3',
+                            fontSize: '12px'
+                          }}>
+                            ${adj.oldPricePerKg.toFixed(2)}/kg
+                          </p>
+                          <p style={{
+                            color: '#ebebeb',
+                            fontSize: '12px',
+                            fontWeight: '500'
+                          }}>
+                            ${adj.newPricePerKg.toFixed(2)}/kg
+                          </p>
+                          <div style={{
+                            padding: '4px 8px',
+                            backgroundColor: changeAmount > 0 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(34, 197, 94, 0.1)',
+                            border: `1px solid ${changeAmount > 0 ? '#ef4444' : '#22c55e'}`,
+                            borderRadius: '4px',
+                            textAlign: 'center'
+                          }}>
+                            <p style={{
+                              color: changeAmount > 0 ? '#ef4444' : '#22c55e',
+                              fontSize: '11px',
+                              fontWeight: '500',
+                              margin: 0
+                            }}>
+                              {changeAmount > 0 ? '+' : ''}${changeAmount.toFixed(2)} ({changeAmount > 0 ? '+' : ''}{changePercent}%)
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {(!container.priceAdjustments || container.priceAdjustments.length === 0) && (
+          <div style={{
+            textAlign: 'center',
+            padding: '32px',
+            color: '#b3b3b3'
+          }}>
+            <Edit3 className="h-12 w-12 mx-auto mb-4" style={{ opacity: 0.5 }} />
+            <p style={{ fontSize: '16px', marginBottom: '8px' }}>No Price Adjustments</p>
+            <p style={{ fontSize: '14px' }}>
+              Click "Adjust Prices" to negotiate new prices with your supplier and maintain accurate cost tracking.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'overview':
@@ -890,6 +1572,8 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
         return renderProductsTab();
       case 'costs':
         return renderCostsTab();
+      case 'adjustments':
+        return renderAdjustmentsTab();
       case 'timeline':
         return renderTimelineTab();
       default:
@@ -1087,6 +1771,9 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
           </button>
         </div>
       </div>
+
+      {/* Price Adjustment Modal */}
+      {renderPriceAdjustmentModal()}
     </Modal>
   );
 }
