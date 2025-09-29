@@ -40,10 +40,15 @@ const DataSync = memo(function DataSync() {
   const dataLoadedRef = useRef(false);
   const lastSaveRef = useRef(null);
 
-  // Reset dataLoadedRef when currentDataFile changes
+  // Reset dataLoadedRef when currentDataFile changes or when component mounts
   useEffect(() => {
     dataLoadedRef.current = false;
   }, [currentDataFile]);
+
+  // Ensure data loads on component mount (for page refreshes)
+  useEffect(() => {
+    dataLoadedRef.current = false;
+  }, []);
 
   // Register callback to clear data when GitHub disconnects
   useEffect(() => {
@@ -79,10 +84,16 @@ const DataSync = memo(function DataSync() {
         
         if (result?.data) {
           // Validate and load the data structure
-          const githubData = typeof result.data === 'string' 
-            ? JSON.parse(result.data) 
+          const githubData = typeof result.data === 'string'
+            ? JSON.parse(result.data)
             : result.data;
-            
+
+          console.log('📥 Raw GitHub data loaded:', {
+            hasCashInjections: !!githubData.cashInjections,
+            cashInjectionsCount: githubData.cashInjections?.length || 0,
+            cashInjectionsData: githubData.cashInjections
+          });
+
           const loadedData = {
             products: githubData.products || [],
             containers: githubData.containers || [],
@@ -122,6 +133,12 @@ const DataSync = memo(function DataSync() {
           // Sanitize and load the data
           const sanitizedData = sanitizeFinanceData(loadedData);
           logDataState(sanitizedData, `Load from GitHub (${currentDataFile})`);
+
+          console.log('📤 Final loaded data being sent to context:', {
+            hasCashInjections: !!sanitizedData.cashInjections,
+            cashInjectionsCount: sanitizedData.cashInjections?.length || 0,
+            cashInjectionsData: sanitizedData.cashInjections
+          });
 
           loadData(sanitizedData);
 
@@ -293,7 +310,11 @@ const DataSync = memo(function DataSync() {
         const sanitizedData = sanitizeFinanceData(dataToSave);
         logDataState(sanitizedData, 'Auto-save');
 
-        console.log('Auto-saving data to GitHub...');
+        console.log('💾 Auto-saving data to GitHub:', {
+          hasCashInjections: !!sanitizedData.cashInjections,
+          cashInjectionsCount: sanitizedData.cashInjections?.length || 0,
+          cashInjectionsData: sanitizedData.cashInjections
+        });
         const result = await saveData(sanitizedData, 'Auto-save: Update business data');
         if (result.success) {
           markSaved();
