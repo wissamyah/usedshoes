@@ -108,7 +108,7 @@ function dataReducer(state, action) {
         cashInjection: loadedMetadata.nextIds?.cashInjection || 1,
       };
 
-      return {
+      const newState = {
         ...state,
         ...action.payload,
         metadata: {
@@ -119,6 +119,9 @@ function dataReducer(state, action) {
         error: null,
         unsavedChanges: false,
       };
+
+      console.log(`✅ Data loaded: ${newState.cashInjections?.length || 0} cash injections`);
+      return newState;
     
     case DATA_ACTIONS.ADD_CONTAINER: {
       const containerId = `C${state.metadata.nextIds.container}`;
@@ -896,8 +899,7 @@ function dataReducer(state, action) {
         id: `CI${currentCashInjectionId}`,
         createdAt: new Date().toISOString()
       };
-      console.log('Adding cash injection to state:', cashInjection);
-      
+
       // If it's a capital contribution, update partner equity
       let updatedPartners = state.partners;
       if (cashInjection.type === 'Capital Contribution' && cashInjection.partnerId) {
@@ -915,7 +917,7 @@ function dataReducer(state, action) {
           return partner;
         });
       }
-      
+
       const newState = {
         ...state,
         cashInjections: [...state.cashInjections, cashInjection],
@@ -930,7 +932,8 @@ function dataReducer(state, action) {
         },
         unsavedChanges: true,
       };
-      console.log('Cash injection added to state. Total cash injections:', newState.cashInjections.length);
+
+      console.log('✅ Cash injection added:', cashInjection.id);
       return newState;
     }
     
@@ -1212,21 +1215,33 @@ export function DataProvider({ children }) {
     
     // Cash Injection operations
     addCashInjection: async (injectionData) => {
+      // Dispatch the action to add to state
       dispatch({ type: DATA_ACTIONS.ADD_CASH_INJECTION, payload: injectionData });
-      // Trigger immediate save after addition
-      if (saveCallbackRef.current) {
-        try {
-          const result = await saveCallbackRef.current();
-          if (!result || !result.success) {
-            console.error('Cash injection save failed:', result?.error);
-            throw new Error(result?.error || 'Failed to save cash injection');
+
+      // Wait for the state to update before saving
+      // Use setTimeout to ensure the state has been updated
+      return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+          try {
+            if (saveCallbackRef.current) {
+              const result = await saveCallbackRef.current();
+
+              if (!result || !result.success) {
+                console.error('Cash injection save failed:', result?.error);
+                reject(new Error(result?.error || 'Failed to save cash injection'));
+                return;
+              }
+              console.log('✅ Cash injection saved to GitHub');
+              resolve({ success: true });
+            } else {
+              reject(new Error('No save callback available'));
+            }
+          } catch (error) {
+            console.error('Cash injection save error:', error);
+            reject(error);
           }
-          console.log('Cash injection saved successfully');
-        } catch (error) {
-          console.error('Cash injection save error:', error);
-          throw error;
-        }
-      }
+        }, 100); // Small delay to let state update
+      });
     },
     updateCashInjection: async (id, data) => {
       dispatch({ type: DATA_ACTIONS.UPDATE_CASH_INJECTION, payload: { id, ...data } });

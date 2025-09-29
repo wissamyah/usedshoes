@@ -17,28 +17,32 @@ const iconMap = {
 
 const colorMap = {
   [NOTIFICATION_TYPES.SUCCESS]: {
-    bg: 'bg-green-50',
-    text: 'text-green-800',
-    icon: 'text-green-400',
-    border: 'border-green-200',
+    bgColor: '#1c2d1c',
+    textColor: '#4ade80',
+    iconColor: '#22c55e',
+    borderColor: '#16a34a',
+    titleColor: '#ebebeb',
   },
   [NOTIFICATION_TYPES.ERROR]: {
-    bg: 'bg-red-50',
-    text: 'text-red-800',
-    icon: 'text-red-400',
-    border: 'border-red-200',
+    bgColor: '#2d1c1c',
+    textColor: '#f87171',
+    iconColor: '#ef4444',
+    borderColor: '#dc2626',
+    titleColor: '#ebebeb',
   },
   [NOTIFICATION_TYPES.WARNING]: {
-    bg: 'bg-yellow-50',
-    text: 'text-yellow-800',
-    icon: 'text-yellow-400',
-    border: 'border-yellow-200',
+    bgColor: '#2d291c',
+    textColor: '#fbbf24',
+    iconColor: '#f59e0b',
+    borderColor: '#d97706',
+    titleColor: '#ebebeb',
   },
   [NOTIFICATION_TYPES.INFO]: {
-    bg: 'bg-blue-50',
-    text: 'text-blue-800',
-    icon: 'text-blue-400',
-    border: 'border-blue-200',
+    bgColor: '#1c2433',
+    textColor: '#60a5fa',
+    iconColor: '#3b82f6',
+    borderColor: '#2563eb',
+    titleColor: '#ebebeb',
   },
 };
 
@@ -58,30 +62,66 @@ function NotificationItem({ notification, onRemove }) {
 
   return (
     <div
-      className={`max-w-sm w-full ${colors.bg} ${colors.border} border rounded-lg shadow-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden`}
+      style={{
+        maxWidth: '24rem',
+        width: '100%',
+        backgroundColor: colors.bgColor,
+        border: `1px solid ${colors.borderColor}`,
+        borderRadius: '8px',
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2)',
+        pointerEvents: 'auto',
+        overflow: 'hidden'
+      }}
     >
-      <div className="p-4">
-        <div className="flex items-start">
-          <div className="flex-shrink-0">
-            <Icon className={`h-6 w-6 ${colors.icon}`} />
+      <div style={{ padding: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+          <div style={{ flexShrink: 0 }}>
+            <Icon style={{ height: '24px', width: '24px', color: colors.iconColor }} />
           </div>
-          <div className="ml-3 w-0 flex-1 pt-0.5">
-            <p className={`text-sm font-medium ${colors.text}`}>
+          <div style={{ marginLeft: '12px', width: 0, flex: '1 1 0%', paddingTop: '2px' }}>
+            <p style={{
+              fontSize: '14px',
+              fontWeight: '600',
+              color: colors.titleColor
+            }}>
               {notification.title}
             </p>
             {notification.message && (
-              <p className={`mt-1 text-sm ${colors.text} opacity-75`}>
+              <p style={{
+                marginTop: '4px',
+                fontSize: '14px',
+                color: colors.textColor,
+                opacity: 0.9
+              }}>
                 {notification.message}
               </p>
             )}
           </div>
-          <div className="ml-4 flex-shrink-0 flex">
+          <div style={{ marginLeft: '16px', flexShrink: 0, display: 'flex' }}>
             <button
-              className={`bg-transparent rounded-md inline-flex ${colors.text} hover:${colors.text} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-${colors.bg} focus:ring-indigo-500`}
+              style={{
+                backgroundColor: 'transparent',
+                borderRadius: '6px',
+                display: 'inline-flex',
+                color: colors.textColor,
+                border: 'none',
+                cursor: 'pointer',
+                outline: 'none',
+                padding: '4px',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                e.target.style.color = colors.titleColor;
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.color = colors.textColor;
+              }}
               onClick={() => onRemove(notification.id)}
             >
               <span className="sr-only">Close</span>
-              <X className="h-5 w-5" />
+              <X style={{ height: '20px', width: '20px' }} />
             </button>
           </div>
         </div>

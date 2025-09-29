@@ -320,15 +320,62 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
 
   return (
     <Modal isOpen={true} onClose={onCancel} size="large">
-      <div className="bg-white rounded-lg shadow-xl p-5 max-h-[80vh] overflow-y-auto">
-        <div className="mt-3">
+      <div style={{
+        backgroundColor: '#2a2a2a',
+        border: '1px solid #404040',
+        borderRadius: '8px',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+        padding: '20px',
+        maxHeight: '80vh',
+        overflowY: 'auto',
+        scrollbarWidth: 'thin',
+        scrollbarColor: '#404040 #2a2a2a'
+      }}>
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            div[style*="maxHeight: 80vh"]::-webkit-scrollbar {
+              width: 8px;
+            }
+            div[style*="maxHeight: 80vh"]::-webkit-scrollbar-track {
+              background: #2a2a2a;
+            }
+            div[style*="maxHeight: 80vh"]::-webkit-scrollbar-thumb {
+              background: #404040;
+              border-radius: 4px;
+            }
+            div[style*="maxHeight: 80vh"]::-webkit-scrollbar-thumb:hover {
+              background: #505050;
+            }
+          `
+        }} />
+        <div style={{ marginTop: '12px' }}>
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-medium text-gray-900">
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '500',
+              color: '#ebebeb'
+            }}>
               {container ? 'Edit Container' : 'Add New Container'}
             </h3>
             <button
               onClick={handleCancel}
-              className="text-gray-400 hover:text-gray-600"
+              style={{
+                color: '#b3b3b3',
+                padding: '4px',
+                borderRadius: '6px',
+                backgroundColor: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.color = '#ebebeb';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.color = '#b3b3b3';
+                e.target.style.backgroundColor = 'transparent';
+              }}
             >
               <span className="sr-only">Close</span>
               <X className="h-6 w-6" />
@@ -339,7 +386,13 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
             {/* Basic Container Info */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
-                <label htmlFor="id" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="id" style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ebebeb',
+                  marginBottom: '4px'
+                }}>
                   Container ID *
                 </label>
                 <input
@@ -348,16 +401,45 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                   name="id"
                   value={formData.id}
                   onChange={handleInputChange}
-                  className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.id ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                  }`}
+                  style={{
+                    marginTop: '4px',
+                    display: 'block',
+                    width: '100%',
+                    border: errors.id ? '1px solid #ef4444' : '1px solid #404040',
+                    borderRadius: '6px',
+                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                    padding: '8px 12px',
+                    fontSize: '14px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = errors.id ? '#ef4444' : '#60a5fa';
+                    e.target.style.boxShadow = errors.id ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = errors.id ? '#ef4444' : '#404040';
+                    e.target.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+                  }}
                   placeholder="Container ID"
                 />
-                {errors.id && <p className="mt-1 text-sm text-red-600">{errors.id}</p>}
+                {errors.id && <p style={{
+                  marginTop: '4px',
+                  fontSize: '14px',
+                  color: '#ef4444'
+                }}>{errors.id}</p>}
               </div>
 
               <div>
-                <label htmlFor="supplier" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="supplier" style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ebebeb',
+                  marginBottom: '4px'
+                }}>
                   Supplier *
                 </label>
                 <input
@@ -366,16 +448,45 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                   name="supplier"
                   value={formData.supplier}
                   onChange={handleInputChange}
-                  className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.supplier ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                  }`}
+                  style={{
+                    marginTop: '4px',
+                    display: 'block',
+                    width: '100%',
+                    border: errors.supplier ? '1px solid #ef4444' : '1px solid #404040',
+                    borderRadius: '6px',
+                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                    padding: '8px 12px',
+                    fontSize: '14px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = errors.supplier ? '#ef4444' : '#60a5fa';
+                    e.target.style.boxShadow = errors.supplier ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = errors.supplier ? '#ef4444' : '#404040';
+                    e.target.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+                  }}
                   placeholder="Supplier"
                 />
-                {errors.supplier && <p className="mt-1 text-sm text-red-600">{errors.supplier}</p>}
+                {errors.supplier && <p style={{
+                  marginTop: '4px',
+                  fontSize: '14px',
+                  color: '#ef4444'
+                }}>{errors.supplier}</p>}
               </div>
 
               <div>
-                <label htmlFor="invoiceNumber" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="invoiceNumber" style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ebebeb',
+                  marginBottom: '4px'
+                }}>
                   Invoice Number
                 </label>
                 <input
@@ -384,13 +495,40 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                   name="invoiceNumber"
                   value={formData.invoiceNumber}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  style={{
+                    marginTop: '4px',
+                    display: 'block',
+                    width: '100%',
+                    border: '1px solid #404040',
+                    borderRadius: '6px',
+                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                    padding: '8px 12px',
+                    fontSize: '14px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#60a5fa';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#404040';
+                    e.target.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+                  }}
                   placeholder="Invoice #"
                 />
               </div>
 
               <div>
-                <label htmlFor="purchaseDate" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="purchaseDate" style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ebebeb',
+                  marginBottom: '4px'
+                }}>
                   Purchase Date *
                 </label>
                 <input
@@ -399,12 +537,40 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                   name="purchaseDate"
                   value={formData.purchaseDate}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  style={{
+                    marginTop: '4px',
+                    display: 'block',
+                    width: '100%',
+                    border: '1px solid #404040',
+                    borderRadius: '6px',
+                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                    padding: '8px 12px',
+                    fontSize: '14px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                    colorScheme: 'dark'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#60a5fa';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#404040';
+                    e.target.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+                  }}
                 />
               </div>
 
               <div>
-                <label htmlFor="shippingCost" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="shippingCost" style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ebebeb',
+                  marginBottom: '4px'
+                }}>
                   Shipping Cost ($)
                 </label>
                 <input
@@ -415,13 +581,40 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                   onChange={handleInputChange}
                   min="0"
                   step="0.01"
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  style={{
+                    marginTop: '4px',
+                    display: 'block',
+                    width: '100%',
+                    border: '1px solid #404040',
+                    borderRadius: '6px',
+                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                    padding: '8px 12px',
+                    fontSize: '14px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#60a5fa';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#404040';
+                    e.target.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+                  }}
                   placeholder="0.00"
                 />
               </div>
 
               <div>
-                <label htmlFor="customsCost" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="customsCost" style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ebebeb',
+                  marginBottom: '4px'
+                }}>
                   Customs/Clearing Cost ($)
                 </label>
                 <input
@@ -432,7 +625,28 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                   onChange={handleInputChange}
                   min="0"
                   step="0.01"
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  style={{
+                    marginTop: '4px',
+                    display: 'block',
+                    width: '100%',
+                    border: '1px solid #404040',
+                    borderRadius: '6px',
+                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                    padding: '8px 12px',
+                    fontSize: '14px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#60a5fa';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#404040';
+                    e.target.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+                  }}
                   placeholder="0.00"
                 />
               </div>
@@ -440,7 +654,13 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
 
             {/* Description */}
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="description" style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#ebebeb',
+                marginBottom: '4px'
+              }}>
                 Description
               </label>
               <textarea
@@ -449,25 +669,75 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                 rows={3}
                 value={formData.description}
                 onChange={handleInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                style={{
+                  marginTop: '4px',
+                  display: 'block',
+                  width: '100%',
+                  border: '1px solid #404040',
+                  borderRadius: '6px',
+                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                  padding: '8px 12px',
+                  fontSize: '14px',
+                  backgroundColor: '#1c1c1c',
+                  color: '#ebebeb',
+                  outline: 'none',
+                  transition: 'border-color 0.2s, box-shadow 0.2s',
+                  resize: 'vertical'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#60a5fa';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#404040';
+                  e.target.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+                }}
                 placeholder="Notes..."
               />
             </div>
 
             {/* Product Selection */}
-            <div className="border-t border-gray-200 pt-6">
-              <h4 className="text-lg font-medium text-gray-900 mb-4">Add Products to Container</h4>
+            <div style={{ borderTop: '1px solid #404040', paddingTop: '24px' }}>
+              <h4 style={{
+                fontSize: '18px',
+                fontWeight: '500',
+                color: '#ebebeb',
+                marginBottom: '16px'
+              }}>Add Products to Container</h4>
               
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 mb-4">
                 <div>
-                  <label htmlFor="selectedProduct" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="selectedProduct" style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#ebebeb',
+                    marginBottom: '4px'
+                  }}>
                     Select Product
                   </label>
                   <select
                     id="selectedProduct"
                     value={selectedProduct}
                     onChange={(e) => setSelectedProduct(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #404040',
+                      borderRadius: '6px',
+                      backgroundColor: '#1c1c1c',
+                      color: '#ebebeb',
+                      outline: 'none',
+                      transition: 'border-color 0.2s, box-shadow 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#60a5fa';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#404040';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   >
                     <option value="">Choose a product...</option>
                     {products.map(product => (
@@ -479,7 +749,13 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                 </div>
 
                 <div>
-                  <label htmlFor="bagQuantity" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="bagQuantity" style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#ebebeb',
+                    marginBottom: '4px'
+                  }}>
                     Bags Quantity
                   </label>
                   <input
@@ -490,13 +766,36 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                     onChange={handleProductPurchaseChange}
                     min="1"
                     step="1"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #404040',
+                      borderRadius: '6px',
+                      backgroundColor: '#1c1c1c',
+                      color: '#ebebeb',
+                      outline: 'none',
+                      transition: 'border-color 0.2s, box-shadow 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#60a5fa';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#404040';
+                      e.target.style.boxShadow = 'none';
+                    }}
                     placeholder="0"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="costPerKg" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="costPerKg" style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#ebebeb',
+                    marginBottom: '4px'
+                  }}>
                     Cost per Kg ($)
                   </label>
                   <input
@@ -507,13 +806,36 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                     onChange={handleProductPurchaseChange}
                     min="0"
                     step="0.0001"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #404040',
+                      borderRadius: '6px',
+                      backgroundColor: '#1c1c1c',
+                      color: '#ebebeb',
+                      outline: 'none',
+                      transition: 'border-color 0.2s, box-shadow 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#60a5fa';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#404040';
+                      e.target.style.boxShadow = 'none';
+                    }}
                     placeholder="0.0000"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="bagWeight" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="bagWeight" style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#ebebeb',
+                    marginBottom: '4px'
+                  }}>
                     Bag Weight (kg)
                   </label>
                   <select
@@ -521,7 +843,24 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                     name="bagWeight"
                     value={productPurchase.bagWeight}
                     onChange={handleProductPurchaseChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #404040',
+                      borderRadius: '6px',
+                      backgroundColor: '#1c1c1c',
+                      color: '#ebebeb',
+                      outline: 'none',
+                      transition: 'border-color 0.2s, box-shadow 0.2s'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#60a5fa';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#404040';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   >
                     <option value="20">20 kg per bag</option>
                     <option value="25">25 kg per bag</option>
@@ -533,16 +872,56 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                 <button
                   type="button"
                   onClick={addProductToContainer}
-                  className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '8px 12px',
+                    border: 'none',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    borderRadius: '6px',
+                    color: '#ffffff',
+                    backgroundColor: '#16a34a',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = '#15803d';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = '#16a34a';
+                  }}
                 >
                   Add Product
                 </button>
-                
+
                 {/* Debug button */}
                 <button
                   type="button"
                   onClick={() => console.log('Current form state:', formData)}
-                  className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '8px 12px',
+                    border: '1px solid #404040',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    borderRadius: '6px',
+                    color: '#b3b3b3',
+                    backgroundColor: 'transparent',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                    e.target.style.color = '#ebebeb';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = 'transparent';
+                    e.target.style.color = '#b3b3b3';
+                  }}
                 >
                   Debug Form State
                 </button>
@@ -551,15 +930,27 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
               {/* Products in Container */}
               {formData.products.length > 0 && (
                 <div className="mt-4">
-                  <h5 className="text-md font-medium text-gray-900 mb-3">Products in Container:</h5>
-                  <div className="bg-gray-50 rounded-lg p-4">
+                  <h5 style={{
+                    fontSize: '16px',
+                    fontWeight: '500',
+                    color: '#ebebeb',
+                    marginBottom: '12px'
+                  }}>Products in Container:</h5>
+                  <div style={{
+                    backgroundColor: '#333333',
+                    borderRadius: '8px',
+                    padding: '16px',
+                    border: '1px solid #404040'
+                  }}>
                     {formData.products.map((product, index) => (
-                      <div key={index} className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
+                      <div key={index} className="flex items-center justify-between py-2" style={{
+                        borderBottom: index < formData.products.length - 1 ? '1px solid #404040' : 'none'
+                      }}>
                         <div className="flex-1">
-                          <p className="font-medium text-gray-900">{product.productName}</p>
-                          <p className="text-sm text-gray-600">
+                          <p style={{ fontWeight: '500', color: '#ebebeb' }}>{product.productName}</p>
+                          <p style={{ fontSize: '14px', color: '#b3b3b3' }}>
                             {product.bagQuantity} bags × {product.bagWeight}kg × {formatCurrency(product.costPerKg, 4)}/kg =
-                            <span className="font-semibold text-gray-900 ml-1">
+                            <span style={{ fontWeight: '600', color: '#ebebeb', marginLeft: '4px' }}>
                               {formatCurrency(product.bagQuantity * product.costPerKg * product.bagWeight)}
                             </span>
                           </p>
@@ -567,7 +958,24 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                         <button
                           type="button"
                           onClick={() => removeProductFromContainer(product.productId)}
-                          className="ml-4 text-red-600 hover:text-red-800 p-1 rounded-md hover:bg-red-50"
+                          style={{
+                            marginLeft: '16px',
+                            color: '#ef4444',
+                            padding: '4px',
+                            borderRadius: '6px',
+                            backgroundColor: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.color = '#dc2626';
+                            e.target.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.color = '#ef4444';
+                            e.target.style.backgroundColor = 'transparent';
+                          }}
                           title="Remove product"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -576,45 +984,108 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
                     ))}
                     
                     {/* Total Cost Summary */}
-                    <div className="mt-4 pt-4 border-t border-gray-300">
-                      <div className="flex justify-between text-sm">
-                        <span>Products Total:</span>
-                        <span>{formatCurrency(formData.products.reduce((sum, p) => sum + (p.bagQuantity * p.costPerKg * p.bagWeight), 0))}</span>
+                    <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #404040' }}>
+                      <div className="flex justify-between" style={{ fontSize: '14px', marginBottom: '8px' }}>
+                        <span style={{ color: '#b3b3b3' }}>Products Total:</span>
+                        <span style={{ color: '#ebebeb' }}>{formatCurrency(formData.products.reduce((sum, p) => sum + (p.bagQuantity * p.costPerKg * p.bagWeight), 0))}</span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span>Shipping Cost:</span>
-                        <span>{formatCurrency(formData.shippingCost)}</span>
+                      <div className="flex justify-between" style={{ fontSize: '14px', marginBottom: '8px' }}>
+                        <span style={{ color: '#b3b3b3' }}>Shipping Cost:</span>
+                        <span style={{ color: '#ebebeb' }}>{formatCurrency(formData.shippingCost)}</span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span>Customs/Clearing Cost:</span>
-                        <span>{formatCurrency(formData.customsCost)}</span>
+                      <div className="flex justify-between" style={{ fontSize: '14px', marginBottom: '8px' }}>
+                        <span style={{ color: '#b3b3b3' }}>Customs/Clearing Cost:</span>
+                        <span style={{ color: '#ebebeb' }}>{formatCurrency(formData.customsCost)}</span>
                       </div>
-                      <div className="flex justify-between text-lg font-semibold border-t border-gray-300 pt-2">
-                        <span>Total Container Cost:</span>
-                        <span>{formatCurrency(calculateTotalCost())}</span>
+                      <div className="flex justify-between" style={{
+                        fontSize: '18px',
+                        fontWeight: '600',
+                        borderTop: '1px solid #404040',
+                        paddingTop: '8px',
+                        marginTop: '8px'
+                      }}>
+                        <span style={{ color: '#ebebeb' }}>Total Container Cost:</span>
+                        <span style={{ color: '#ebebeb' }}>{formatCurrency(calculateTotalCost())}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {errors.products && <p className="mt-1 text-sm text-red-600">{errors.products}</p>}
+              {errors.products && <p style={{
+                marginTop: '4px',
+                fontSize: '14px',
+                color: '#ef4444'
+              }}>{errors.products}</p>}
             </div>
 
             {/* Form Actions */}
-            <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+            <div className="flex justify-end space-x-3" style={{
+              paddingTop: '24px',
+              borderTop: '1px solid #404040'
+            }}>
               <button
                 type="button"
                 onClick={handleCancel}
                 disabled={isSubmitting}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#b3b3b3',
+                  backgroundColor: 'transparent',
+                  border: '1px solid #404040',
+                  borderRadius: '6px',
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  opacity: isSubmitting ? 0.5 : 1,
+                  outline: 'none',
+                  transition: 'all 0.2s',
+                  whiteSpace: 'nowrap'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSubmitting) {
+                    e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                    e.target.style.borderColor = '#60a5fa';
+                    e.target.style.color = '#ebebeb';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSubmitting) {
+                    e.target.style.backgroundColor = 'transparent';
+                    e.target.style.borderColor = '#404040';
+                    e.target.style.color = '#b3b3b3';
+                  }
+                }}
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ffffff',
+                  backgroundColor: '#2563eb',
+                  border: '1px solid transparent',
+                  borderRadius: '6px',
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  opacity: isSubmitting ? 0.5 : 1,
+                  outline: 'none',
+                  transition: 'all 0.2s',
+                  whiteSpace: 'nowrap'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSubmitting) {
+                    e.target.style.backgroundColor = '#1d4ed8';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSubmitting) {
+                    e.target.style.backgroundColor = '#2563eb';
+                  }
+                }}
               >
                 {isSubmitting ? 'Saving...' : (container ? 'Update Container' : 'Add Container')}
               </button>
@@ -622,7 +1093,7 @@ export default function ContainerForm({ container, onSubmit, onCancel }) {
 
             {errors.submit && (
               <div className="text-center">
-                <p className="text-sm text-red-600">{errors.submit}</p>
+                <p style={{ fontSize: '14px', color: '#ef4444' }}>{errors.submit}</p>
               </div>
             )}
           </form>

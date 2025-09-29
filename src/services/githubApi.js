@@ -178,7 +178,7 @@ export class GitHubAPI {
         });
 
         if (response.status === 404) {
-          // File doesn't exist, return empty data structure
+          // File doesn't exist, return complete empty data structure
           return {
             data: {
               metadata: {
@@ -188,13 +188,21 @@ export class GitHubAPI {
                   product: 1,
                   container: 1,
                   sale: 1,
-                  expense: 1
+                  expense: 1,
+                  partner: 1,
+                  withdrawal: 1,
+                  cashFlow: 1,
+                  cashInjection: 1,
                 }
               },
               containers: [],
               products: [],
               sales: [],
-              expenses: []
+              expenses: [],
+              partners: [],
+              withdrawals: [],
+              cashFlows: [],
+              cashInjections: []
             },
             sha: null,
             isNewFile: true
@@ -280,9 +288,12 @@ export class GitHubAPI {
           }
         };
 
-        // Validate data structure
-        if (!updatedData.containers || !updatedData.products || !updatedData.sales || !updatedData.expenses) {
-          throw new Error('Invalid data structure: missing required arrays');
+        // Validate data structure - ensure all required arrays exist
+        const requiredArrays = ['containers', 'products', 'sales', 'expenses', 'partners', 'withdrawals', 'cashFlows', 'cashInjections'];
+        for (const field of requiredArrays) {
+          if (!Array.isArray(updatedData[field])) {
+            updatedData[field] = [];
+          }
         }
 
         let content;
@@ -353,13 +364,21 @@ export class GitHubAPI {
             product: 1,
             container: 1,
             sale: 1,
-            expense: 1
+            expense: 1,
+            partner: 1,
+            withdrawal: 1,
+            cashFlow: 1,
+            cashInjection: 1,
           }
         },
         containers: [],
         products: [],
         sales: [],
         expenses: [],
+        partners: [],
+        withdrawals: [],
+        cashFlows: [],
+        cashInjections: [],
         ...data
       };
 

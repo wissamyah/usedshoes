@@ -72,24 +72,86 @@ export default function WithdrawalForm({ availableCash, onClose }) {
   
   return (
     <Modal isOpen={true} onClose={onClose} size="medium">
-      <div className="bg-white rounded-lg shadow-xl">
-        <div className="flex items-center justify-between px-6 py-4 border-b">
-          <h3 className="text-lg font-semibold text-gray-900">Record Withdrawal</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+      <div style={{
+        backgroundColor: '#2a2a2a',
+        border: '1px solid #404040',
+        borderRadius: '8px'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '16px 24px',
+          borderBottom: '1px solid #404040'
+        }}>
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: '600',
+            color: '#ebebeb'
+          }}>Record Withdrawal</h3>
+          <button
+            onClick={onClose}
+            style={{
+              color: '#b3b3b3',
+              backgroundColor: 'transparent',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '8px',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.color = '#ebebeb';
+              e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.color = '#b3b3b3';
+              e.target.style.backgroundColor = 'transparent';
+            }}
+          >
             <X className="h-6 w-6" />
           </button>
         </div>
-        
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+
+        <form onSubmit={handleSubmit} style={{
+          padding: '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px'
+        }}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#ebebeb',
+                marginBottom: '8px'
+              }}>
                 Partner *
               </label>
               <select
                 value={formData.partnerId}
                 onChange={(e) => setFormData({...formData, partnerId: e.target.value})}
-                className={`w-full px-3 py-2 border rounded-md ${errors.partnerId ? 'border-red-300' : 'border-gray-300'}`}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  fontSize: '14px',
+                  backgroundColor: '#1c1c1c',
+                  color: '#ebebeb',
+                  border: errors.partnerId ? '1px solid #ef4444' : '1px solid #404040',
+                  borderRadius: '6px',
+                  outline: 'none',
+                  transition: 'border-color 0.2s, box-shadow 0.2s'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = errors.partnerId ? '#ef4444' : '#60a5fa';
+                  e.target.style.boxShadow = errors.partnerId ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = errors.partnerId ? '#ef4444' : '#404040';
+                  e.target.style.boxShadow = 'none';
+                }}
               >
                 <option value="">Select partner...</option>
                 {partners.map(partner => (
@@ -98,11 +160,21 @@ export default function WithdrawalForm({ availableCash, onClose }) {
                   </option>
                 ))}
               </select>
-              {errors.partnerId && <p className="mt-1 text-sm text-red-600">{errors.partnerId}</p>}
+              {errors.partnerId && <p style={{
+                marginTop: '4px',
+                fontSize: '14px',
+                color: '#ef4444'
+              }}>{errors.partnerId}</p>}
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#ebebeb',
+                marginBottom: '8px'
+              }}>
                 Amount ($) *
               </label>
               <input
@@ -111,21 +183,71 @@ export default function WithdrawalForm({ availableCash, onClose }) {
                 onChange={(e) => setFormData({...formData, amount: e.target.value})}
                 step="0.01"
                 min="0"
-                className={`w-full px-3 py-2 border rounded-md ${errors.amount ? 'border-red-300' : 'border-gray-300'}`}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  fontSize: '14px',
+                  backgroundColor: '#1c1c1c',
+                  color: '#ebebeb',
+                  border: errors.amount ? '1px solid #ef4444' : '1px solid #404040',
+                  borderRadius: '6px',
+                  outline: 'none',
+                  transition: 'border-color 0.2s, box-shadow 0.2s'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = errors.amount ? '#ef4444' : '#60a5fa';
+                  e.target.style.boxShadow = errors.amount ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = errors.amount ? '#ef4444' : '#404040';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
-              {errors.amount && <p className="mt-1 text-sm text-red-600">{errors.amount}</p>}
-              <p className="mt-1 text-xs text-gray-500">Available: ${availableCash.toFixed(2)}</p>
+              {errors.amount && <p style={{
+                marginTop: '4px',
+                fontSize: '14px',
+                color: '#ef4444'
+              }}>{errors.amount}</p>}
+              <p style={{
+                marginTop: '4px',
+                fontSize: '12px',
+                color: '#22c55e'
+              }}>Available: ${availableCash.toFixed(2)}</p>
             </div>
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#ebebeb',
+              marginBottom: '8px'
+            }}>
               Type *
             </label>
             <select
               value={formData.type}
               onChange={(e) => setFormData({...formData, type: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              style={{
+                width: '100%',
+                padding: '12px',
+                fontSize: '14px',
+                backgroundColor: '#1c1c1c',
+                color: '#ebebeb',
+                border: '1px solid #404040',
+                borderRadius: '6px',
+                outline: 'none',
+                transition: 'border-color 0.2s, box-shadow 0.2s'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#60a5fa';
+                e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#404040';
+                e.target.style.boxShadow = 'none';
+              }}
             >
               {withdrawalTypes.map(type => (
                 <option key={type.value} value={type.value}>
@@ -136,42 +258,143 @@ export default function WithdrawalForm({ availableCash, onClose }) {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#ebebeb',
+              marginBottom: '8px'
+            }}>
               Purpose *
             </label>
             <input
               type="text"
               value={formData.purpose}
               onChange={(e) => setFormData({...formData, purpose: e.target.value})}
-              className={`w-full px-3 py-2 border rounded-md ${errors.purpose ? 'border-red-300' : 'border-gray-300'}`}
+              style={{
+                width: '100%',
+                padding: '12px',
+                fontSize: '14px',
+                backgroundColor: '#1c1c1c',
+                color: '#ebebeb',
+                border: errors.purpose ? '1px solid #ef4444' : '1px solid #404040',
+                borderRadius: '6px',
+                outline: 'none',
+                transition: 'border-color 0.2s, box-shadow 0.2s'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = errors.purpose ? '#ef4444' : '#60a5fa';
+                e.target.style.boxShadow = errors.purpose ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = errors.purpose ? '#ef4444' : '#404040';
+                e.target.style.boxShadow = 'none';
+              }}
             />
-            {errors.purpose && <p className="mt-1 text-sm text-red-600">{errors.purpose}</p>}
+            {errors.purpose && <p style={{
+              marginTop: '4px',
+              fontSize: '14px',
+              color: '#ef4444'
+            }}>{errors.purpose}</p>}
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#ebebeb',
+              marginBottom: '8px'
+            }}>
               Notes
             </label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({...formData, notes: e.target.value})}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              style={{
+                width: '100%',
+                padding: '12px',
+                fontSize: '14px',
+                backgroundColor: '#1c1c1c',
+                color: '#ebebeb',
+                border: '1px solid #404040',
+                borderRadius: '6px',
+                outline: 'none',
+                transition: 'border-color 0.2s, box-shadow 0.2s',
+                resize: 'vertical'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#60a5fa';
+                e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#404040';
+                e.target.style.boxShadow = 'none';
+              }}
             />
           </div>
           
-          <div className="flex justify-end space-x-3 pt-4">
+          <div style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: '12px',
+            paddingTop: '16px',
+            borderTop: '1px solid #404040',
+            marginTop: '8px'
+          }}>
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              style={{
+                padding: '8px 16px',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#b3b3b3',
+                backgroundColor: 'transparent',
+                border: '1px solid #404040',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                e.target.style.color = '#ebebeb';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.color = '#b3b3b3';
+              }}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50"
+              style={{
+                padding: '8px 16px',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#ffffff',
+                backgroundColor: '#22c55e',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                opacity: isSubmitting ? 0.5 : 1,
+                transition: 'all 0.2s',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={(e) => {
+                if (!isSubmitting) {
+                  e.target.style.backgroundColor = '#16a34a';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isSubmitting) {
+                  e.target.style.backgroundColor = '#22c55e';
+                }
+              }}
             >
               {isSubmitting ? 'Recording...' : 'Record Withdrawal'}
             </button>

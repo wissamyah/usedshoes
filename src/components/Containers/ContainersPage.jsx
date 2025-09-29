@@ -84,19 +84,19 @@ export default function ContainersPage() {
     // Find the container to get more details for the confirmation
     const container = containers.find(c => c.id === containerId);
     const containerName = container ? `${container.id} (${container.supplier})` : containerId;
-    
+
     const confirmed = await showConfirmDialog(
       `Delete Container ${containerName}`,
       `Are you sure you want to delete this container? This will revert ALL stock that was added from this container. This action cannot be undone and may affect your inventory levels.`,
       'danger'
     );
-    
+
     if (confirmed) {
       deleteContainer(containerId);
+      // If no error occurs (handled by useEffect), show success message
+      // Note: This will show immediately, but if there's an error, the error effect will override it
+      showSuccessMessage('Container Deleted', `Container ${containerName} has been deleted and stock has been reverted.`);
     }
-    // If no error occurs (handled by useEffect), show success message
-    // Note: This will show immediately, but if there's an error, the error effect will override it
-    showSuccessMessage('Container Deleted', `Container ${containerName} has been deleted and stock has been reverted.`);
   };
 
   const handleViewContainer = (container) => {
@@ -360,8 +360,8 @@ export default function ContainersPage() {
           ) : (
             <div style={{ backgroundColor: '#2a2a2a', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', border: '1px solid #404040' }} className="overflow-hidden sm:rounded-md">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y" style={{ borderColor: '#404040' }}>
-                  <thead style={{ backgroundColor: '#333333' }}>
+                <table className="min-w-full" style={{ borderCollapse: 'collapse' }}>
+                  <thead style={{ backgroundColor: '#333333', borderBottom: '1px solid #404040' }}>
                     <tr>
                       <th
                         scope="col"
@@ -414,11 +414,11 @@ export default function ContainersPage() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y" style={{ borderColor: '#404040' }}>
+                  <tbody>
                     {filteredContainers.map((container) => {
                       const stats = getContainerStats(container);
                       return (
-                        <tr key={container.id}>
+                        <tr key={container.id} style={{ borderTop: '1px solid #404040' }}>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div>
                               <div className="text-sm font-medium" style={{ color: '#ebebeb' }}>

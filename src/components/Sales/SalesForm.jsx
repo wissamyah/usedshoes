@@ -952,32 +952,34 @@ export default function SalesForm({ sale, onClose }) {
                   }}>Recording {saleEntries.length} sales for {commonDate}</span>
                 )}
               </div>
-              <div className="flex flex-col-reverse sm:flex-row gap-3 sm:space-x-0">
+              <div className="flex flex-row justify-end gap-3">
                 <button
                   type="button"
                   onClick={onClose}
                   disabled={isSubmitting}
                   style={{
-                    width: '100%',
-                    padding: '12px 20px',
+                    padding: '8px 16px',
                     fontSize: '14px',
                     fontWeight: '500',
-                    color: '#ebebeb',
-                    backgroundColor: '#404040',
-                    border: '1px solid #525252',
+                    color: '#b3b3b3',
+                    backgroundColor: 'transparent',
+                    border: '1px solid #404040',
                     borderRadius: '6px',
                     cursor: isSubmitting ? 'not-allowed' : 'pointer',
                     opacity: isSubmitting ? 0.5 : 1,
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
+                    whiteSpace: 'nowrap'
                   }}
                   onMouseEnter={(e) => {
                     if (!isSubmitting) {
-                      e.target.style.backgroundColor = '#525252';
+                      e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                      e.target.style.color = '#ebebeb';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!isSubmitting) {
-                      e.target.style.backgroundColor = '#404040';
+                      e.target.style.backgroundColor = 'transparent';
+                      e.target.style.color = '#b3b3b3';
                     }
                   }}
                 >
@@ -987,29 +989,29 @@ export default function SalesForm({ sale, onClose }) {
                   type="submit"
                   disabled={isSubmitting || availableProducts.length === 0}
                   style={{
-                    width: '100%',
                     display: 'inline-flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    padding: '12px 20px',
+                    padding: '8px 16px',
                     fontSize: '14px',
                     fontWeight: '500',
                     color: '#ffffff',
-                    background: 'linear-gradient(to right, #10b981, #059669)',
+                    backgroundColor: '#10b981',
                     border: 'none',
                     borderRadius: '6px',
                     cursor: (isSubmitting || availableProducts.length === 0) ? 'not-allowed' : 'pointer',
                     opacity: (isSubmitting || availableProducts.length === 0) ? 0.5 : 1,
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
+                    whiteSpace: 'nowrap'
                   }}
                   onMouseEnter={(e) => {
                     if (!isSubmitting && availableProducts.length > 0) {
-                      e.target.style.background = 'linear-gradient(to right, #059669, #047857)';
+                      e.target.style.backgroundColor = '#059669';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!isSubmitting && availableProducts.length > 0) {
-                      e.target.style.background = 'linear-gradient(to right, #10b981, #059669)';
+                      e.target.style.backgroundColor = '#10b981';
                     }
                   }}
                 >

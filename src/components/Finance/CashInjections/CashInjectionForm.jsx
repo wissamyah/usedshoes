@@ -94,13 +94,13 @@ export default function CashInjectionForm({ injection, onClose }) {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
       const injectionData = {
         type: formData.type,
@@ -112,7 +112,7 @@ export default function CashInjectionForm({ injection, onClose }) {
         partnerId: formData.partnerId || null,
         notes: formData.notes.trim()
       };
-      
+
       if (injection) {
         await updateCashInjection(injection.id, injectionData);
         showSuccessMessage('Cash Injection Updated', 'Cash injection has been updated successfully');
@@ -120,7 +120,7 @@ export default function CashInjectionForm({ injection, onClose }) {
         await addCashInjection(injectionData);
         showSuccessMessage('Cash Injection Added', 'New cash injection has been recorded successfully');
       }
-      
+
       onClose();
     } catch (error) {
       console.error('Cash injection submission error:', error);
@@ -139,27 +139,62 @@ export default function CashInjectionForm({ injection, onClose }) {
   
   return (
     <Modal isOpen={true} onClose={onClose} size="medium">
-      <div className="bg-white rounded-lg shadow-xl p-5">
-        <div className="mt-3">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-medium text-gray-900">
-              {injection ? 'Edit Cash Injection' : 'Add Cash Injection'}
-            </h3>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <span className="sr-only">Close</span>
-              <X className="h-6 w-6" />
-            </button>
-          </div>
+      <div style={{
+        backgroundColor: '#2a2a2a',
+        border: '1px solid #404040',
+        borderRadius: '8px',
+        padding: '24px'
+      }}>
+        {/* Header */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '24px'
+        }}>
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: '600',
+            color: '#ebebeb'
+          }}>
+            {injection ? 'Edit Cash Injection' : 'Add Cash Injection'}
+          </h3>
+          <button
+            onClick={onClose}
+            style={{
+              color: '#b3b3b3',
+              backgroundColor: 'transparent',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '8px',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.color = '#ebebeb';
+              e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.color = '#b3b3b3';
+              e.target.style.backgroundColor = 'transparent';
+            }}
+          >
+            <span className="sr-only">Close</span>
+            <X className="h-6 w-6" />
+          </button>
+        </div>
           
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Type and Amount */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="type" style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ebebeb',
+                  marginBottom: '8px'
+                }}>
                   Injection Type *
                 </label>
                 <select
@@ -167,9 +202,25 @@ export default function CashInjectionForm({ injection, onClose }) {
                   name="type"
                   value={formData.type}
                   onChange={handleInputChange}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.type ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                  }`}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    fontSize: '14px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    border: errors.type ? '1px solid #ef4444' : '1px solid #404040',
+                    borderRadius: '6px',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = errors.type ? '#ef4444' : '#60a5fa';
+                    e.target.style.boxShadow = errors.type ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = errors.type ? '#ef4444' : '#404040';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 >
                   {injectionTypes.map(type => (
                     <option key={type.value} value={type.value}>
@@ -177,11 +228,21 @@ export default function CashInjectionForm({ injection, onClose }) {
                     </option>
                   ))}
                 </select>
-                {errors.type && <p className="mt-1 text-sm text-red-600">{errors.type}</p>}
+                {errors.type && <p style={{
+                  marginTop: '4px',
+                  fontSize: '14px',
+                  color: '#ef4444'
+                }}>{errors.type}</p>}
               </div>
               
               <div>
-                <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="amount" style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ebebeb',
+                  marginBottom: '8px'
+                }}>
                   Amount ($) *
                 </label>
                 <input
@@ -192,19 +253,45 @@ export default function CashInjectionForm({ injection, onClose }) {
                   onChange={handleInputChange}
                   min="0"
                   step="0.01"
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.amount ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                  }`}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    fontSize: '14px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    border: errors.amount ? '1px solid #ef4444' : '1px solid #404040',
+                    borderRadius: '6px',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = errors.amount ? '#ef4444' : '#60a5fa';
+                    e.target.style.boxShadow = errors.amount ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = errors.amount ? '#ef4444' : '#404040';
+                    e.target.style.boxShadow = 'none';
+                  }}
                   placeholder="0.00"
                 />
-                {errors.amount && <p className="mt-1 text-sm text-red-600">{errors.amount}</p>}
+                {errors.amount && <p style={{
+                  marginTop: '4px',
+                  fontSize: '14px',
+                  color: '#ef4444'
+                }}>{errors.amount}</p>}
               </div>
             </div>
             
             {/* Partner Selection (for Capital Contributions) */}
             {selectedType?.requiresPartner && (
               <div>
-                <label htmlFor="partnerId" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="partnerId" style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ebebeb',
+                  marginBottom: '8px'
+                }}>
                   Partner *
                 </label>
                 <select
@@ -212,9 +299,25 @@ export default function CashInjectionForm({ injection, onClose }) {
                   name="partnerId"
                   value={formData.partnerId}
                   onChange={handleInputChange}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.partnerId ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                  }`}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    fontSize: '14px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    border: errors.partnerId ? '1px solid #ef4444' : '1px solid #404040',
+                    borderRadius: '6px',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = errors.partnerId ? '#ef4444' : '#60a5fa';
+                    e.target.style.boxShadow = errors.partnerId ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = errors.partnerId ? '#ef4444' : '#404040';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 >
                   <option value="">Select a partner</option>
                   {partners.map(partner => (
@@ -223,14 +326,24 @@ export default function CashInjectionForm({ injection, onClose }) {
                     </option>
                   ))}
                 </select>
-                {errors.partnerId && <p className="mt-1 text-sm text-red-600">{errors.partnerId}</p>}
+                {errors.partnerId && <p style={{
+                  marginTop: '4px',
+                  fontSize: '14px',
+                  color: '#ef4444'
+                }}>{errors.partnerId}</p>}
               </div>
             )}
             
             {/* Source and Date */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="source" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="source" style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ebebeb',
+                  marginBottom: '8px'
+                }}>
                   Source *
                 </label>
                 <input
@@ -239,16 +352,42 @@ export default function CashInjectionForm({ injection, onClose }) {
                   name="source"
                   value={formData.source}
                   onChange={handleInputChange}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.source ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                  }`}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    fontSize: '14px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    border: errors.source ? '1px solid #ef4444' : '1px solid #404040',
+                    borderRadius: '6px',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = errors.source ? '#ef4444' : '#60a5fa';
+                    e.target.style.boxShadow = errors.source ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = errors.source ? '#ef4444' : '#404040';
+                    e.target.style.boxShadow = 'none';
+                  }}
                   placeholder="Source"
                 />
-                {errors.source && <p className="mt-1 text-sm text-red-600">{errors.source}</p>}
+                {errors.source && <p style={{
+                  marginTop: '4px',
+                  fontSize: '14px',
+                  color: '#ef4444'
+                }}>{errors.source}</p>}
               </div>
               
               <div>
-                <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="date" style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ebebeb',
+                  marginBottom: '8px'
+                }}>
                   Date *
                 </label>
                 <input
@@ -257,17 +396,43 @@ export default function CashInjectionForm({ injection, onClose }) {
                   name="date"
                   value={formData.date}
                   onChange={handleInputChange}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.date ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                  }`}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    fontSize: '14px',
+                    backgroundColor: '#1c1c1c',
+                    color: '#ebebeb',
+                    border: errors.date ? '1px solid #ef4444' : '1px solid #404040',
+                    borderRadius: '6px',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = errors.date ? '#ef4444' : '#60a5fa';
+                    e.target.style.boxShadow = errors.date ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = errors.date ? '#ef4444' : '#404040';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
-                {errors.date && <p className="mt-1 text-sm text-red-600">{errors.date}</p>}
+                {errors.date && <p style={{
+                  marginTop: '4px',
+                  fontSize: '14px',
+                  color: '#ef4444'
+                }}>{errors.date}</p>}
               </div>
             </div>
             
             {/* Description */}
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="description" style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#ebebeb',
+                marginBottom: '8px'
+              }}>
                 Description *
               </label>
               <input
@@ -276,17 +441,43 @@ export default function CashInjectionForm({ injection, onClose }) {
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.description ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                }`}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  fontSize: '14px',
+                  backgroundColor: '#1c1c1c',
+                  color: '#ebebeb',
+                  border: errors.description ? '1px solid #ef4444' : '1px solid #404040',
+                  borderRadius: '6px',
+                  outline: 'none',
+                  transition: 'border-color 0.2s, box-shadow 0.2s'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = errors.description ? '#ef4444' : '#60a5fa';
+                  e.target.style.boxShadow = errors.description ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = errors.description ? '#ef4444' : '#404040';
+                  e.target.style.boxShadow = 'none';
+                }}
                 placeholder="Description"
               />
-              {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
+              {errors.description && <p style={{
+                marginTop: '4px',
+                fontSize: '14px',
+                color: '#ef4444'
+              }}>{errors.description}</p>}
             </div>
             
             {/* Reference Number */}
             <div>
-              <label htmlFor="reference" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="reference" style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#ebebeb',
+                marginBottom: '8px'
+              }}>
                 Reference Number
               </label>
               <input
@@ -295,15 +486,43 @@ export default function CashInjectionForm({ injection, onClose }) {
                 name="reference"
                 value={formData.reference}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  fontSize: '14px',
+                  backgroundColor: '#1c1c1c',
+                  color: '#ebebeb',
+                  border: '1px solid #404040',
+                  borderRadius: '6px',
+                  outline: 'none',
+                  transition: 'border-color 0.2s, box-shadow 0.2s'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#60a5fa';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#404040';
+                  e.target.style.boxShadow = 'none';
+                }}
                 placeholder="Reference number"
               />
-              <p className="mt-1 text-xs text-gray-500">Optional reference for tracking</p>
+              <p style={{
+                marginTop: '4px',
+                fontSize: '12px',
+                color: '#b3b3b3'
+              }}>Optional reference for tracking</p>
             </div>
             
             {/* Notes */}
             <div>
-              <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="notes" style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#ebebeb',
+                marginBottom: '8px'
+              }}>
                 Additional Notes
               </label>
               <textarea
@@ -312,35 +531,64 @@ export default function CashInjectionForm({ injection, onClose }) {
                 value={formData.notes}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  fontSize: '14px',
+                  backgroundColor: '#1c1c1c',
+                  color: '#ebebeb',
+                  border: '1px solid #404040',
+                  borderRadius: '6px',
+                  outline: 'none',
+                  transition: 'border-color 0.2s, box-shadow 0.2s',
+                  resize: 'vertical'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#60a5fa';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#404040';
+                  e.target.style.boxShadow = 'none';
+                }}
                 placeholder="Notes"
               />
             </div>
             
             {/* Injection Preview */}
             {formData.amount && (
-              <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                <h4 className="text-sm font-medium text-green-900 mb-2">Cash Injection Summary</h4>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-green-700">Type:</span>
-                    <span className="font-semibold text-green-900">{formData.type}</span>
+              <div style={{
+                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                borderRadius: '8px',
+                padding: '16px',
+                border: '1px solid rgba(34, 197, 94, 0.3)'
+              }}>
+                <h4 style={{
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: '#22c55e',
+                  marginBottom: '12px'
+                }}>Cash Injection Summary</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#10b981' }}>Type:</span>
+                    <span style={{ fontWeight: '600', color: '#ebebeb' }}>{formData.type}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-green-700">Amount:</span>
-                    <span className="font-semibold text-green-900">{formatCurrency(formData.amount)}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#10b981' }}>Amount:</span>
+                    <span style={{ fontWeight: '600', color: '#ebebeb' }}>{formatCurrency(formData.amount)}</span>
                   </div>
                   {selectedType?.requiresPartner && formData.partnerId && (
-                    <div className="flex justify-between">
-                      <span className="text-green-700">Partner:</span>
-                      <span className="font-semibold text-green-900">
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#10b981' }}>Partner:</span>
+                      <span style={{ fontWeight: '600', color: '#ebebeb' }}>
                         {partners.find(p => p.id === formData.partnerId)?.name}
                       </span>
                     </div>
                   )}
-                  <div className="flex justify-between">
-                    <span className="text-green-700">Date:</span>
-                    <span className="font-semibold text-green-900">
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#10b981' }}>Date:</span>
+                    <span style={{ fontWeight: '600', color: '#ebebeb' }}>
                       {new Date(formData.date).toLocaleDateString()}
                     </span>
                   </div>
@@ -349,25 +597,77 @@ export default function CashInjectionForm({ injection, onClose }) {
             )}
             
             {/* Form Actions */}
-            <div className="flex justify-end space-x-3 pt-4">
+            <div style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: '12px',
+              paddingTop: '16px',
+              borderTop: '1px solid #404040',
+              marginTop: '8px'
+            }}>
               <button
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#b3b3b3',
+                  backgroundColor: 'transparent',
+                  border: '1px solid #404040',
+                  borderRadius: '6px',
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  opacity: isSubmitting ? 0.5 : 1,
+                  transition: 'all 0.2s',
+                  whiteSpace: 'nowrap'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSubmitting) {
+                    e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                    e.target.style.color = '#ebebeb';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSubmitting) {
+                    e.target.style.backgroundColor = 'transparent';
+                    e.target.style.color = '#b3b3b3';
+                  }
+                }}
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#ffffff',
+                  backgroundColor: '#22c55e',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  opacity: isSubmitting ? 0.5 : 1,
+                  transition: 'all 0.2s',
+                  whiteSpace: 'nowrap'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSubmitting) {
+                    e.target.style.backgroundColor = '#16a34a';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSubmitting) {
+                    e.target.style.backgroundColor = '#22c55e';
+                  }
+                }}
               >
                 {isSubmitting ? 'Processing...' : (injection ? 'Update Injection' : 'Add Cash Injection')}
               </button>
             </div>
           </form>
-        </div>
       </div>
     </Modal>
   );

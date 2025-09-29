@@ -94,47 +94,92 @@ export default function DestroyProductModal({ product, onClose }) {
   
   return (
     <Modal isOpen={true} onClose={onClose} size="medium">
-      <div className="bg-white rounded-lg shadow-xl">
+      <div style={{
+        backgroundColor: '#2a2a2a',
+        border: '1px solid #404040',
+        borderRadius: '8px',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)'
+      }}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-red-50">
+        <div className="flex items-center justify-between px-6 py-4" style={{
+          borderBottom: '1px solid #404040',
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          borderTopLeftRadius: '8px',
+          borderTopRightRadius: '8px'
+        }}>
           <div className="flex items-center">
-            <AlertTriangle className="h-6 w-6 text-red-600 mr-3" />
+            <AlertTriangle className="h-6 w-6 mr-3" style={{ color: '#ef4444' }} />
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 style={{
+                fontSize: '18px',
+                fontWeight: '600',
+                color: '#ebebeb'
+              }}>
                 Destroy/Damage Product
               </h3>
-              <p className="text-sm text-gray-600 mt-0.5">
+              <p style={{
+                fontSize: '14px',
+                color: '#b3b3b3',
+                marginTop: '2px'
+              }}>
                 Record damaged or destroyed inventory
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            style={{
+              color: '#b3b3b3',
+              padding: '4px',
+              borderRadius: '6px',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.color = '#ebebeb';
+              e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.color = '#b3b3b3';
+              e.target.style.backgroundColor = 'transparent';
+            }}
           >
             <span className="sr-only">Close</span>
             <X className="h-6 w-6" />
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} style={{ padding: '24px' }} className="space-y-4">
           {/* Product Info */}
-          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div style={{
+            backgroundColor: '#333333',
+            border: '1px solid #404040',
+            borderRadius: '8px',
+            padding: '16px'
+          }}>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-600">Product</p>
-                <p className="font-medium text-gray-900">{product.name}</p>
+                <p style={{ fontSize: '14px', color: '#b3b3b3' }}>Product</p>
+                <p style={{ fontWeight: '500', color: '#ebebeb' }}>{product.name}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Current Stock</p>
-                <p className="font-medium text-gray-900">{product.currentStock} bags</p>
+                <p style={{ fontSize: '14px', color: '#b3b3b3' }}>Current Stock</p>
+                <p style={{ fontWeight: '500', color: '#ebebeb' }}>{product.currentStock} bags</p>
               </div>
             </div>
           </div>
           
           {/* Quantity to Destroy */}
           <div>
-            <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="quantity" style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#ebebeb',
+              marginBottom: '4px'
+            }}>
               Quantity to Destroy (bags) *
             </label>
             <input
@@ -144,28 +189,72 @@ export default function DestroyProductModal({ product, onClose }) {
               onChange={(e) => setFormData(prev => ({ ...prev, quantity: e.target.value }))}
               min="1"
               max={product.currentStock}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                errors.quantity ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-red-500'
-              }`}
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                border: errors.quantity ? '1px solid #ef4444' : '1px solid #404040',
+                borderRadius: '6px',
+                backgroundColor: '#1c1c1c',
+                color: '#ebebeb',
+                outline: 'none',
+                transition: 'border-color 0.2s, box-shadow 0.2s'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = errors.quantity ? '#ef4444' : '#60a5fa';
+                e.target.style.boxShadow = errors.quantity ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = errors.quantity ? '#ef4444' : '#404040';
+                e.target.style.boxShadow = 'none';
+              }}
             />
-            {errors.quantity && <p className="mt-1 text-sm text-red-600">{errors.quantity}</p>}
-            <p className="mt-1 text-xs text-gray-500">
+            {errors.quantity && <p style={{
+              marginTop: '4px',
+              fontSize: '14px',
+              color: '#ef4444'
+            }}>{errors.quantity}</p>}
+            <p style={{
+              marginTop: '4px',
+              fontSize: '12px',
+              color: '#b3b3b3'
+            }}>
               Remaining stock after destruction: {product.currentStock - (parseInt(formData.quantity) || 0)} bags
             </p>
           </div>
           
           {/* Reason */}
           <div>
-            <label htmlFor="reason" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="reason" style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#ebebeb',
+              marginBottom: '4px'
+            }}>
               Reason for Destruction *
             </label>
             <select
               id="reason"
               value={formData.reason}
               onChange={(e) => setFormData(prev => ({ ...prev, reason: e.target.value }))}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                errors.reason ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-red-500'
-              }`}
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                border: errors.reason ? '1px solid #ef4444' : '1px solid #404040',
+                borderRadius: '6px',
+                backgroundColor: '#1c1c1c',
+                color: '#ebebeb',
+                outline: 'none',
+                transition: 'border-color 0.2s, box-shadow 0.2s'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = errors.reason ? '#ef4444' : '#60a5fa';
+                e.target.style.boxShadow = errors.reason ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = errors.reason ? '#ef4444' : '#404040';
+                e.target.style.boxShadow = 'none';
+              }}
             >
               <option value="">Select a reason...</option>
               {reasons.map(reason => (
@@ -174,12 +263,22 @@ export default function DestroyProductModal({ product, onClose }) {
                 </option>
               ))}
             </select>
-            {errors.reason && <p className="mt-1 text-sm text-red-600">{errors.reason}</p>}
+            {errors.reason && <p style={{
+              marginTop: '4px',
+              fontSize: '14px',
+              color: '#ef4444'
+            }}>{errors.reason}</p>}
           </div>
           
           {/* Additional Notes */}
           <div>
-            <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="notes" style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#ebebeb',
+              marginBottom: '4px'
+            }}>
               Additional Details {formData.reason === 'Other' && '*'}
             </label>
             <textarea
@@ -187,28 +286,58 @@ export default function DestroyProductModal({ product, onClose }) {
               value={formData.notes}
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               rows={3}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                errors.notes ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-red-500'
-              }`}
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                border: errors.notes ? '1px solid #ef4444' : '1px solid #404040',
+                borderRadius: '6px',
+                backgroundColor: '#1c1c1c',
+                color: '#ebebeb',
+                outline: 'none',
+                transition: 'border-color 0.2s, box-shadow 0.2s',
+                resize: 'vertical'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = errors.notes ? '#ef4444' : '#60a5fa';
+                e.target.style.boxShadow = errors.notes ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(96, 165, 250, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = errors.notes ? '#ef4444' : '#404040';
+                e.target.style.boxShadow = 'none';
+              }}
               placeholder="Provide additional details about the damage or destruction..."
             />
-            {errors.notes && <p className="mt-1 text-sm text-red-600">{errors.notes}</p>}
+            {errors.notes && <p style={{
+              marginTop: '4px',
+              fontSize: '14px',
+              color: '#ef4444'
+            }}>{errors.notes}</p>}
           </div>
           
           {/* Loss Value */}
           {lossValue > 0 && (
-            <div className="bg-red-50 rounded-lg p-4 border border-red-200">
-              <h4 className="text-sm font-medium text-red-900 mb-2">Financial Impact</h4>
-              <div className="space-y-1 text-sm">
+            <div style={{
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              borderRadius: '8px',
+              padding: '16px'
+            }}>
+              <h4 style={{
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#ef4444',
+                marginBottom: '8px'
+              }}>Financial Impact</h4>
+              <div className="space-y-1" style={{ fontSize: '14px' }}>
                 <div className="flex justify-between">
-                  <span className="text-red-700">Cost per bag:</span>
-                  <span className="font-medium text-red-900">
+                  <span style={{ color: '#ef4444' }}>Cost per bag:</span>
+                  <span style={{ fontWeight: '500', color: '#ef4444' }}>
                     {formatCurrency((product.costPerKg || product.costPerUnit || 0) * (product.bagWeight || 25))}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-red-700">Total Loss Value:</span>
-                  <span className="font-semibold text-red-900">
+                  <span style={{ color: '#ef4444' }}>Total Loss Value:</span>
+                  <span style={{ fontWeight: '600', color: '#ef4444' }}>
                     {formatCurrency(lossValue)}
                   </span>
                 </div>
@@ -217,19 +346,70 @@ export default function DestroyProductModal({ product, onClose }) {
           )}
           
           {/* Actions */}
-          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+          <div className="flex justify-end space-x-3" style={{
+            paddingTop: '16px',
+            borderTop: '1px solid #404040'
+          }}>
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                padding: '8px 16px',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#b3b3b3',
+                backgroundColor: 'transparent',
+                border: '1px solid #404040',
+                borderRadius: '6px',
+                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                opacity: isSubmitting ? 0.5 : 1,
+                outline: 'none',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                if (!isSubmitting) {
+                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                  e.target.style.borderColor = '#60a5fa';
+                  e.target.style.color = '#ebebeb';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isSubmitting) {
+                  e.target.style.backgroundColor = 'transparent';
+                  e.target.style.borderColor = '#404040';
+                  e.target.style.color = '#b3b3b3';
+                }
+              }}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                padding: '8px 16px',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#ffffff',
+                backgroundColor: '#dc2626',
+                border: '1px solid transparent',
+                borderRadius: '6px',
+                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                opacity: isSubmitting ? 0.5 : 1,
+                outline: 'none',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                if (!isSubmitting) {
+                  e.target.style.backgroundColor = '#b91c1c';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isSubmitting) {
+                  e.target.style.backgroundColor = '#dc2626';
+                }
+              }}
             >
               {isSubmitting ? 'Processing...' : 'Confirm Destruction'}
             </button>

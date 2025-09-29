@@ -29,24 +29,78 @@ export default function CashReconciliation({ expectedBalance, onReconcile, onClo
   
   return (
     <Modal isOpen={true} onClose={onClose} size="medium">
-      <div className="bg-white rounded-lg shadow-xl">
-        <div className="flex items-center justify-between px-6 py-4 border-b">
-          <h3 className="text-lg font-semibold text-gray-900">Daily Cash Reconciliation</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+      <div style={{
+        backgroundColor: '#2a2a2a',
+        border: '1px solid #404040',
+        borderRadius: '8px'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '16px 24px',
+          borderBottom: '1px solid #404040'
+        }}>
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: '600',
+            color: '#ebebeb'
+          }}>Daily Cash Reconciliation</h3>
+          <button
+            onClick={onClose}
+            style={{
+              color: '#b3b3b3',
+              backgroundColor: 'transparent',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '8px',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.color = '#ebebeb';
+              e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.color = '#b3b3b3';
+              e.target.style.backgroundColor = 'transparent';
+            }}
+          >
             <X className="h-6 w-6" />
           </button>
         </div>
-        
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+
+        <form onSubmit={handleSubmit} style={{
+          padding: '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px'
+        }}>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#ebebeb',
+              marginBottom: '8px'
+            }}>
               Expected Balance
             </label>
-            <p className="text-lg font-semibold text-gray-900">{formatCurrency(expectedBalance)}</p>
+            <p style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              color: '#10b981'
+            }}>{formatCurrency(expectedBalance)}</p>
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#ebebeb',
+              marginBottom: '8px'
+            }}>
               Actual Count *
             </label>
             <input
@@ -55,42 +109,137 @@ export default function CashReconciliation({ expectedBalance, onReconcile, onClo
               onChange={(e) => setActualCount(e.target.value)}
               step="0.01"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              style={{
+                width: '100%',
+                padding: '12px',
+                fontSize: '14px',
+                backgroundColor: '#1c1c1c',
+                color: '#ebebeb',
+                border: '1px solid #404040',
+                borderRadius: '6px',
+                outline: 'none',
+                transition: 'border-color 0.2s, box-shadow 0.2s'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#60a5fa';
+                e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#404040';
+                e.target.style.boxShadow = 'none';
+              }}
             />
           </div>
-          
+
           {discrepancy !== 0 && (
-            <div className={`p-3 rounded ${discrepancy > 0 ? 'bg-green-50' : 'bg-red-50'}`}>
-              <p className="text-sm font-medium">
+            <div style={{
+              padding: '12px',
+              borderRadius: '6px',
+              backgroundColor: discrepancy > 0 ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+              border: `1px solid ${discrepancy > 0 ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
+            }}>
+              <p style={{
+                fontSize: '14px',
+                fontWeight: '500',
+                color: discrepancy > 0 ? '#22c55e' : '#ef4444'
+              }}>
                 Discrepancy: {formatCurrency(discrepancy)}
               </p>
             </div>
           )}
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#ebebeb',
+              marginBottom: '8px'
+            }}>
               Notes
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              style={{
+                width: '100%',
+                padding: '12px',
+                fontSize: '14px',
+                backgroundColor: '#1c1c1c',
+                color: '#ebebeb',
+                border: '1px solid #404040',
+                borderRadius: '6px',
+                outline: 'none',
+                transition: 'border-color 0.2s, box-shadow 0.2s',
+                resize: 'vertical'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#60a5fa';
+                e.target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#404040';
+                e.target.style.boxShadow = 'none';
+              }}
               placeholder="Add any notes about the reconciliation..."
             />
           </div>
-          
-          <div className="flex justify-end space-x-3 pt-4">
+
+          <div style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: '12px',
+            paddingTop: '16px',
+            borderTop: '1px solid #404040',
+            marginTop: '8px'
+          }}>
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              style={{
+                padding: '8px 16px',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#b3b3b3',
+                backgroundColor: 'transparent',
+                border: '1px solid #404040',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                e.target.style.color = '#ebebeb';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.color = '#b3b3b3';
+              }}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+              style={{
+                padding: '8px 16px',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#ffffff',
+                backgroundColor: '#3b82f6',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = '#2563eb';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = '#3b82f6';
+              }}
             >
               Reconcile
             </button>

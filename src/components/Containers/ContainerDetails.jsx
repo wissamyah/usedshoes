@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { X, Pencil, Package, Weight, DollarSign, Calculator, Truck, Calendar, FileText, BarChart3, TrendingUp, MapPin, Clock } from 'lucide-react';
+import { X, Pencil, Package, DollarSign, Truck, Calendar, FileText, BarChart3, MapPin, Clock } from 'lucide-react';
 import { formatDate } from '../../utils/dateFormatter';
 import Modal from '../UI/Modal';
-import StatCard from '../UI/StatCard';
 
 export default function ContainerDetails({ container, onClose, onEdit }) {
   const [activeTab, setActiveTab] = useState('overview');
@@ -43,11 +42,33 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
   const TabButton = ({ tab, isActive, onClick }) => (
     <button
       onClick={() => onClick(tab.id)}
-      className={`flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-        isActive
-          ? 'bg-blue-600 text-white shadow-sm'
-          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-      }`}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '8px 16px',
+        fontSize: '14px',
+        fontWeight: '500',
+        borderRadius: '8px',
+        border: 'none',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        backgroundColor: isActive ? '#2563eb' : 'transparent',
+        color: isActive ? '#ffffff' : '#b3b3b3',
+        boxShadow: isActive ? '0 2px 4px rgba(37, 99, 235, 0.2)' : 'none'
+      }}
+      onMouseEnter={(e) => {
+        if (!isActive) {
+          e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+          e.target.style.color = '#ebebeb';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isActive) {
+          e.target.style.backgroundColor = 'transparent';
+          e.target.style.color = '#b3b3b3';
+        }
+      }}
     >
       <tab.icon className="h-4 w-4" />
       <span className="hidden sm:block">{tab.label}</span>
@@ -57,98 +78,206 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
 
   const renderOverviewTab = () => (
     <div className="space-y-6">
-      {/* Status and Key Info */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+      {/* Container Header */}
+      <div style={{
+        backgroundColor: '#2a2a2a',
+        border: '1px solid #404040',
+        borderRadius: '12px',
+        padding: '24px'
+      }}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div>
             <div className="flex items-center space-x-3 mb-2">
-              <h3 className="text-2xl font-bold text-gray-900">Container {container.id}</h3>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${containerStatus.bg} text-${containerStatus.color}-800`}>
+              <h3 style={{
+                fontSize: '24px',
+                fontWeight: '700',
+                color: '#ebebeb'
+              }}>Container {container.id}</h3>
+              <span style={{
+                padding: '4px 12px',
+                borderRadius: '20px',
+                fontSize: '14px',
+                fontWeight: '500',
+                backgroundColor: containerStatus.status === 'Arrived' ? 'rgba(34, 197, 94, 0.1)' :
+                                 containerStatus.status === 'In Transit' ? 'rgba(59, 130, 246, 0.1)' :
+                                 containerStatus.status === 'Ordered' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(107, 114, 128, 0.1)',
+                color: containerStatus.status === 'Arrived' ? '#22c55e' :
+                       containerStatus.status === 'In Transit' ? '#3b82f6' :
+                       containerStatus.status === 'Ordered' ? '#f59e0b' : '#6b7280'
+              }}>
                 {containerStatus.status}
               </span>
             </div>
-            <p className="text-gray-600 flex items-center">
-              <MapPin className="h-4 w-4 mr-1" />
+            <p style={{
+              color: '#b3b3b3',
+              display: 'flex',
+              alignItems: 'center'
+            }}>
+              <MapPin className="h-4 w-4 mr-2" />
               {container.supplier}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-gray-500">Total Investment</p>
-            <p className="text-3xl font-bold text-gray-900">{formatCurrency(totalCost)}</p>
+            <p style={{
+              fontSize: '14px',
+              color: '#b3b3b3'
+            }}>Total Investment</p>
+            <p style={{
+              fontSize: '32px',
+              fontWeight: '700',
+              color: '#ebebeb'
+            }}>{formatCurrency(totalCost)}</p>
           </div>
         </div>
       </div>
 
-      {/* Key Metrics */}
+      {/* Key Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="Products"
-          value={`${uniqueProducts}`}
-          subtitle="Different items"
-          icon={Package}
-          iconBgColor="bg-blue-100"
-          iconColor="text-blue-600"
-        />
-        <StatCard
-          title="Total Bags"
-          value={`${totalBags}`}
-          subtitle="Quantity imported"
-          icon={Weight}
-          iconBgColor="bg-green-100"
-          iconColor="text-green-600"
-        />
-        <StatCard
-          title="Total Weight"
-          value={`${(totalKg / 1000).toFixed(1)}t`}
-          subtitle={`${totalKg.toLocaleString()} kg`}
-          icon={Truck}
-          iconBgColor="bg-purple-100"
-          iconColor="text-purple-600"
-        />
-        <StatCard
-          title="Cost per Kg"
-          value={totalKg > 0 ? formatCurrency(totalCost / totalKg) : '$0'}
-          subtitle="Landed cost"
-          icon={TrendingUp}
-          iconBgColor="bg-orange-100"
-          iconColor="text-orange-600"
-        />
+        <div style={{
+          backgroundColor: '#2a2a2a',
+          border: '1px solid #404040',
+          borderRadius: '8px',
+          padding: '16px'
+        }}>
+          <div className="flex items-center">
+            <Package style={{ color: '#3b82f6' }} className="h-6 w-6 mr-3" />
+            <div>
+              <p style={{ fontSize: '24px', fontWeight: '600', color: '#ebebeb' }}>{uniqueProducts}</p>
+              <p style={{ fontSize: '14px', color: '#b3b3b3' }}>Products</p>
+            </div>
+          </div>
+        </div>
+
+        <div style={{
+          backgroundColor: '#2a2a2a',
+          border: '1px solid #404040',
+          borderRadius: '8px',
+          padding: '16px'
+        }}>
+          <div className="flex items-center">
+            <Package style={{ color: '#22c55e' }} className="h-6 w-6 mr-3" />
+            <div>
+              <p style={{ fontSize: '24px', fontWeight: '600', color: '#ebebeb' }}>{totalBags}</p>
+              <p style={{ fontSize: '14px', color: '#b3b3b3' }}>Total Bags</p>
+            </div>
+          </div>
+        </div>
+
+        <div style={{
+          backgroundColor: '#2a2a2a',
+          border: '1px solid #404040',
+          borderRadius: '8px',
+          padding: '16px'
+        }}>
+          <div className="flex items-center">
+            <Truck style={{ color: '#8b5cf6' }} className="h-6 w-6 mr-3" />
+            <div>
+              <p style={{ fontSize: '24px', fontWeight: '600', color: '#ebebeb' }}>{(totalKg / 1000).toFixed(1)}t</p>
+              <p style={{ fontSize: '14px', color: '#b3b3b3' }}>Total Weight</p>
+            </div>
+          </div>
+        </div>
+
+        <div style={{
+          backgroundColor: '#2a2a2a',
+          border: '1px solid #404040',
+          borderRadius: '8px',
+          padding: '16px'
+        }}>
+          <div className="flex items-center">
+            <DollarSign style={{ color: '#f59e0b' }} className="h-6 w-6 mr-3" />
+            <div>
+              <p style={{ fontSize: '24px', fontWeight: '600', color: '#ebebeb' }}>
+                {totalKg > 0 ? formatCurrency(totalCost / totalKg) : '$0'}
+              </p>
+              <p style={{ fontSize: '14px', color: '#b3b3b3' }}>Cost per Kg</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Container Information */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6">
-        <h4 className="text-lg font-semibold text-gray-900 mb-4">Container Information</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Supplier</label>
-              <p className="text-gray-900 font-semibold">{container.supplier}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Purchase Date</label>
-              <p className="text-gray-900">{formatDate(container.purchaseDate)}</p>
-            </div>
+      {/* Container Information - Compact Layout */}
+      <div style={{
+        backgroundColor: '#2a2a2a',
+        border: '1px solid #404040',
+        borderRadius: '8px',
+        padding: '16px'
+      }}>
+        <h4 style={{
+          fontSize: '16px',
+          fontWeight: '600',
+          color: '#ebebeb',
+          marginBottom: '12px'
+        }}>Container Details</h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <p style={{
+              fontSize: '12px',
+              color: '#b3b3b3',
+              marginBottom: '2px'
+            }}>Supplier</p>
+            <p style={{
+              fontSize: '14px',
+              color: '#ebebeb',
+              fontWeight: '500'
+            }}>{container.supplier}</p>
           </div>
-          <div className="space-y-4">
-            {container.invoiceNumber && (
-              <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1">Invoice Number</label>
-                <p className="text-gray-900 font-mono">{container.invoiceNumber}</p>
-              </div>
-            )}
-            {container.arrivalDate && (
-              <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1">Arrival Date</label>
-                <p className="text-gray-900">{formatDate(container.arrivalDate)}</p>
-              </div>
-            )}
+          <div>
+            <p style={{
+              fontSize: '12px',
+              color: '#b3b3b3',
+              marginBottom: '2px'
+            }}>Purchase Date</p>
+            <p style={{
+              fontSize: '14px',
+              color: '#ebebeb'
+            }}>{formatDate(container.purchaseDate)}</p>
           </div>
+          {container.invoiceNumber && (
+            <div>
+              <p style={{
+                fontSize: '12px',
+                color: '#b3b3b3',
+                marginBottom: '2px'
+              }}>Invoice #</p>
+              <p style={{
+                fontSize: '14px',
+                color: '#ebebeb',
+                fontFamily: 'monospace'
+              }}>{container.invoiceNumber}</p>
+            </div>
+          )}
+          {container.arrivalDate && (
+            <div>
+              <p style={{
+                fontSize: '12px',
+                color: '#b3b3b3',
+                marginBottom: '2px'
+              }}>Arrival Date</p>
+              <p style={{
+                fontSize: '14px',
+                color: '#ebebeb'
+              }}>{formatDate(container.arrivalDate)}</p>
+            </div>
+          )}
         </div>
 
         {container.description && (
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <label className="block text-sm font-medium text-gray-500 mb-2">Description</label>
-            <p className="text-gray-700 leading-relaxed">{container.description}</p>
+          <div style={{
+            marginTop: '12px',
+            paddingTop: '12px',
+            borderTop: '1px solid #404040'
+          }}>
+            <p style={{
+              fontSize: '12px',
+              color: '#b3b3b3',
+              marginBottom: '4px'
+            }}>Description</p>
+            <p style={{
+              fontSize: '14px',
+              color: '#ebebeb',
+              lineHeight: '1.5'
+            }}>{container.description}</p>
           </div>
         )}
       </div>
@@ -158,8 +287,15 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
   const renderProductsTab = () => (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h4 className="text-lg font-semibold text-gray-900">Products in Container</h4>
-        <span className="text-sm text-gray-500">{uniqueProducts} products • {totalBags} bags</span>
+        <h4 style={{
+          fontSize: '18px',
+          fontWeight: '600',
+          color: '#ebebeb'
+        }}>Products in Container</h4>
+        <span style={{
+          fontSize: '14px',
+          color: '#b3b3b3'
+        }}>{uniqueProducts} products • {totalBags} bags</span>
       </div>
 
       {container.products && container.products.length > 0 ? (
@@ -170,40 +306,131 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
             const landedCostPerBag = ((product.costPerKg || 0) * (product.bagWeight || 25)) + (totalBags > 0 ? (shippingCost + customsCost) / totalBags : 0);
 
             return (
-              <div key={index} className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+              <div key={index} style={{
+                backgroundColor: '#2a2a2a',
+                border: '1px solid #404040',
+                borderRadius: '12px',
+                padding: '24px',
+                transition: 'all 0.2s'
+              }}>
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                   <div className="flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-                      <h5 className="text-xl font-semibold text-gray-900 mb-2 sm:mb-0">{product.productName}</h5>
-                      <span className="text-2xl font-bold text-green-600">{formatCurrency(productTotalCost)}</span>
+                      <h5 style={{
+                        fontSize: '20px',
+                        fontWeight: '600',
+                        color: '#ebebeb',
+                        marginBottom: '8px'
+                      }} className="sm:mb-0">{product.productName}</h5>
+                      <span style={{
+                        fontSize: '24px',
+                        fontWeight: '700',
+                        color: '#22c55e'
+                      }}>{formatCurrency(productTotalCost)}</span>
                     </div>
 
                     <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-                      <div className="bg-blue-50 rounded-lg p-3">
-                        <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Quantity</p>
-                        <p className="text-lg font-bold text-blue-900">{product.bagQuantity}</p>
-                        <p className="text-xs text-blue-600">bags</p>
+                      <div style={{
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderRadius: '8px',
+                        padding: '12px'
+                      }}>
+                        <p style={{
+                          fontSize: '12px',
+                          color: '#3b82f6',
+                          fontWeight: '500',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em'
+                        }}>Quantity</p>
+                        <p style={{
+                          fontSize: '18px',
+                          fontWeight: '700',
+                          color: '#ebebeb'
+                        }}>{product.bagQuantity}</p>
+                        <p style={{
+                          fontSize: '12px',
+                          color: '#3b82f6'
+                        }}>bags</p>
                       </div>
 
-                      <div className="bg-green-50 rounded-lg p-3">
-                        <p className="text-xs text-green-600 font-medium uppercase tracking-wide">Weight</p>
-                        <p className="text-lg font-bold text-green-900">{productTotalKg} kg</p>
-                        <p className="text-xs text-green-600">{product.bagWeight}kg/bag</p>
+                      <div style={{
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        borderRadius: '8px',
+                        padding: '12px'
+                      }}>
+                        <p style={{
+                          fontSize: '12px',
+                          color: '#22c55e',
+                          fontWeight: '500',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em'
+                        }}>Weight</p>
+                        <p style={{
+                          fontSize: '18px',
+                          fontWeight: '700',
+                          color: '#ebebeb'
+                        }}>{productTotalKg} kg</p>
+                        <p style={{
+                          fontSize: '12px',
+                          color: '#22c55e'
+                        }}>{product.bagWeight}kg/bag</p>
                       </div>
 
-                      <div className="bg-purple-50 rounded-lg p-3">
-                        <p className="text-xs text-purple-600 font-medium uppercase tracking-wide">Cost/Kg</p>
-                        <p className="text-lg font-bold text-purple-900">{formatCurrency(product.costPerKg)}</p>
+                      <div style={{
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderRadius: '8px',
+                        padding: '12px'
+                      }}>
+                        <p style={{
+                          fontSize: '12px',
+                          color: '#8b5cf6',
+                          fontWeight: '500',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em'
+                        }}>Cost/Kg</p>
+                        <p style={{
+                          fontSize: '18px',
+                          fontWeight: '700',
+                          color: '#ebebeb'
+                        }}>{formatCurrency(product.costPerKg)}</p>
                       </div>
 
-                      <div className="bg-orange-50 rounded-lg p-3">
-                        <p className="text-xs text-orange-600 font-medium uppercase tracking-wide">Cost/Bag</p>
-                        <p className="text-lg font-bold text-orange-900">{formatCurrency((product.costPerKg || 0) * (product.bagWeight || 25))}</p>
+                      <div style={{
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderRadius: '8px',
+                        padding: '12px'
+                      }}>
+                        <p style={{
+                          fontSize: '12px',
+                          color: '#f59e0b',
+                          fontWeight: '500',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em'
+                        }}>Cost/Bag</p>
+                        <p style={{
+                          fontSize: '18px',
+                          fontWeight: '700',
+                          color: '#ebebeb'
+                        }}>{formatCurrency((product.costPerKg || 0) * (product.bagWeight || 25))}</p>
                       </div>
 
-                      <div className="bg-gray-50 rounded-lg p-3 col-span-2 lg:col-span-1">
-                        <p className="text-xs text-gray-600 font-medium uppercase tracking-wide">Landed/Bag</p>
-                        <p className="text-lg font-bold text-gray-900">{formatCurrency(landedCostPerBag)}</p>
+                      <div style={{
+                        backgroundColor: 'rgba(107, 114, 128, 0.1)',
+                        borderRadius: '8px',
+                        padding: '12px'
+                      }} className="col-span-2 lg:col-span-1">
+                        <p style={{
+                          fontSize: '12px',
+                          color: '#6b7280',
+                          fontWeight: '500',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em'
+                        }}>Landed/Bag</p>
+                        <p style={{
+                          fontSize: '18px',
+                          fontWeight: '700',
+                          color: '#ebebeb'
+                        }}>{formatCurrency(landedCostPerBag)}</p>
                       </div>
                     </div>
                   </div>
@@ -213,10 +440,23 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
           })}
         </div>
       ) : (
-        <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
-          <Package className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No Products Found</h3>
-          <p className="text-gray-500">This container doesn't have any products assigned yet.</p>
+        <div style={{
+          textAlign: 'center',
+          padding: '48px',
+          backgroundColor: '#333333',
+          borderRadius: '12px',
+          border: '2px dashed #404040'
+        }}>
+          <Package style={{ color: '#808080' }} className="mx-auto h-12 w-12 mb-4" />
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: '500',
+            color: '#ebebeb',
+            marginBottom: '8px'
+          }}>No Products Found</h3>
+          <p style={{
+            color: '#b3b3b3'
+          }}>This container doesn't have any products assigned yet.</p>
         </div>
       )}
     </div>
@@ -225,73 +465,211 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
   const renderCostsTab = () => (
     <div className="space-y-6">
       {/* Cost Summary */}
-      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100">
-        <h4 className="text-lg font-semibold text-gray-900 mb-4">Cost Summary</h4>
+      <div style={{
+        backgroundColor: '#2a2a2a',
+        border: '1px solid #404040',
+        borderRadius: '12px',
+        padding: '24px'
+      }}>
+        <h4 style={{
+          fontSize: '18px',
+          fontWeight: '600',
+          color: '#ebebeb',
+          marginBottom: '16px'
+        }}>Cost Summary</h4>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <div className="text-center">
-            <p className="text-sm text-gray-600 mb-1">Products Cost</p>
-            <p className="text-2xl font-bold text-gray-900">{formatCurrency(productsCost)}</p>
-            <p className="text-xs text-gray-500">{((productsCost/totalCost)*100).toFixed(1)}% of total</p>
+            <p style={{
+              fontSize: '14px',
+              color: '#b3b3b3',
+              marginBottom: '4px'
+            }}>Products Cost</p>
+            <p style={{
+              fontSize: '24px',
+              fontWeight: '700',
+              color: '#ebebeb'
+            }}>{formatCurrency(productsCost)}</p>
+            <p style={{
+              fontSize: '12px',
+              color: '#808080'
+            }}>{((productsCost/totalCost)*100).toFixed(1)}% of total</p>
           </div>
           <div className="text-center">
-            <p className="text-sm text-gray-600 mb-1">Shipping & Customs</p>
-            <p className="text-2xl font-bold text-gray-900">{formatCurrency(shippingCost + customsCost)}</p>
-            <p className="text-xs text-gray-500">{(((shippingCost + customsCost)/totalCost)*100).toFixed(1)}% of total</p>
+            <p style={{
+              fontSize: '14px',
+              color: '#b3b3b3',
+              marginBottom: '4px'
+            }}>Shipping & Customs</p>
+            <p style={{
+              fontSize: '24px',
+              fontWeight: '700',
+              color: '#ebebeb'
+            }}>{formatCurrency(shippingCost + customsCost)}</p>
+            <p style={{
+              fontSize: '12px',
+              color: '#808080'
+            }}>{(((shippingCost + customsCost)/totalCost)*100).toFixed(1)}% of total</p>
           </div>
           <div className="text-center">
-            <p className="text-sm text-gray-600 mb-1">Total Investment</p>
-            <p className="text-3xl font-bold text-green-600">{formatCurrency(totalCost)}</p>
+            <p style={{
+              fontSize: '14px',
+              color: '#b3b3b3',
+              marginBottom: '4px'
+            }}>Total Investment</p>
+            <p style={{
+              fontSize: '32px',
+              fontWeight: '700',
+              color: '#22c55e'
+            }}>{formatCurrency(totalCost)}</p>
           </div>
         </div>
       </div>
 
       {/* Detailed Breakdown */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6">
-        <h4 className="text-lg font-semibold text-gray-900 mb-6">Detailed Cost Breakdown</h4>
+      <div style={{
+        backgroundColor: '#2a2a2a',
+        border: '1px solid #404040',
+        borderRadius: '12px',
+        padding: '24px'
+      }}>
+        <h4 style={{
+          fontSize: '18px',
+          fontWeight: '600',
+          color: '#ebebeb',
+          marginBottom: '24px'
+        }}>Detailed Cost Breakdown</h4>
 
         <div className="space-y-4">
-          <div className="flex justify-between items-center py-3 border-b border-gray-100">
+          <div className="flex justify-between items-center py-3" style={{
+            borderBottom: '1px solid #404040'
+          }}>
             <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <span className="font-medium text-gray-700">Products Total</span>
+              <div style={{
+                width: '12px',
+                height: '12px',
+                backgroundColor: '#3b82f6',
+                borderRadius: '50%'
+              }}></div>
+              <span style={{
+                fontWeight: '500',
+                color: '#ebebeb'
+              }}>Products Total</span>
             </div>
-            <span className="text-lg font-semibold text-gray-900">{formatCurrency(productsCost)}</span>
+            <span style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              color: '#ebebeb'
+            }}>{formatCurrency(productsCost)}</span>
           </div>
 
-          <div className="flex justify-between items-center py-3 border-b border-gray-100">
+          <div className="flex justify-between items-center py-3" style={{
+            borderBottom: '1px solid #404040'
+          }}>
             <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="font-medium text-gray-700">Shipping Cost</span>
+              <div style={{
+                width: '12px',
+                height: '12px',
+                backgroundColor: '#22c55e',
+                borderRadius: '50%'
+              }}></div>
+              <span style={{
+                fontWeight: '500',
+                color: '#ebebeb'
+              }}>Shipping Cost</span>
             </div>
-            <span className="text-lg font-semibold text-gray-900">{formatCurrency(shippingCost)}</span>
+            <span style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              color: '#ebebeb'
+            }}>{formatCurrency(shippingCost)}</span>
           </div>
 
-          <div className="flex justify-between items-center py-3 border-b border-gray-100">
+          <div className="flex justify-between items-center py-3" style={{
+            borderBottom: '1px solid #404040'
+          }}>
             <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-              <span className="font-medium text-gray-700">Customs/Clearing Cost</span>
+              <div style={{
+                width: '12px',
+                height: '12px',
+                backgroundColor: '#8b5cf6',
+                borderRadius: '50%'
+              }}></div>
+              <span style={{
+                fontWeight: '500',
+                color: '#ebebeb'
+              }}>Customs/Clearing Cost</span>
             </div>
-            <span className="text-lg font-semibold text-gray-900">{formatCurrency(customsCost)}</span>
+            <span style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              color: '#ebebeb'
+            }}>{formatCurrency(customsCost)}</span>
           </div>
 
-          <div className="flex justify-between items-center py-4 bg-gray-50 -mx-6 px-6 rounded-lg">
-            <span className="text-lg font-bold text-gray-900">Total Container Cost</span>
-            <span className="text-2xl font-bold text-green-600">{formatCurrency(totalCost)}</span>
+          <div className="flex justify-between items-center py-4" style={{
+            backgroundColor: '#333333',
+            margin: '0 -24px',
+            padding: '16px 24px',
+            borderRadius: '8px'
+          }}>
+            <span style={{
+              fontSize: '18px',
+              fontWeight: '700',
+              color: '#ebebeb'
+            }}>Total Container Cost</span>
+            <span style={{
+              fontSize: '24px',
+              fontWeight: '700',
+              color: '#22c55e'
+            }}>{formatCurrency(totalCost)}</span>
           </div>
         </div>
 
         {totalKg > 0 && (
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <h5 className="text-md font-semibold text-gray-900 mb-4">Unit Cost Analysis</h5>
+          <div style={{
+            marginTop: '32px',
+            paddingTop: '24px',
+            borderTop: '1px solid #404040'
+          }}>
+            <h5 style={{
+              fontSize: '16px',
+              fontWeight: '600',
+              color: '#ebebeb',
+              marginBottom: '16px'
+            }}>Unit Cost Analysis</h5>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-blue-50 rounded-lg p-4">
-                <p className="text-sm text-blue-600 font-medium">Average Landed Cost per Kg</p>
-                <p className="text-xl font-bold text-blue-900">{formatCurrency(totalCost / totalKg)}</p>
+              <div style={{
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderRadius: '8px',
+                padding: '16px'
+              }}>
+                <p style={{
+                  fontSize: '14px',
+                  color: '#3b82f6',
+                  fontWeight: '500'
+                }}>Average Landed Cost per Kg</p>
+                <p style={{
+                  fontSize: '20px',
+                  fontWeight: '700',
+                  color: '#ebebeb'
+                }}>{formatCurrency(totalCost / totalKg)}</p>
               </div>
               {totalBags > 0 && (
-                <div className="bg-green-50 rounded-lg p-4">
-                  <p className="text-sm text-green-600 font-medium">Average Landed Cost per Bag</p>
-                  <p className="text-xl font-bold text-green-900">{formatCurrency(totalCost / totalBags)}</p>
+                <div style={{
+                  backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}>
+                  <p style={{
+                    fontSize: '14px',
+                    color: '#22c55e',
+                    fontWeight: '500'
+                  }}>Average Landed Cost per Bag</p>
+                  <p style={{
+                    fontSize: '20px',
+                    fontWeight: '700',
+                    color: '#ebebeb'
+                  }}>{formatCurrency(totalCost / totalBags)}</p>
                 </div>
               )}
             </div>
@@ -303,22 +681,59 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
 
   const renderTimelineTab = () => (
     <div className="space-y-6">
-      <h4 className="text-lg font-semibold text-gray-900">Container Timeline</h4>
+      <h4 style={{
+        fontSize: '18px',
+        fontWeight: '600',
+        color: '#ebebeb'
+      }}>Container Timeline</h4>
 
       <div className="relative">
-        <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+        <div style={{
+          position: 'absolute',
+          left: '32px',
+          top: 0,
+          bottom: 0,
+          width: '2px',
+          backgroundColor: '#404040'
+        }}></div>
 
         <div className="space-y-8">
           {/* Purchase Date */}
           <div className="relative flex items-start">
-            <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full ring-4 ring-white z-10">
-              <Calendar className="w-6 h-6 text-green-600" />
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '64px',
+              height: '64px',
+              backgroundColor: 'rgba(34, 197, 94, 0.1)',
+              borderRadius: '50%',
+              border: '4px solid #1c1c1c',
+              zIndex: 10
+            }}>
+              <Calendar style={{ width: '24px', height: '24px', color: '#22c55e' }} />
             </div>
             <div className="ml-6 min-w-0 flex-1">
-              <div className="bg-white p-4 rounded-lg border border-gray-200">
-                <h5 className="font-semibold text-gray-900">Container Ordered</h5>
-                <p className="text-sm text-gray-600 mt-1">{formatDate(container.purchaseDate)}</p>
-                <p className="text-sm text-gray-500 mt-2">
+              <div style={{
+                backgroundColor: '#2a2a2a',
+                padding: '16px',
+                borderRadius: '8px',
+                border: '1px solid #404040'
+              }}>
+                <h5 style={{
+                  fontWeight: '600',
+                  color: '#ebebeb'
+                }}>Container Ordered</h5>
+                <p style={{
+                  fontSize: '14px',
+                  color: '#b3b3b3',
+                  marginTop: '4px'
+                }}>{formatDate(container.purchaseDate)}</p>
+                <p style={{
+                  fontSize: '14px',
+                  color: '#808080',
+                  marginTop: '8px'
+                }}>
                   Container ordered from {container.supplier}
                   {container.invoiceNumber && ` with invoice #${container.invoiceNumber}`}
                 </p>
@@ -329,14 +744,40 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
           {/* Shipping Date */}
           {container.shippingDate && (
             <div className="relative flex items-start">
-              <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full ring-4 ring-white z-10">
-                <Truck className="w-6 h-6 text-blue-600" />
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '64px',
+                height: '64px',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderRadius: '50%',
+                border: '4px solid #1c1c1c',
+                zIndex: 10
+              }}>
+                <Truck style={{ width: '24px', height: '24px', color: '#3b82f6' }} />
               </div>
               <div className="ml-6 min-w-0 flex-1">
-                <div className="bg-white p-4 rounded-lg border border-gray-200">
-                  <h5 className="font-semibold text-gray-900">Shipping Started</h5>
-                  <p className="text-sm text-gray-600 mt-1">{formatDate(container.shippingDate)}</p>
-                  <p className="text-sm text-gray-500 mt-2">Container departed and is in transit</p>
+                <div style={{
+                  backgroundColor: '#2a2a2a',
+                  padding: '16px',
+                  borderRadius: '8px',
+                  border: '1px solid #404040'
+                }}>
+                  <h5 style={{
+                    fontWeight: '600',
+                    color: '#ebebeb'
+                  }}>Shipping Started</h5>
+                  <p style={{
+                    fontSize: '14px',
+                    color: '#b3b3b3',
+                    marginTop: '4px'
+                  }}>{formatDate(container.shippingDate)}</p>
+                  <p style={{
+                    fontSize: '14px',
+                    color: '#808080',
+                    marginTop: '8px'
+                  }}>Container departed and is in transit</p>
                 </div>
               </div>
             </div>
@@ -345,14 +786,40 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
           {/* Arrival Date */}
           {container.arrivalDate && (
             <div className="relative flex items-start">
-              <div className="flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full ring-4 ring-white z-10">
-                <MapPin className="w-6 h-6 text-purple-600" />
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '64px',
+                height: '64px',
+                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                borderRadius: '50%',
+                border: '4px solid #1c1c1c',
+                zIndex: 10
+              }}>
+                <MapPin style={{ width: '24px', height: '24px', color: '#8b5cf6' }} />
               </div>
               <div className="ml-6 min-w-0 flex-1">
-                <div className="bg-white p-4 rounded-lg border border-gray-200">
-                  <h5 className="font-semibold text-gray-900">Container Arrived</h5>
-                  <p className="text-sm text-gray-600 mt-1">{formatDate(container.arrivalDate)}</p>
-                  <p className="text-sm text-gray-500 mt-2">Container successfully arrived at destination</p>
+                <div style={{
+                  backgroundColor: '#2a2a2a',
+                  padding: '16px',
+                  borderRadius: '8px',
+                  border: '1px solid #404040'
+                }}>
+                  <h5 style={{
+                    fontWeight: '600',
+                    color: '#ebebeb'
+                  }}>Container Arrived</h5>
+                  <p style={{
+                    fontSize: '14px',
+                    color: '#b3b3b3',
+                    marginTop: '4px'
+                  }}>{formatDate(container.arrivalDate)}</p>
+                  <p style={{
+                    fontSize: '14px',
+                    color: '#808080',
+                    marginTop: '8px'
+                  }}>Container successfully arrived at destination</p>
                 </div>
               </div>
             </div>
@@ -360,14 +827,51 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
 
           {/* Current Status */}
           <div className="relative flex items-start">
-            <div className={`flex items-center justify-center w-16 h-16 ${containerStatus.bg} rounded-full ring-4 ring-white z-10`}>
-              <FileText className={`w-6 h-6 text-${containerStatus.color}-600`} />
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '64px',
+              height: '64px',
+              backgroundColor: containerStatus.status === 'Arrived' ? 'rgba(34, 197, 94, 0.1)' :
+                               containerStatus.status === 'In Transit' ? 'rgba(59, 130, 246, 0.1)' :
+                               containerStatus.status === 'Ordered' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(107, 114, 128, 0.1)',
+              borderRadius: '50%',
+              border: '4px solid #1c1c1c',
+              zIndex: 10
+            }}>
+              <FileText style={{
+                width: '24px',
+                height: '24px',
+                color: containerStatus.status === 'Arrived' ? '#22c55e' :
+                       containerStatus.status === 'In Transit' ? '#3b82f6' :
+                       containerStatus.status === 'Ordered' ? '#f59e0b' : '#6b7280'
+              }} />
             </div>
             <div className="ml-6 min-w-0 flex-1">
-              <div className="bg-white p-4 rounded-lg border border-gray-200">
-                <h5 className="font-semibold text-gray-900">Current Status</h5>
-                <p className={`text-sm text-${containerStatus.color}-600 font-medium mt-1`}>{containerStatus.status}</p>
-                <p className="text-sm text-gray-500 mt-2">
+              <div style={{
+                backgroundColor: '#2a2a2a',
+                padding: '16px',
+                borderRadius: '8px',
+                border: '1px solid #404040'
+              }}>
+                <h5 style={{
+                  fontWeight: '600',
+                  color: '#ebebeb'
+                }}>Current Status</h5>
+                <p style={{
+                  fontSize: '14px',
+                  color: containerStatus.status === 'Arrived' ? '#22c55e' :
+                         containerStatus.status === 'In Transit' ? '#3b82f6' :
+                         containerStatus.status === 'Ordered' ? '#f59e0b' : '#6b7280',
+                  fontWeight: '500',
+                  marginTop: '4px'
+                }}>{containerStatus.status}</p>
+                <p style={{
+                  fontSize: '14px',
+                  color: '#808080',
+                  marginTop: '8px'
+                }}>
                   Total investment: {formatCurrency(totalCost)} • {totalBags} bags • {uniqueProducts} products
                 </p>
               </div>
@@ -395,17 +899,57 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
 
   return (
     <Modal isOpen={true} onClose={onClose} size="large">
-      <div className="bg-gray-50 min-h-[80vh] max-h-[90vh] flex flex-col">
+      <div style={{
+        backgroundColor: '#1c1c1c',
+        minHeight: '80vh',
+        maxHeight: '90vh',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <div style={{
+          backgroundColor: '#2a2a2a',
+          borderBottom: '1px solid #404040',
+          padding: '16px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Container Details</h2>
-            <p className="text-sm text-gray-500 mt-1">{container.supplier} • {formatDate(container.purchaseDate)}</p>
+            <h2 style={{
+              fontSize: '20px',
+              fontWeight: '600',
+              color: '#ebebeb'
+            }}>Container Details</h2>
+            <p style={{
+              fontSize: '14px',
+              color: '#b3b3b3',
+              marginTop: '4px'
+            }}>{container.supplier} • {formatDate(container.purchaseDate)}</p>
           </div>
           <div className="flex items-center space-x-2">
             <button
               onClick={onEdit}
-              className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 12px',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+              }}
               title="Edit container"
             >
               <Pencil className="h-4 w-4" />
@@ -413,7 +957,23 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              style={{
+                padding: '8px',
+                color: '#b3b3b3',
+                backgroundColor: 'transparent',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.color = '#ebebeb';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.color = '#b3b3b3';
+                e.target.style.backgroundColor = 'transparent';
+              }}
             >
               <X className="h-5 w-5" />
             </button>
@@ -421,7 +981,11 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white border-b border-gray-200 px-6 py-3">
+        <div style={{
+          backgroundColor: '#2a2a2a',
+          borderBottom: '1px solid #404040',
+          padding: '12px 24px'
+        }}>
           <div className="flex space-x-1 overflow-x-auto">
             {tabs.map((tab) => (
               <TabButton
@@ -435,21 +999,89 @@ export default function ContainerDetails({ container, onClose, onEdit }) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '24px',
+          backgroundColor: '#1c1c1c',
+          scrollbarWidth: 'thin',
+          scrollbarColor: '#404040 #1c1c1c'
+        }}>
+          <style dangerouslySetInnerHTML={{
+            __html: `
+              div[style*="overflowY: auto"]::-webkit-scrollbar {
+                width: 8px;
+              }
+              div[style*="overflowY: auto"]::-webkit-scrollbar-track {
+                background: #1c1c1c;
+              }
+              div[style*="overflowY: auto"]::-webkit-scrollbar-thumb {
+                background: #404040;
+                border-radius: 4px;
+              }
+              div[style*="overflowY: auto"]::-webkit-scrollbar-thumb:hover {
+                background: #505050;
+              }
+            `
+          }} />
           {renderTabContent()}
         </div>
 
         {/* Footer Actions */}
-        <div className="bg-white border-t border-gray-200 px-6 py-4 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
+        <div style={{
+          backgroundColor: '#2a2a2a',
+          borderTop: '1px solid #404040',
+          padding: '16px 24px',
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          gap: '12px'
+        }}>
           <button
             onClick={onClose}
-            className="w-full sm:w-auto px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            style={{
+              padding: '8px 16px',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#b3b3b3',
+              backgroundColor: 'transparent',
+              border: '1px solid #404040',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              whiteSpace: 'nowrap'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+              e.target.style.color = '#ebebeb';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = 'transparent';
+              e.target.style.color = '#b3b3b3';
+            }}
           >
             Close
           </button>
           <button
             onClick={onEdit}
-            className="w-full sm:w-auto px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+            style={{
+              padding: '8px 16px',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#ffffff',
+              backgroundColor: '#2563eb',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              whiteSpace: 'nowrap'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#1d4ed8';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#2563eb';
+            }}
           >
             Edit Container
           </button>

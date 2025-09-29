@@ -298,36 +298,32 @@ const DataSync = memo(function DataSync() {
         // Validate and sanitize data before saving
         const validation = validateFinanceData(dataToSave);
         if (!validation.isValid) {
-          console.error('❌ Data validation failed:', validation.errors);
+          console.error('❌ Auto-save validation failed:', validation.errors);
           setError(`Data validation failed: ${validation.errors.join(', ')}`);
           return;
         }
 
         if (validation.warnings.length > 0) {
-          console.warn('⚠️ Data validation warnings:', validation.warnings);
+          console.warn('⚠️ Auto-save validation warnings:', validation.warnings);
         }
 
         const sanitizedData = sanitizeFinanceData(dataToSave);
         logDataState(sanitizedData, 'Auto-save');
 
-        console.log('💾 Auto-saving data to GitHub:', {
-          hasCashInjections: !!sanitizedData.cashInjections,
-          cashInjectionsCount: sanitizedData.cashInjections?.length || 0,
-          cashInjectionsData: sanitizedData.cashInjections
-        });
         const result = await saveData(sanitizedData, 'Auto-save: Update business data');
+
         if (result.success) {
           markSaved();
           // Create local backup after successful save
           createLocalBackup(sanitizedData);
-          console.log('✅ Data auto-saved to GitHub successfully');
+          console.log('✅ Auto-saved to GitHub');
         } else {
           console.error('❌ Auto-save failed:', result.error);
           // Don't show error for auto-save failures, just log them
           // User will see the unsaved changes indicator
         }
       } catch (error) {
-        console.error('❌ Failed to auto-save data to GitHub:', error);
+        console.error('❌ Failed to auto-save:', error.message);
         // Silent auto-save failures to avoid interrupting user workflow
       }
     }, 5000); // 5 second delay for better data safety
@@ -338,12 +334,10 @@ const DataSync = memo(function DataSync() {
   // Manual save function that can be triggered (enhanced with better error handling)
   const forceSave = async () => {
     if (!isConnected) {
-      console.warn('Cannot save: GitHub not connected');
       return { success: false, error: 'GitHub not connected' };
     }
 
     try {
-      console.log('🚀 Initiating manual save to GitHub...');
       setLoading(true);
 
       const dataToSave = {

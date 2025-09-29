@@ -12,7 +12,24 @@ import StatCard from '../UI/StatCard';
 export default function FinancePage() {
   const { partners, withdrawals, cashFlows, cashInjections = [], sales, expenses, containers, syncFinanceData: syncData } = useData();
   const { showSuccessMessage, showInfoMessage, showErrorMessage } = useUI();
-  const [activeTab, setActiveTab] = useState('dashboard');
+
+  // Get initial tab from URL parameters or default to 'dashboard'
+  const getInitialTab = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    const validTabs = ['dashboard', 'injections', 'withdrawals', 'partners'];
+    return validTabs.includes(tabParam) ? tabParam : 'dashboard';
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
+
+  // Update URL when tab changes
+  const handleTabChange = (newTab) => {
+    setActiveTab(newTab);
+    const url = new URL(window.location);
+    url.searchParams.set('tab', newTab);
+    window.history.replaceState(null, '', url.toString());
+  };
 
   // Calculate today's cash position
   const today = new Date().toISOString().split('T')[0];
@@ -142,7 +159,7 @@ export default function FinancePage() {
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
+                      onClick={() => handleTabChange(tab.id)}
                       className={`
                         whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center justify-center sm:justify-start
                         ${activeTab === tab.id
