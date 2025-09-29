@@ -31,7 +31,54 @@ const components = {
 };
 
 function Layout() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  // Initialize main navigation tab state with URL + localStorage fallback
+  const getInitialTab = () => {
+    try {
+      // First try URL parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlTab = urlParams.get('page');
+
+      // Then try localStorage as fallback
+      const savedTab = localStorage.getItem('mainActiveTab');
+
+      const validTabs = ['dashboard', 'products', 'containers', 'sales', 'expenses', 'finance', 'reports', 'settings'];
+
+      // Prefer URL, fallback to localStorage, default to dashboard
+      const targetTab = urlTab || savedTab || 'dashboard';
+      return validTabs.includes(targetTab) ? targetTab : 'dashboard';
+    } catch (error) {
+      console.error('Error getting initial main tab:', error);
+      return 'dashboard';
+    }
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
+
+  // Sync tab state on mount
+  useEffect(() => {
+    const currentTab = getInitialTab();
+    if (currentTab !== activeTab) {
+      setActiveTab(currentTab);
+    }
+  }, []);
+
+  // Enhanced tab change handler with persistence
+  const handleTabChange = (newTab) => {
+    try {
+      setActiveTab(newTab);
+
+      // Update URL with page parameter
+      const url = new URL(window.location);
+      url.searchParams.set('page', newTab);
+      window.history.pushState(null, '', url.toString());
+
+      // Save to localStorage as backup
+      localStorage.setItem('mainActiveTab', newTab);
+    } catch (error) {
+      console.error('Error changing main tab:', error);
+      setActiveTab(newTab);
+    }
+  };
   
   // Use contexts
   const { containers, products, sales, expenses, loadData, markSaved } = useData();
@@ -47,7 +94,7 @@ function Layout() {
     try {
       if (!isConnected) {
         showErrorMessage('GitHub Not Connected', 'Please configure GitHub settings first');
-        setActiveTab('settings');
+        handleTabChange('settings');
         return;
       }
 
@@ -94,11 +141,11 @@ function Layout() {
         onSyncData={handleSyncData}
         syncStatus={syncStatus}
         lastSyncTime={lastSync}
-        onTitleClick={() => setActiveTab('dashboard')}
+        onTitleClick={() => handleTabChange('dashboard')}
       />
 
       {/* Navigation - Outside of padding on mobile */}
-      <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
+      <Navigation activeTab={activeTab} onTabChange={handleTabChange} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <main className="mt-6">

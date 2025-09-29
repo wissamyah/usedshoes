@@ -13,22 +13,53 @@ export default function FinancePage() {
   const { partners, withdrawals, cashFlows, cashInjections = [], sales, expenses, containers, syncFinanceData: syncData } = useData();
   const { showSuccessMessage, showInfoMessage, showErrorMessage } = useUI();
 
-  // Get initial tab from URL parameters or default to 'dashboard'
+  // Initialize tab state with URL + localStorage fallback
   const getInitialTab = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tabParam = urlParams.get('tab');
-    const validTabs = ['dashboard', 'injections', 'withdrawals', 'partners'];
-    return validTabs.includes(tabParam) ? tabParam : 'dashboard';
+    try {
+      // First try URL parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlTab = urlParams.get('tab');
+
+      // Then try localStorage as fallback
+      const savedTab = localStorage.getItem('financeActiveTab');
+
+      const validTabs = ['dashboard', 'injections', 'withdrawals', 'partners'];
+
+      // Prefer URL, fallback to localStorage, default to dashboard
+      const targetTab = urlTab || savedTab || 'dashboard';
+      return validTabs.includes(targetTab) ? targetTab : 'dashboard';
+    } catch (error) {
+      console.error('Error getting initial tab:', error);
+      return 'dashboard';
+    }
   };
 
   const [activeTab, setActiveTab] = useState(getInitialTab);
 
-  // Update URL when tab changes
+  // Sync tab state on mount and handle any missed URL changes
+  useEffect(() => {
+    const currentTab = getInitialTab();
+    if (currentTab !== activeTab) {
+      setActiveTab(currentTab);
+    }
+  }, []);
+
+  // Update URL and localStorage when tab changes
   const handleTabChange = (newTab) => {
-    setActiveTab(newTab);
-    const url = new URL(window.location);
-    url.searchParams.set('tab', newTab);
-    window.history.replaceState(null, '', url.toString());
+    try {
+      setActiveTab(newTab);
+
+      // Update URL - use pushState instead of replaceState to make it "sticky"
+      const url = new URL(window.location);
+      url.searchParams.set('tab', newTab);
+      window.history.pushState(null, '', url.toString());
+
+      // Save to localStorage as backup
+      localStorage.setItem('financeActiveTab', newTab);
+    } catch (error) {
+      console.error('Error changing tab:', error);
+      setActiveTab(newTab); // Still set the state even if URL/localStorage fails
+    }
   };
 
   // Calculate today's cash position
