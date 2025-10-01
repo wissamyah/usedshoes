@@ -160,6 +160,7 @@ export default function SettingsPage() {
       // Create ID mappings for relational data
       const productIdMap = {};
       const containerIdMap = {};
+      const partnerIdMap = {}; // Add partner ID mapping
 
       // Merge products with new IDs
       const mergedProducts = [...products];
@@ -209,26 +210,52 @@ export default function SettingsPage() {
         mergedExpenses.push({ ...expense, id: newId });
       });
 
-      // Merge other entities
+      // Merge partners with new IDs and create mapping
       const mergedPartners = [...(partners || [])];
       importedData.partners?.forEach(partner => {
+        const oldId = partner.id;
         const newId = currentMaxIds.partner + 1;
+        partnerIdMap[oldId] = newId; // Map old partner ID to new ID
         currentMaxIds.partner = newId;
+        console.log(`📥 Importing partner: ${partner.name} - Old ID: ${oldId} → New ID: ${newId}`);
         mergedPartners.push({ ...partner, id: newId });
       });
 
+      // Merge withdrawals with new IDs and updated partner references
       const mergedWithdrawals = [...(withdrawals || [])];
       importedData.withdrawals?.forEach(withdrawal => {
         const newId = currentMaxIds.withdrawal + 1;
         currentMaxIds.withdrawal = newId;
-        mergedWithdrawals.push({ ...withdrawal, id: newId });
+
+        // Update partnerId reference to match new partner ID
+        const oldPartnerId = withdrawal.partnerId;
+        const newPartnerId = partnerIdMap[oldPartnerId] || oldPartnerId;
+
+        console.log(`📥 Importing withdrawal ${withdrawal.id}: Partner ID ${oldPartnerId} → ${newPartnerId}, Amount: $${withdrawal.amount}`);
+
+        mergedWithdrawals.push({
+          ...withdrawal,
+          id: newId,
+          partnerId: newPartnerId // Use mapped partner ID
+        });
       });
 
+      // Merge cash injections with new IDs and updated partner references
       const mergedCashInjections = [...(cashInjections || [])];
       importedData.cashInjections?.forEach(injection => {
         const newId = currentMaxIds.cashInjection + 1;
         currentMaxIds.cashInjection = newId;
-        mergedCashInjections.push({ ...injection, id: newId });
+
+        // Update partnerId reference if it exists (for Capital Contributions)
+        const updatedInjection = { ...injection, id: newId };
+        if (injection.partnerId) {
+          const oldPartnerId = injection.partnerId;
+          const newPartnerId = partnerIdMap[oldPartnerId] || oldPartnerId;
+          updatedInjection.partnerId = newPartnerId;
+          console.log(`📥 Importing cash injection ${injection.id}: Partner ID ${oldPartnerId} → ${newPartnerId}, Amount: $${injection.amount}`);
+        }
+
+        mergedCashInjections.push(updatedInjection);
       });
 
       // Load the merged data
