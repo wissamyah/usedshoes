@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
 import { useData } from '../../context/DataContext';
 import { useUI } from '../../context/UIContext';
-import { Download, Upload, Database, Shield, AlertTriangle, CheckCircle, FileJson, Wrench } from 'lucide-react';
+import { useGitHub } from '../../context/GitHubContext';
+import { Download, Upload, Database, Shield, AlertTriangle, CheckCircle, FileJson, Wrench, Trash2, CloudOff } from 'lucide-react';
 
 export default function SettingsPage() {
   const {
@@ -15,11 +16,15 @@ export default function SettingsPage() {
     metadata,
     loadData,
     fixMalformedIds,
+    triggerSave,
     dispatch
   } = useData();
   const { showSuccessMessage, showErrorMessage, showConfirmDialog } = useUI();
+  const { forceSaveData, isConnected } = useGitHub();
   const [isImporting, setIsImporting] = useState(false);
   const [isFixingIds, setIsFixingIds] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [isForceOverwriting, setIsForceOverwriting] = useState(false);
   const fileInputRef = useRef(null);
 
   // Backup functionality
@@ -273,7 +278,124 @@ export default function SettingsPage() {
       event.target.value = ''; // Reset file input
     }
   };
-  
+
+  // Reset all data functionality
+  const handleResetData = async () => {
+    const confirmed = await showConfirmDialog(
+      'Reset All Data',
+      'Are you sure you want to delete ALL data? This will permanently remove all products, sales, expenses, containers, partners, withdrawals, and cash injections.',
+      'warning'
+    );
+
+    if (!confirmed) return;
+
+    // Double confirmation for this destructive action
+    const doubleConfirmed = await showConfirmDialog(
+      'Final Confirmation - Cannot Be Undone',
+      'This is your last chance. ALL data will be permanently deleted from your local storage and GitHub. Are you absolutely sure you want to continue?',
+      'warning'
+    );
+
+    if (!doubleConfirmed) return;
+
+    setIsResetting(true);
+
+    try {
+      // Create empty data structure
+      const emptyData = {
+        metadata: {
+          version: '1.0.0',
+          nextIds: {
+            product: 1,
+            container: 1,
+            sale: 1,
+            expense: 1,
+            partner: 1,
+            withdrawal: 1,
+            cashInjection: 1,
+            cashFlow: 1
+          },
+          lastUpdated: new Date().toISOString()
+        },
+        containers: [],
+        products: [],
+        sales: [],
+        expenses: [],
+        partners: [],
+        withdrawals: [],
+        cashInjections: [],
+        cashFlows: []
+      };
+
+      // Load the empty data into context
+      loadData(emptyData);
+
+      // Immediately save to GitHub to persist the reset
+      if (triggerSave) {
+        await triggerSave();
+      }
+
+      showSuccessMessage(
+        'Data Reset Successfully',
+        'All data has been permanently deleted. Your application is now in a clean state.'
+      );
+    } catch (error) {
+      console.error('Reset failed:', error);
+      showErrorMessage('Reset Failed', 'Failed to reset data. Please try again.');
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
+  // Force overwrite GitHub data functionality
+  const handleForceOverwrite = async () => {
+    if (!isConnected) {
+      showErrorMessage('Not Connected', 'Please connect to GitHub first from the header settings.');
+      return;
+    }
+
+    const confirmed = await showConfirmDialog(
+      'Force Overwrite GitHub Data',
+      'This will overwrite the data.json file on GitHub with your current local data. Use this if the GitHub file is corrupted or has invalid JSON. Are you sure?',
+      'warning'
+    );
+
+    if (!confirmed) return;
+
+    setIsForceOverwriting(true);
+
+    try {
+      // Prepare current data for force save
+      const currentData = {
+        metadata: {
+          ...metadata,
+          version: '1.0.0',
+          lastUpdated: new Date().toISOString()
+        },
+        containers,
+        products,
+        sales,
+        expenses,
+        partners: partners || [],
+        withdrawals: withdrawals || [],
+        cashInjections: cashInjections || []
+      };
+
+      // Force save to GitHub (bypasses JSON parsing errors)
+      await forceSaveData(currentData, 'Force overwrite corrupted data file');
+
+      showSuccessMessage(
+        'Force Overwrite Successful',
+        'Your local data has been successfully pushed to GitHub, overwriting the previous file.'
+      );
+    } catch (error) {
+      console.error('Force overwrite failed:', error);
+      showErrorMessage('Force Overwrite Failed', error.message || 'Failed to overwrite GitHub data. Please try again.');
+    } finally {
+      setIsForceOverwriting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <div className="py-6">
@@ -371,6 +493,49 @@ export default function SettingsPage() {
                   </button>
                 </div>
 
+                {/* Force Overwrite GitHub Section */}
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between pb-6" style={{ borderBottom: '1px solid #404040' }}>
+                  <div className="mb-4 sm:mb-0">
+                    <div className="flex items-center mb-2">
+                      <CloudOff className="h-5 w-5 text-yellow-500 mr-2" />
+                      <h4 style={{ fontSize: '14px', fontWeight: '500', color: '#ebebeb' }}>Force Overwrite GitHub Data</h4>
+                    </div>
+                    <p style={{ fontSize: '14px', color: '#b3b3b3' }}>
+                      Push your local data to GitHub, overwriting any corrupted or invalid JSON file
+                    </p>
+                    <div style={{ marginTop: '8px', backgroundColor: 'rgba(234, 179, 8, 0.1)', border: '1px solid rgba(234, 179, 8, 0.3)', borderRadius: '8px', padding: '16px', display: 'flex', alignItems: 'center' }}>
+                      <AlertTriangle style={{ height: '20px', width: '20px', color: '#eab308', marginRight: '12px', flexShrink: 0 }} />
+                      <div>
+                        <p style={{ fontSize: '14px', fontWeight: '500', color: '#eab308' }}>Recovery Tool</p>
+                        <p style={{ fontSize: '14px', color: '#ca8a04', marginTop: '4px' }}>
+                          Use this if you see "Failed to parse data file" errors
+                        </p>
+                        <p style={{ fontSize: '14px', color: '#ca8a04' }}>
+                          This will force-push your current local data to GitHub
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleForceOverwrite}
+                    disabled={isForceOverwriting || !isConnected}
+                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title={!isConnected ? 'Connect to GitHub first' : ''}
+                  >
+                    {isForceOverwriting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Overwriting...
+                      </>
+                    ) : (
+                      <>
+                        <CloudOff className="h-4 w-4 mr-2" />
+                        Force Overwrite
+                      </>
+                    )}
+                  </button>
+                </div>
+
                 {/* Import Section */}
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
                   <div className="mb-4 sm:mb-0">
@@ -423,6 +588,69 @@ export default function SettingsPage() {
                       )}
                     </button>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Danger Zone Section */}
+            <div style={{ backgroundColor: '#2a2a2a', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', borderRadius: '8px', border: '1px solid #7f1d1d' }}>
+              <div className="px-6 py-4" style={{ borderBottom: '1px solid #7f1d1d' }}>
+                <div className="flex items-center">
+                  <AlertTriangle className="h-5 w-5 mr-2" style={{ color: '#ef4444' }} />
+                  <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#ef4444' }}>Danger Zone</h3>
+                </div>
+                <p style={{ fontSize: '14px', color: '#b3b3b3', marginTop: '4px' }}>
+                  Irreversible and destructive actions
+                </p>
+              </div>
+
+              <div className="p-6">
+                {/* Reset All Data Section */}
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
+                  <div className="mb-4 sm:mb-0">
+                    <div className="flex items-center mb-2">
+                      <Trash2 className="h-5 w-5 text-red-500 mr-2" />
+                      <h4 style={{ fontSize: '14px', fontWeight: '500', color: '#ebebeb' }}>Reset All Data</h4>
+                    </div>
+                    <p style={{ fontSize: '14px', color: '#b3b3b3' }}>
+                      Permanently delete all data from the application
+                    </p>
+                    <div style={{ marginTop: '8px', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', padding: '16px', display: 'flex', alignItems: 'center' }}>
+                      <AlertTriangle style={{ height: '20px', width: '20px', color: '#ef4444', marginRight: '12px', flexShrink: 0 }} />
+                      <div>
+                        <p style={{ fontSize: '14px', fontWeight: '500', color: '#ef4444' }}>Warning: This action is permanent!</p>
+                        <p style={{ fontSize: '14px', color: '#dc2626', marginTop: '4px' }}>
+                          • All products, sales, expenses, and containers will be deleted
+                        </p>
+                        <p style={{ fontSize: '14px', color: '#dc2626' }}>
+                          • All partners, withdrawals, and cash injections will be removed
+                        </p>
+                        <p style={{ fontSize: '14px', color: '#dc2626' }}>
+                          • This action CANNOT be undone
+                        </p>
+                        <p style={{ fontSize: '14px', color: '#dc2626', fontWeight: '500', marginTop: '8px' }}>
+                          ⚠️ Make sure to backup your data first!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleResetData}
+                    disabled={isResetting}
+                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isResetting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Resetting...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Reset All Data
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </div>

@@ -211,13 +211,50 @@ export class GitHubAPI {
 
         const validResponse = await this.handleResponse(response);
         const fileData = await validResponse.json();
-        
+
         let data;
         try {
           const content = atob(fileData.content);
+
+          // Handle empty or whitespace-only content
+          if (!content || content.trim() === '') {
+            console.warn('GitHub file is empty, returning empty data structure');
+            return {
+              data: {
+                metadata: {
+                  version: "1.0.0",
+                  lastUpdated: new Date().toISOString(),
+                  nextIds: {
+                    product: 1,
+                    container: 1,
+                    sale: 1,
+                    expense: 1,
+                    partner: 1,
+                    withdrawal: 1,
+                    cashFlow: 1,
+                    cashInjection: 1,
+                  }
+                },
+                containers: [],
+                products: [],
+                sales: [],
+                expenses: [],
+                partners: [],
+                withdrawals: [],
+                cashFlows: [],
+                cashInjections: []
+              },
+              sha: fileData.sha,
+              isNewFile: false,
+              wasEmpty: true
+            };
+          }
+
           data = JSON.parse(content);
         } catch (parseError) {
-          throw new Error(`Failed to parse data file: ${parseError.message}`);
+          console.error('Failed to parse GitHub data file:', parseError.message);
+          // Return the SHA so we can overwrite the corrupted file
+          throw new Error(`Failed to parse data file: ${parseError.message}. SHA: ${fileData.sha}`);
         }
 
         return {
@@ -241,36 +278,59 @@ export class GitHubAPI {
     }
   }
 
-  async updateData(fileName = 'data.json', data, commitMessage = 'Update data', providedSha = null) {
+  async updateData(fileName = 'data.json', data, commitMessage = 'Update data', providedSha = null, forceOverwrite = false) {
     try {
-      console.log(`GitHub API: Attempting to update ${fileName} in ${this.owner}/${this.repo}`);
-      
+      console.log(`GitHub API: Attempting to ${forceOverwrite ? 'force overwrite' : 'update'} ${fileName} in ${this.owner}/${this.repo}`);
+
       const result = await this.withRetry(async () => {
         // Use provided SHA or fetch the current one
         let sha = providedSha;
-        
-        // Always fetch the latest SHA to avoid conflicts
-        try {
-          const currentFileResponse = await this.fetchWithTimeout(`${GITHUB_API_BASE}/repos/${this.owner}/${this.repo}/contents/${fileName}`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${this.token}`,
-              'Accept': 'application/vnd.github.v3+json',
-              'X-GitHub-Api-Version': '2022-11-28'
-            }
-          });
 
-          if (currentFileResponse.ok) {
-            const currentFile = await currentFileResponse.json();
-            sha = currentFile.sha; // Always use the latest SHA
-            console.log(`GitHub API: Found existing file with SHA: ${sha}`);
+        // Always fetch the latest SHA to avoid conflicts (unless force overwrite)
+        if (!forceOverwrite) {
+          try {
+            const currentFileResponse = await this.fetchWithTimeout(`${GITHUB_API_BASE}/repos/${this.owner}/${this.repo}/contents/${fileName}`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${this.token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'X-GitHub-Api-Version': '2022-11-28'
+              }
+            });
+
+            if (currentFileResponse.ok) {
+              const currentFile = await currentFileResponse.json();
+              sha = currentFile.sha; // Always use the latest SHA
+              console.log(`GitHub API: Found existing file with SHA: ${sha}`);
+            }
+          } catch (error) {
+            if (error.status !== 404) {
+              throw error; // Re-throw non-404 errors
+            }
+            console.log(`GitHub API: File doesn't exist yet, creating new file`);
+            sha = null;
           }
-        } catch (error) {
-          if (error.status !== 404) {
-            throw error; // Re-throw non-404 errors
+        } else {
+          // For force overwrite, fetch SHA but don't fail if content is bad
+          try {
+            const currentFileResponse = await this.fetchWithTimeout(`${GITHUB_API_BASE}/repos/${this.owner}/${this.repo}/contents/${fileName}`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${this.token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'X-GitHub-Api-Version': '2022-11-28'
+              }
+            });
+
+            if (currentFileResponse.ok) {
+              const currentFile = await currentFileResponse.json();
+              sha = currentFile.sha;
+              console.log(`GitHub API: Force overwrite - using SHA: ${sha}`);
+            }
+          } catch (error) {
+            console.log(`GitHub API: Force overwrite - could not fetch SHA, will create new file`);
+            sha = null;
           }
-          console.log(`GitHub API: File doesn't exist yet, creating new file`);
-          sha = null;
         }
 
         // Validate data before encoding
@@ -456,7 +516,7 @@ export async function fetchGitHubData(owner, repo, token, fileName = 'data.json'
   return await api.fetchData(fileName);
 }
 
-export async function updateGitHubData(owner, repo, token, fileName = 'data.json', data, commitMessage, sha = null) {
+export async function updateGitHubData(owner, repo, token, fileName = 'data.json', data, commitMessage, sha = null, forceOverwrite = false) {
   const api = new GitHubAPI(owner, repo, token);
-  return await api.updateData(fileName, data, commitMessage, sha);
+  return await api.updateData(fileName, data, commitMessage, sha, forceOverwrite);
 }

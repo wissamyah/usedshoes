@@ -364,112 +364,200 @@ function dataReducer(state, action) {
 
       // Handle product changes if products array is being updated
       if (newContainerData.products && Array.isArray(newContainerData.products)) {
-        console.log('Container products are being updated, adjusting stock...');
+        console.log('Container products are being updated, checking for quantity changes...');
 
-        // First, revert all stock AND cost changes from the existing container
+        // Build a map of old product quantities for comparison
+        const oldQuantities = {};
         if (existingContainer.products && Array.isArray(existingContainer.products)) {
-          existingContainer.products.forEach(containerProduct => {
-            const productIndex = updatedProducts.findIndex(p => 
-              p.id == containerProduct.productId || 
-              p.id === parseInt(containerProduct.productId) || 
-              p.id === containerProduct.productId.toString()
-            );
-            
-            if (productIndex >= 0) {
-              const product = updatedProducts[productIndex];
-              // REVERT: Subtract the stock that was previously added when this container was created
-              const revertedStock = Math.max(0, product.currentStock - containerProduct.bagQuantity);
-              
-              console.log(`Reverting stock for product ${product.name}: ${product.currentStock} - ${containerProduct.bagQuantity} = ${revertedStock}`);
-              
-              // For cost calculation, we need to recalculate weighted average cost after removing the old container contribution
-              let revertedCostPerKg = product.costPerKg || product.costPerUnit || 0;
-              
-              // If we're reverting all stock from this container and it results in 0 stock, reset cost
-              if (revertedStock === 0) {
-                revertedCostPerKg = 0;
-                console.log(`Product ${product.name} stock reduced to 0, resetting cost to 0`);
-              } else if (product.currentStock > 0 && containerProduct.bagQuantity > 0) {
-                // Attempt to reverse the weighted average calculation
-                // This is complex, so we'll recalculate from scratch in the next step
-                console.log(`Product ${product.name} will need cost recalculation`);
-              }
-              
-              updatedProducts[productIndex] = {
-                ...product,
-                currentStock: revertedStock,
-                costPerKg: revertedCostPerKg,
-                costPerUnit: revertedCostPerKg
-              };
-            }
+          existingContainer.products.forEach(cp => {
+            oldQuantities[cp.productId] = cp.bagQuantity;
           });
         }
 
-        // Calculate allocated shipping and customs cost per bag
-        const totalBags = newContainerData.products.reduce((sum, p) => sum + p.bagQuantity, 0);
-        const shippingCost = parseFloat(newContainerData.shippingCost) || 0;
-        const customsCost = parseFloat(newContainerData.customsCost) || 0;
-        const allocatedCostPerBag = totalBags > 0 ? (shippingCost + customsCost) / totalBags : 0;
-        
-        console.log(`Container overhead allocation: $${shippingCost + customsCost} / ${totalBags} bags = $${allocatedCostPerBag}/bag`);
-        
-        // Then, apply the new stock and cost changes (add stock since container represents incoming stock)
-        newContainerData.products.forEach(containerProduct => {
-          const productIndex = updatedProducts.findIndex(p => 
-            p.id == containerProduct.productId || 
-            p.id === parseInt(containerProduct.productId) || 
-            p.id === containerProduct.productId.toString()
-          );
-          
-          if (productIndex >= 0) {
-            const product = updatedProducts[productIndex];
-            // ADD stock since container represents incoming shipment/stock
-            const newStock = product.currentStock + containerProduct.bagQuantity;
-            
-            console.log(`Adding incoming stock for product ${product.name}: ${product.currentStock} + ${containerProduct.bagQuantity} = ${newStock}`);
-            
-            // Calculate weighted average cost properly for updates
-            let newCostPerKg;
-            
-            if (product.currentStock === 0) {
-              // If current stock is 0, use the new cost directly including allocated costs
-              const totalCostPerBag = (containerProduct.costPerKg * containerProduct.bagWeight) + allocatedCostPerBag;
-              newCostPerKg = totalCostPerBag / containerProduct.bagWeight;
-              console.log(`Product ${product.name} has 0 stock, using new landed cost: ${newCostPerKg}`);
-            } else {
-              // Calculate weighted average cost including allocated costs
-              const bagWeight = containerProduct.bagWeight || product.bagWeight || 25;
-              const currentTotalKg = product.currentStock * bagWeight;
-              const newTotalKg = containerProduct.bagQuantity * bagWeight;
-              const totalKg = currentTotalKg + newTotalKg;
-              
-              if (totalKg === 0) {
-                const totalCostPerBag = (containerProduct.costPerKg * bagWeight) + allocatedCostPerBag;
-                newCostPerKg = totalCostPerBag / bagWeight;
-              } else {
-                const currentTotalValue = currentTotalKg * (product.costPerKg || product.costPerUnit || 0);
-                const newTotalValue = (newTotalKg * containerProduct.costPerKg) + (containerProduct.bagQuantity * allocatedCostPerBag);
-                const totalValue = currentTotalValue + newTotalValue;
-                newCostPerKg = totalValue / totalKg;
-              }
-              
-              console.log(`Product ${product.name} weighted average cost calculation:
-                Current: ${product.currentStock} bags × ${bagWeight}kg × $${product.costPerKg || product.costPerUnit || 0}/kg = $${currentTotalKg * (product.costPerKg || product.costPerUnit || 0)}
-                New: ${containerProduct.bagQuantity} bags × ${bagWeight}kg × $${containerProduct.costPerKg}/kg + allocated costs = $${(newTotalKg * containerProduct.costPerKg) + (containerProduct.bagQuantity * allocatedCostPerBag)}
-                Average Landed Cost: $${newCostPerKg}/kg`);
-            }
-            
-            updatedProducts[productIndex] = {
-              ...product,
-              currentStock: newStock,
-              costPerKg: newCostPerKg,
-              costPerUnit: newCostPerKg,
-              bagWeight: containerProduct.bagWeight // Update bag weight if different
-            };
-          } else {
-            console.error(`Product not found for container product: ${containerProduct.productId}`);
+        // Build a map of new product quantities
+        const newQuantities = {};
+        newContainerData.products.forEach(cp => {
+          newQuantities[cp.productId] = cp.bagQuantity;
+        });
+
+        // Identify products with quantity changes
+        const productsWithQuantityChanges = [];
+
+        // Check for changed quantities in existing products
+        Object.keys(oldQuantities).forEach(productId => {
+          const oldQty = oldQuantities[productId];
+          const newQty = newQuantities[productId];
+
+          if (newQty !== undefined && oldQty !== newQty) {
+            productsWithQuantityChanges.push({
+              productId,
+              oldQuantity: oldQty,
+              newQuantity: newQty,
+              quantityDelta: newQty - oldQty
+            });
+          } else if (newQty === undefined) {
+            // Product removed from container
+            productsWithQuantityChanges.push({
+              productId,
+              oldQuantity: oldQty,
+              newQuantity: 0,
+              quantityDelta: -oldQty
+            });
           }
         });
+
+        // Check for new products added to container
+        Object.keys(newQuantities).forEach(productId => {
+          if (oldQuantities[productId] === undefined) {
+            productsWithQuantityChanges.push({
+              productId,
+              oldQuantity: 0,
+              newQuantity: newQuantities[productId],
+              quantityDelta: newQuantities[productId]
+            });
+          }
+        });
+
+        if (productsWithQuantityChanges.length === 0) {
+          console.log('✅ No quantity changes detected - stock will be preserved');
+
+          // Even though quantities haven't changed, we might need to update costs if shipping/customs costs changed
+          // But we should NOT touch stock quantities at all
+          const totalBags = newContainerData.products.reduce((sum, p) => sum + p.bagQuantity, 0);
+          const shippingCost = parseFloat(newContainerData.shippingCost) || 0;
+          const customsCost = parseFloat(newContainerData.customsCost) || 0;
+          const oldShippingCost = parseFloat(existingContainer.shippingCost) || 0;
+          const oldCustomsCost = parseFloat(existingContainer.customsCost) || 0;
+
+          const costsChanged = (shippingCost !== oldShippingCost) || (customsCost !== oldCustomsCost);
+
+          if (costsChanged) {
+            console.log('⚠️ Shipping/customs costs changed - recalculating product costs');
+            // Recalculate costs but DO NOT touch stock
+            const allocatedCostPerBag = totalBags > 0 ? (shippingCost + customsCost) / totalBags : 0;
+            const oldAllocatedCostPerBag = totalBags > 0 ? (oldShippingCost + oldCustomsCost) / totalBags : 0;
+            const costDelta = allocatedCostPerBag - oldAllocatedCostPerBag;
+
+            newContainerData.products.forEach(containerProduct => {
+              const productIndex = updatedProducts.findIndex(p =>
+                p.id == containerProduct.productId ||
+                p.id === parseInt(containerProduct.productId) ||
+                p.id === containerProduct.productId.toString()
+              );
+
+              if (productIndex >= 0) {
+                const product = updatedProducts[productIndex];
+                const bagWeight = containerProduct.bagWeight || product.bagWeight || 25;
+
+                // Adjust cost by the delta in allocated costs, weighted by this container's contribution
+                const totalCurrentKg = product.currentStock * bagWeight;
+                const containerKg = containerProduct.bagQuantity * bagWeight;
+
+                if (totalCurrentKg > 0 && containerKg > 0) {
+                  const adjustmentWeight = containerKg / totalCurrentKg;
+                  const costAdjustmentPerKg = (costDelta / bagWeight) * adjustmentWeight;
+                  const newCostPerKg = (product.costPerKg || product.costPerUnit || 0) + costAdjustmentPerKg;
+
+                  console.log(`Adjusting cost for ${product.name} due to overhead change: ${costAdjustmentPerKg >= 0 ? '+' : ''}$${costAdjustmentPerKg.toFixed(4)}/kg`);
+
+                  updatedProducts[productIndex] = {
+                    ...product,
+                    costPerKg: newCostPerKg,
+                    costPerUnit: newCostPerKg
+                  };
+                }
+              }
+            });
+          }
+        } else {
+          console.log(`⚠️ Quantity changes detected for ${productsWithQuantityChanges.length} products - adjusting stock`);
+
+          // Only adjust stock for products with quantity changes
+          productsWithQuantityChanges.forEach(change => {
+            const productIndex = updatedProducts.findIndex(p =>
+              p.id == change.productId ||
+              p.id === parseInt(change.productId) ||
+              p.id === change.productId.toString()
+            );
+
+            if (productIndex >= 0) {
+              const product = updatedProducts[productIndex];
+              const newStock = product.currentStock + change.quantityDelta;
+
+              if (newStock < 0) {
+                console.error(`❌ Cannot update container: Would result in negative stock for ${product.name} (${newStock})`);
+                throw new Error(`Cannot update container: Would result in negative stock for ${product.name}`);
+              }
+
+              console.log(`Stock adjustment for ${product.name}: ${product.currentStock} + ${change.quantityDelta} = ${newStock}`);
+
+              updatedProducts[productIndex] = {
+                ...product,
+                currentStock: newStock
+              };
+            }
+          });
+
+          // Recalculate costs for ALL products in the container (not just those with qty changes)
+          const totalBags = newContainerData.products.reduce((sum, p) => sum + p.bagQuantity, 0);
+          const shippingCost = parseFloat(newContainerData.shippingCost) || 0;
+          const customsCost = parseFloat(newContainerData.customsCost) || 0;
+          const allocatedCostPerBag = totalBags > 0 ? (shippingCost + customsCost) / totalBags : 0;
+
+          console.log(`Container overhead allocation: $${shippingCost + customsCost} / ${totalBags} bags = $${allocatedCostPerBag}/bag`);
+
+          newContainerData.products.forEach(containerProduct => {
+            const productIndex = updatedProducts.findIndex(p =>
+              p.id == containerProduct.productId ||
+              p.id === parseInt(containerProduct.productId) ||
+              p.id === containerProduct.productId.toString()
+            );
+
+            if (productIndex >= 0) {
+              const product = updatedProducts[productIndex];
+              const bagWeight = containerProduct.bagWeight || product.bagWeight || 25;
+
+              // Recalculate weighted average cost
+              if (product.currentStock === 0) {
+                const totalCostPerBag = (containerProduct.costPerKg * bagWeight) + allocatedCostPerBag;
+                const newCostPerKg = totalCostPerBag / bagWeight;
+
+                updatedProducts[productIndex] = {
+                  ...product,
+                  costPerKg: newCostPerKg,
+                  costPerUnit: newCostPerKg,
+                  bagWeight: containerProduct.bagWeight
+                };
+              } else {
+                // Complex weighted average calculation when there's existing stock
+                const currentTotalKg = product.currentStock * bagWeight;
+                const change = productsWithQuantityChanges.find(c =>
+                  c.productId == containerProduct.productId ||
+                  c.productId === parseInt(containerProduct.productId) ||
+                  c.productId === containerProduct.productId.toString()
+                );
+
+                if (change && change.quantityDelta !== 0) {
+                  // Only recalculate if quantity changed for this product
+                  const deltaKg = change.quantityDelta * bagWeight;
+                  const currentValue = currentTotalKg * (product.costPerKg || product.costPerUnit || 0);
+                  const deltaValue = (deltaKg * containerProduct.costPerKg) + (Math.abs(change.quantityDelta) * allocatedCostPerBag * Math.sign(change.quantityDelta));
+                  const newTotalKg = currentTotalKg + deltaKg;
+                  const newCostPerKg = newTotalKg > 0 ? (currentValue + deltaValue) / newTotalKg : 0;
+
+                  console.log(`Cost recalculation for ${product.name}: new cost = $${newCostPerKg.toFixed(4)}/kg`);
+
+                  updatedProducts[productIndex] = {
+                    ...product,
+                    costPerKg: newCostPerKg,
+                    costPerUnit: newCostPerKg,
+                    bagWeight: containerProduct.bagWeight
+                  };
+                }
+              }
+            }
+          });
+        }
       }
 
       // Update the container

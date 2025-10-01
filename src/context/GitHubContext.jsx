@@ -250,6 +250,54 @@ export function GitHubProvider({ children }) {
     }
   };
 
+  // Force save data to GitHub (overwrites corrupted files)
+  const forceSaveData = async (data, commitMessage = 'Force overwrite data file') => {
+    if (!state.isConnected || !state.api) {
+      throw new Error('GitHub not configured');
+    }
+
+    setState(prev => ({ ...prev, syncStatus: 'syncing', error: null }));
+
+    try {
+      // Force overwrite - the API will handle fetching the SHA for us
+      const result = await state.api.updateData(
+        currentDataFile,
+        data,
+        `${commitMessage}\n\n🤖 Force overwrite with Claude Code`,
+        null, // No SHA needed initially
+        true // Force overwrite flag
+      );
+
+      if (result.success) {
+        const lastSync = new Date().toISOString();
+        setState(prev => ({
+          ...prev,
+          syncStatus: 'success',
+          lastSync,
+          error: null,
+        }));
+
+        localStorage.setItem('github_last_sync', lastSync);
+
+        // Update the SHA for this file after successful save
+        if (result.commit && result.commit.sha) {
+          setFileShas(prev => ({ ...prev, [currentDataFile]: result.commit.sha }));
+        }
+
+        return result;
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        syncStatus: 'error',
+        error: error.message,
+      }));
+      throw error;
+    }
+  };
+
   // Set data file
   const setDataFile = async (fileName) => {
     setCurrentDataFile(fileName);
@@ -342,12 +390,13 @@ export function GitHubProvider({ children }) {
     testConnection,
     fetchData,
     saveData,
+    forceSaveData,
     disconnect,
     onDisconnect,
     setDataFile,
     listDataFiles,
     createDataFile,
-    
+
     // Helper to clear sync status after a delay
     clearSyncStatus: () => {
       setTimeout(() => {
