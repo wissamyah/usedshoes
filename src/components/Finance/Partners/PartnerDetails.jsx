@@ -7,8 +7,9 @@ export default function PartnerDetails({ partner, onClose }) {
   const { withdrawals } = useData();
   
   // Get partner's withdrawal history
+  // Use loose equality to handle both string and number partner IDs
   const partnerWithdrawals = withdrawals
-    .filter(w => w.partnerId === partner.id)
+    .filter(w => w.partnerId == partner.id) // Note: == not ===
     .sort((a, b) => new Date(b.date) - new Date(a.date));
   
   const capitalAccount = partner.capitalAccount || {};

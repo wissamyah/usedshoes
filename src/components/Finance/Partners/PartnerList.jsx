@@ -28,7 +28,8 @@ export default function PartnerList() {
   };
   
   const handleDeletePartner = async (partner) => {
-    const partnerWithdrawals = withdrawals.filter(w => w.partnerId === partner.id);
+    // Use loose equality to handle both string and number partner IDs
+    const partnerWithdrawals = withdrawals.filter(w => w.partnerId == partner.id);
     
     if (partnerWithdrawals.length > 0) {
       showErrorMessage(
@@ -64,8 +65,9 @@ export default function PartnerList() {
     });
 
     const partnerWithdrawals = withdrawals.filter(w => {
-      const match = w.partnerId === partner.id;
-      console.log(`   - Comparing withdrawal partnerId "${w.partnerId}" === partner.id "${partner.id}": ${match}`);
+      // Use loose equality to handle both string and number IDs
+      const match = w.partnerId == partner.id; // Note: == not ===
+      console.log(`   - Comparing withdrawal partnerId "${w.partnerId}" == partner.id "${partner.id}": ${match}`);
       return match;
     });
     console.log(`📊 Partner ${partner.id} withdrawals found: ${partnerWithdrawals.length}`);

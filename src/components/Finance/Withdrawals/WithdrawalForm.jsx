@@ -49,9 +49,14 @@ export default function WithdrawalForm({ availableCash, onClose }) {
     setIsSubmitting(true);
     
     try {
-      const partner = partners.find(p => p.id === formData.partnerId);
+      // Convert partnerId to number to match partner ID type
+      const partnerIdNumber = parseInt(formData.partnerId);
+      const partner = partners.find(p => p.id === partnerIdNumber);
+
+      console.log(`💰 Creating withdrawal for partner ${partnerIdNumber} (${partner?.name})`);
+
       await addWithdrawal({
-        partnerId: formData.partnerId,
+        partnerId: partnerIdNumber,
         partnerName: partner?.name || 'Unknown',
         amount: parseFloat(formData.amount),
         type: formData.type,
