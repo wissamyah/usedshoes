@@ -55,12 +55,20 @@ export default function PartnerList() {
   };
   
   const calculatePartnerMetrics = (partner) => {
-    console.log(`📊 Calculating metrics for partner: ${partner.name} (${partner.id})`);
+    console.log(`📊 Calculating metrics for partner: ${partner.name} (ID: ${partner.id}, type: ${typeof partner.id})`);
     console.log(`📊 Total withdrawals in system: ${withdrawals?.length || 0}`);
-    console.log(`📊 All withdrawals:`, withdrawals);
 
-    const partnerWithdrawals = withdrawals.filter(w => w.partnerId === partner.id);
-    console.log(`📊 Partner ${partner.id} withdrawals:`, partnerWithdrawals);
+    // Log each withdrawal with details
+    withdrawals.forEach(w => {
+      console.log(`   - Withdrawal ${w.id}: partnerId="${w.partnerId}" (type: ${typeof w.partnerId}), amount=$${w.amount}`);
+    });
+
+    const partnerWithdrawals = withdrawals.filter(w => {
+      const match = w.partnerId === partner.id;
+      console.log(`   - Comparing withdrawal partnerId "${w.partnerId}" === partner.id "${partner.id}": ${match}`);
+      return match;
+    });
+    console.log(`📊 Partner ${partner.id} withdrawals found: ${partnerWithdrawals.length}`);
 
     const totalWithdrawn = partnerWithdrawals.reduce((sum, w) => sum + w.amount, 0);
     const lastWithdrawal = partnerWithdrawals.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
