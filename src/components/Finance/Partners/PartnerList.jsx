@@ -55,15 +55,23 @@ export default function PartnerList() {
   };
   
   const calculatePartnerMetrics = (partner) => {
+    console.log(`📊 Calculating metrics for partner: ${partner.name} (${partner.id})`);
+    console.log(`📊 Total withdrawals in system: ${withdrawals?.length || 0}`);
+    console.log(`📊 All withdrawals:`, withdrawals);
+
     const partnerWithdrawals = withdrawals.filter(w => w.partnerId === partner.id);
+    console.log(`📊 Partner ${partner.id} withdrawals:`, partnerWithdrawals);
+
     const totalWithdrawn = partnerWithdrawals.reduce((sum, w) => sum + w.amount, 0);
     const lastWithdrawal = partnerWithdrawals.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-    
+
     const capitalAccount = partner.capitalAccount || {};
-    const currentEquity = (capitalAccount.initialInvestment || 0) + 
-                         (capitalAccount.profitShare || 0) - 
+    const currentEquity = (capitalAccount.initialInvestment || 0) +
+                         (capitalAccount.profitShare || 0) -
                          totalWithdrawn;
-    
+
+    console.log(`📊 Partner ${partner.id} metrics: totalWithdrawn=${totalWithdrawn}, equity=${currentEquity}`);
+
     return {
       totalWithdrawn,
       lastWithdrawal,
