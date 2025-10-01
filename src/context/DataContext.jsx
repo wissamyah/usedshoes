@@ -1020,23 +1020,31 @@ function dataReducer(state, action) {
     
     case DATA_ACTIONS.DELETE_WITHDRAWAL: {
       const withdrawal = state.withdrawals.find(w => w.id === action.payload);
-      if (!withdrawal) return state;
-      
+      if (!withdrawal) {
+        console.warn(`⚠️ Withdrawal ${action.payload} not found for deletion`);
+        return state;
+      }
+
+      console.log(`🗑️ Deleting withdrawal ${withdrawal.id}: $${withdrawal.amount} for partner ${withdrawal.partnerId}`);
+
       // Revert partner's capital account
       const updatedPartners = state.partners.map(p => {
         if (p.id === withdrawal.partnerId) {
+          const oldTotal = p.capitalAccount.totalWithdrawn || 0;
+          const newTotal = Math.max(0, oldTotal - withdrawal.amount);
+          console.log(`💰 Reverting partner ${p.id} totalWithdrawn: $${oldTotal} → $${newTotal}`);
           return {
             ...p,
             capitalAccount: {
               ...p.capitalAccount,
-              totalWithdrawn: Math.max(0, (p.capitalAccount.totalWithdrawn || 0) - withdrawal.amount)
+              totalWithdrawn: newTotal
             }
           };
         }
         return p;
       });
-      
-      return {
+
+      const newState = {
         ...state,
         withdrawals: state.withdrawals.filter(w => w.id !== action.payload),
         partners: updatedPartners,
@@ -1046,6 +1054,9 @@ function dataReducer(state, action) {
         },
         unsavedChanges: true,
       };
+
+      console.log(`✅ Withdrawal ${withdrawal.id} removed from state. Remaining withdrawals: ${newState.withdrawals.length}`);
+      return newState;
     }
     
     // Cash Flow actions
@@ -1474,21 +1485,33 @@ export function DataProvider({ children }) {
       });
     },
     deleteWithdrawal: async (withdrawalId) => {
+      // Dispatch the deletion action
       dispatch({ type: DATA_ACTIONS.DELETE_WITHDRAWAL, payload: withdrawalId });
-      // Trigger immediate save after deletion
-      if (saveCallbackRef.current) {
-        try {
-          const result = await saveCallbackRef.current();
-          if (!result || !result.success) {
-            console.error('Withdrawal deletion save failed:', result?.error);
-            throw new Error(result?.error || 'Failed to save withdrawal deletion');
+
+      // Wait for the state to update before saving
+      // Use setTimeout to ensure the state has been updated
+      return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+          try {
+            if (saveCallbackRef.current) {
+              const result = await saveCallbackRef.current();
+
+              if (!result || !result.success) {
+                console.error('Withdrawal deletion save failed:', result?.error);
+                reject(new Error(result?.error || 'Failed to save withdrawal deletion'));
+                return;
+              }
+              console.log('✅ Withdrawal deleted and saved to GitHub');
+              resolve({ success: true });
+            } else {
+              reject(new Error('No save callback available'));
+            }
+          } catch (error) {
+            console.error('Withdrawal deletion save error:', error);
+            reject(error);
           }
-          console.log('Withdrawal deleted and saved successfully');
-        } catch (error) {
-          console.error('Withdrawal deletion save error:', error);
-          throw error;
-        }
-      }
+        }, 100); // Small delay to let state update
+      });
     },
     
     // Cash Flow operations
@@ -1545,21 +1568,33 @@ export function DataProvider({ children }) {
       }
     },
     deleteCashInjection: async (injectionId) => {
+      // Dispatch the deletion action
       dispatch({ type: DATA_ACTIONS.DELETE_CASH_INJECTION, payload: injectionId });
-      // Trigger immediate save after deletion
-      if (saveCallbackRef.current) {
-        try {
-          const result = await saveCallbackRef.current();
-          if (!result || !result.success) {
-            console.error('Cash injection deletion save failed:', result?.error);
-            throw new Error(result?.error || 'Failed to save cash injection deletion');
+
+      // Wait for the state to update before saving
+      // Use setTimeout to ensure the state has been updated
+      return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+          try {
+            if (saveCallbackRef.current) {
+              const result = await saveCallbackRef.current();
+
+              if (!result || !result.success) {
+                console.error('Cash injection deletion save failed:', result?.error);
+                reject(new Error(result?.error || 'Failed to save cash injection deletion'));
+                return;
+              }
+              console.log('✅ Cash injection deleted and saved to GitHub');
+              resolve({ success: true });
+            } else {
+              reject(new Error('No save callback available'));
+            }
+          } catch (error) {
+            console.error('Cash injection deletion save error:', error);
+            reject(error);
           }
-          console.log('Cash injection deleted and saved successfully');
-        } catch (error) {
-          console.error('Cash injection deletion save error:', error);
-          throw error;
-        }
-      }
+        }, 100); // Small delay to let state update
+      });
     },
     
     loadData: (data) => dispatch({ type: DATA_ACTIONS.LOAD_DATA, payload: data }),
