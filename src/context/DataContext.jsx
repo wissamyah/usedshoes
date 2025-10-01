@@ -124,7 +124,7 @@ function dataReducer(state, action) {
         unsavedChanges: false,
       };
 
-      console.log(`✅ Data loaded: ${newState.cashInjections?.length || 0} cash injections`);
+      console.log(`✅ Data loaded: ${newState.cashInjections?.length || 0} cash injections, ${newState.withdrawals?.length || 0} withdrawals`);
       return newState;
     
     case DATA_ACTIONS.ADD_CONTAINER: {
@@ -999,7 +999,7 @@ function dataReducer(state, action) {
         return p;
       });
       
-      return {
+      const newState = {
         ...state,
         withdrawals: [...state.withdrawals, withdrawal],
         partners: updatedPartners,
@@ -1013,6 +1013,9 @@ function dataReducer(state, action) {
         },
         unsavedChanges: true,
       };
+
+      console.log('✅ Withdrawal added:', withdrawal.id);
+      return newState;
     }
     
     case DATA_ACTIONS.DELETE_WITHDRAWAL: {
@@ -1442,17 +1445,49 @@ export function DataProvider({ children }) {
 
     // Withdrawal operations with immediate save
     addWithdrawal: async (withdrawalData) => {
+      // Dispatch the action to add to state
       dispatch({ type: DATA_ACTIONS.ADD_WITHDRAWAL, payload: withdrawalData });
-      // Trigger immediate save after addition
-      if (saveCallbackRef.current) {
-        await saveCallbackRef.current();
-      }
+
+      // Wait for the state to update before saving
+      // Use setTimeout to ensure the state has been updated
+      return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+          try {
+            if (saveCallbackRef.current) {
+              const result = await saveCallbackRef.current();
+
+              if (!result || !result.success) {
+                console.error('Withdrawal save failed:', result?.error);
+                reject(new Error(result?.error || 'Failed to save withdrawal'));
+                return;
+              }
+              console.log('✅ Withdrawal saved to GitHub');
+              resolve({ success: true });
+            } else {
+              reject(new Error('No save callback available'));
+            }
+          } catch (error) {
+            console.error('Withdrawal save error:', error);
+            reject(error);
+          }
+        }, 100); // Small delay to let state update
+      });
     },
     deleteWithdrawal: async (withdrawalId) => {
       dispatch({ type: DATA_ACTIONS.DELETE_WITHDRAWAL, payload: withdrawalId });
       // Trigger immediate save after deletion
       if (saveCallbackRef.current) {
-        await saveCallbackRef.current();
+        try {
+          const result = await saveCallbackRef.current();
+          if (!result || !result.success) {
+            console.error('Withdrawal deletion save failed:', result?.error);
+            throw new Error(result?.error || 'Failed to save withdrawal deletion');
+          }
+          console.log('Withdrawal deleted and saved successfully');
+        } catch (error) {
+          console.error('Withdrawal deletion save error:', error);
+          throw error;
+        }
       }
     },
     
