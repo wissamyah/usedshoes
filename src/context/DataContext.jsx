@@ -1188,7 +1188,8 @@ function dataReducer(state, action) {
         console.log(`📋 Available partners:`, state.partners.map(p => ({ id: p.id, type: typeof p.id, name: p.name })));
 
         updatedPartners = state.partners.map(partner => {
-          if (partner.id === cashInjection.partnerId) {
+          // Use loose equality to handle both string and number IDs
+          if (partner.id == cashInjection.partnerId) {
             const currentAdditionalContributions = partner.capitalAccount?.additionalContributions || 0;
             const newAdditionalContributions = currentAdditionalContributions + cashInjection.amount;
 
@@ -1253,8 +1254,10 @@ function dataReducer(state, action) {
       let updatedPartners = state.partners;
       if (injectionToDelete && injectionToDelete.type === 'Capital Contribution' && injectionToDelete.partnerId) {
         updatedPartners = state.partners.map(partner => {
-          if (partner.id === injectionToDelete.partnerId) {
+          // Use loose equality to handle both string and number IDs
+          if (partner.id == injectionToDelete.partnerId) {
             const currentAdditionalContributions = partner.capitalAccount?.additionalContributions || 0;
+            console.log(`🗑️ Reversing cash injection for partner ${partner.id} (${partner.name}): $${injectionToDelete.amount}`);
             return {
               ...partner,
               capitalAccount: {
