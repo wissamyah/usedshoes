@@ -90,10 +90,15 @@ export function sanitizeFinanceData(data) {
       id: partner.id || `P${Date.now()}`,
       capitalAccount: {
         initialInvestment: 0,
+        additionalContributions: 0,
         profitShare: 0,
         totalWithdrawn: 0,
         currentEquity: 0,
-        ...partner.capitalAccount
+        ...partner.capitalAccount,
+        // Ensure additionalContributions is always a number, not an array
+        additionalContributions: typeof partner.capitalAccount?.additionalContributions === 'number'
+          ? partner.capitalAccount.additionalContributions
+          : 0
       }
     })),
     withdrawals: (data.withdrawals || []).map(withdrawal => ({

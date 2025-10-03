@@ -14,8 +14,9 @@ export default function PartnerDetails({ partner, onClose }) {
   
   const capitalAccount = partner.capitalAccount || {};
   const totalWithdrawn = partnerWithdrawals.reduce((sum, w) => sum + w.amount, 0);
-  const currentEquity = (capitalAccount.initialInvestment || 0) + 
-                       (capitalAccount.profitShare || 0) - 
+  const currentEquity = (capitalAccount.initialInvestment || 0) +
+                       (capitalAccount.additionalContributions || 0) +
+                       (capitalAccount.profitShare || 0) -
                        totalWithdrawn;
   
   const formatCurrency = (amount) => {
@@ -51,6 +52,10 @@ export default function PartnerDetails({ partner, onClose }) {
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Initial Investment</span>
                 <span className="text-sm font-medium">{formatCurrency(capitalAccount.initialInvestment || 0)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Additional Contributions</span>
+                <span className="text-sm font-medium text-green-600">+{formatCurrency(capitalAccount.additionalContributions || 0)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Profit Share</span>

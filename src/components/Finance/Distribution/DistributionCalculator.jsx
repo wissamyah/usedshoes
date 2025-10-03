@@ -14,8 +14,9 @@ export default function DistributionCalculator({ availableCash, currentCashPosit
       const partnerWithdrawals = withdrawals.filter(w => w.partnerId === partner.id);
       const totalWithdrawn = partnerWithdrawals.reduce((sum, w) => sum + w.amount, 0);
       const capitalAccount = partner.capitalAccount || {};
-      const currentEquity = (capitalAccount.initialInvestment || 0) + 
-                           (capitalAccount.profitShare || 0) - 
+      const currentEquity = (capitalAccount.initialInvestment || 0) +
+                           (capitalAccount.additionalContributions || 0) +
+                           (capitalAccount.profitShare || 0) -
                            totalWithdrawn;
       
       return {

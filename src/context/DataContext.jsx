@@ -112,9 +112,27 @@ function dataReducer(state, action) {
         priceAdjustment: loadedMetadata.nextIds?.priceAdjustment || 1,
       };
 
+      // Ensure partners have additionalContributions field for backward compatibility
+      const sanitizedPartners = (action.payload.partners || []).map(partner => ({
+        ...partner,
+        capitalAccount: {
+          initialInvestment: 0,
+          additionalContributions: 0,
+          profitShare: 0,
+          totalWithdrawn: 0,
+          currentEquity: 0,
+          ...partner.capitalAccount,
+          // Ensure additionalContributions is always a number
+          additionalContributions: typeof partner.capitalAccount?.additionalContributions === 'number'
+            ? partner.capitalAccount.additionalContributions
+            : 0
+        }
+      }));
+
       const newState = {
         ...state,
         ...action.payload,
+        partners: sanitizedPartners,
         metadata: {
           ...loadedMetadata,
           nextIds: ensuredNextIds
@@ -896,7 +914,7 @@ function dataReducer(state, action) {
         id: `P${currentPartnerId}`,
         capitalAccount: {
           initialInvestment: initialInvestment,
-          additionalContributions: [],
+          additionalContributions: 0,
           totalWithdrawn: 0,
           profitShare: 0,
           currentEquity: initialInvestment
@@ -938,8 +956,9 @@ function dataReducer(state, action) {
               capitalAccount: {
                 ...currentCapitalAccount,
                 initialInvestment: newInitialInvestment,
-                currentEquity: (newInitialInvestment || 0) + 
-                              (currentCapitalAccount.profitShare || 0) - 
+                currentEquity: (newInitialInvestment || 0) +
+                              (currentCapitalAccount.additionalContributions || 0) +
+                              (currentCapitalAccount.profitShare || 0) -
                               (currentCapitalAccount.totalWithdrawn || 0)
               }
             };
@@ -1162,17 +1181,17 @@ function dataReducer(state, action) {
         createdAt: new Date().toISOString()
       };
 
-      // If it's a capital contribution, update partner equity
+      // If it's a capital contribution, update partner's additional contributions
       let updatedPartners = state.partners;
       if (cashInjection.type === 'Capital Contribution' && cashInjection.partnerId) {
         updatedPartners = state.partners.map(partner => {
           if (partner.id === cashInjection.partnerId) {
+            const currentAdditionalContributions = partner.capitalAccount?.additionalContributions || 0;
             return {
               ...partner,
               capitalAccount: {
                 ...partner.capitalAccount,
-                initialInvestment: (partner.capitalAccount?.initialInvestment || 0) + cashInjection.amount,
-                currentEquity: (partner.capitalAccount?.currentEquity || 0) + cashInjection.amount
+                additionalContributions: currentAdditionalContributions + cashInjection.amount
               }
             };
           }
@@ -1215,25 +1234,25 @@ function dataReducer(state, action) {
     
     case DATA_ACTIONS.DELETE_CASH_INJECTION: {
       const injectionToDelete = state.cashInjections.find(ci => ci.id === action.payload);
-      
-      // If it was a capital contribution, reverse the partner equity update
+
+      // If it was a capital contribution, reverse the partner's additional contributions
       let updatedPartners = state.partners;
       if (injectionToDelete && injectionToDelete.type === 'Capital Contribution' && injectionToDelete.partnerId) {
         updatedPartners = state.partners.map(partner => {
           if (partner.id === injectionToDelete.partnerId) {
+            const currentAdditionalContributions = partner.capitalAccount?.additionalContributions || 0;
             return {
               ...partner,
               capitalAccount: {
                 ...partner.capitalAccount,
-                initialInvestment: (partner.capitalAccount?.initialInvestment || 0) - injectionToDelete.amount,
-                currentEquity: (partner.capitalAccount?.currentEquity || 0) - injectionToDelete.amount
+                additionalContributions: Math.max(0, currentAdditionalContributions - injectionToDelete.amount)
               }
             };
           }
           return partner;
         });
       }
-      
+
       return {
         ...state,
         cashInjections: state.cashInjections.filter(ci => ci.id !== action.payload),

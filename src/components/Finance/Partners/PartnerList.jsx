@@ -77,6 +77,7 @@ export default function PartnerList() {
 
     const capitalAccount = partner.capitalAccount || {};
     const currentEquity = (capitalAccount.initialInvestment || 0) +
+                         (capitalAccount.additionalContributions || 0) +
                          (capitalAccount.profitShare || 0) -
                          totalWithdrawn;
 
