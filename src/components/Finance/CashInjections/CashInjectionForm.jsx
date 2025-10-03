@@ -113,6 +113,14 @@ export default function CashInjectionForm({ injection, onClose }) {
         notes: formData.notes.trim()
       };
 
+      console.log('💵 Submitting cash injection:', {
+        type: injectionData.type,
+        amount: injectionData.amount,
+        partnerId: injectionData.partnerId,
+        partnerIdType: typeof injectionData.partnerId,
+        date: injectionData.date
+      });
+
       if (injection) {
         await updateCashInjection(injection.id, injectionData);
         showSuccessMessage('Cash Injection Updated', 'Cash injection has been updated successfully');

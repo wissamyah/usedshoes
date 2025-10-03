@@ -113,21 +113,21 @@ function dataReducer(state, action) {
       };
 
       // Ensure partners have additionalContributions field for backward compatibility
-      const sanitizedPartners = (action.payload.partners || []).map(partner => ({
-        ...partner,
-        capitalAccount: {
-          initialInvestment: 0,
-          additionalContributions: 0,
-          profitShare: 0,
-          totalWithdrawn: 0,
-          currentEquity: 0,
-          ...partner.capitalAccount,
-          // Ensure additionalContributions is always a number
-          additionalContributions: typeof partner.capitalAccount?.additionalContributions === 'number'
-            ? partner.capitalAccount.additionalContributions
-            : 0
-        }
-      }));
+      const sanitizedPartners = (action.payload.partners || []).map(partner => {
+        const existingCapitalAccount = partner.capitalAccount || {};
+        return {
+          ...partner,
+          capitalAccount: {
+            initialInvestment: existingCapitalAccount.initialInvestment || 0,
+            additionalContributions: typeof existingCapitalAccount.additionalContributions === 'number'
+              ? existingCapitalAccount.additionalContributions
+              : 0,
+            profitShare: existingCapitalAccount.profitShare || 0,
+            totalWithdrawn: existingCapitalAccount.totalWithdrawn || 0,
+            currentEquity: existingCapitalAccount.currentEquity || 0
+          }
+        };
+      });
 
       const newState = {
         ...state,
@@ -1184,18 +1184,32 @@ function dataReducer(state, action) {
       // If it's a capital contribution, update partner's additional contributions
       let updatedPartners = state.partners;
       if (cashInjection.type === 'Capital Contribution' && cashInjection.partnerId) {
+        console.log(`💰 Cash injection: type="${cashInjection.type}", partnerId="${cashInjection.partnerId}" (${typeof cashInjection.partnerId}), amount=$${cashInjection.amount}`);
+        console.log(`📋 Available partners:`, state.partners.map(p => ({ id: p.id, type: typeof p.id, name: p.name })));
+
         updatedPartners = state.partners.map(partner => {
           if (partner.id === cashInjection.partnerId) {
             const currentAdditionalContributions = partner.capitalAccount?.additionalContributions || 0;
+            const newAdditionalContributions = currentAdditionalContributions + cashInjection.amount;
+
+            console.log(`✅ MATCH FOUND! Updating partner ${partner.id} (${partner.name})`);
+            console.log(`   - Old additionalContributions: $${currentAdditionalContributions}`);
+            console.log(`   - New additionalContributions: $${newAdditionalContributions}`);
+
             return {
               ...partner,
               capitalAccount: {
                 ...partner.capitalAccount,
-                additionalContributions: currentAdditionalContributions + cashInjection.amount
+                additionalContributions: newAdditionalContributions
               }
             };
           }
           return partner;
+        });
+      } else {
+        console.log(`ℹ️ Cash injection is not a Capital Contribution or has no partnerId:`, {
+          type: cashInjection.type,
+          partnerId: cashInjection.partnerId
         });
       }
 

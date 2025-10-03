@@ -27,7 +27,9 @@
       "Bash(cp:*)",
       "Bash(npm run lint)",
       "Bash(npm ci:*)",
-      "Bash(start https://github.com/wissamyah/usedshoes/actions)"
+      "Bash(start https://github.com/wissamyah/usedshoes/actions)",
+      "Bash(pkill:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []

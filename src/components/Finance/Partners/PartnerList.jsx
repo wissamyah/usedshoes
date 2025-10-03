@@ -57,20 +57,11 @@ export default function PartnerList() {
   
   const calculatePartnerMetrics = (partner) => {
     console.log(`📊 Calculating metrics for partner: ${partner.name} (ID: ${partner.id}, type: ${typeof partner.id})`);
-    console.log(`📊 Total withdrawals in system: ${withdrawals?.length || 0}`);
-
-    // Log each withdrawal with details
-    withdrawals.forEach(w => {
-      console.log(`   - Withdrawal ${w.id}: partnerId="${w.partnerId}" (type: ${typeof w.partnerId}), amount=$${w.amount}`);
-    });
 
     const partnerWithdrawals = withdrawals.filter(w => {
       // Use loose equality to handle both string and number IDs
-      const match = w.partnerId == partner.id; // Note: == not ===
-      console.log(`   - Comparing withdrawal partnerId "${w.partnerId}" == partner.id "${partner.id}": ${match}`);
-      return match;
+      return w.partnerId == partner.id; // Note: == not ===
     });
-    console.log(`📊 Partner ${partner.id} withdrawals found: ${partnerWithdrawals.length}`);
 
     const totalWithdrawn = partnerWithdrawals.reduce((sum, w) => sum + w.amount, 0);
     const lastWithdrawal = partnerWithdrawals.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
@@ -81,7 +72,12 @@ export default function PartnerList() {
                          (capitalAccount.profitShare || 0) -
                          totalWithdrawn;
 
-    console.log(`📊 Partner ${partner.id} metrics: totalWithdrawn=${totalWithdrawn}, equity=${currentEquity}`);
+    console.log(`📊 Partner ${partner.id} equity breakdown:
+      - Initial Investment: $${capitalAccount.initialInvestment || 0}
+      - Additional Contributions: $${capitalAccount.additionalContributions || 0}
+      - Profit Share: $${capitalAccount.profitShare || 0}
+      - Total Withdrawn: $${totalWithdrawn}
+      = Current Equity: $${currentEquity}`);
 
     return {
       totalWithdrawn,
@@ -228,11 +224,21 @@ export default function PartnerList() {
                       </span>
                     </div>
 
+                    {/* Additional Contributions */}
+                    {(partner.capitalAccount?.additionalContributions || 0) > 0 && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm" style={{ color: '#b3b3b3' }}>Additional Contributions</span>
+                        <span className="text-sm font-medium text-green-600">
+                          +{formatCurrency(partner.capitalAccount?.additionalContributions || 0)}
+                        </span>
+                      </div>
+                    )}
+
                     {/* Total Withdrawn */}
                     <div className="flex justify-between items-center">
                       <span className="text-sm" style={{ color: '#b3b3b3' }}>Total Withdrawn</span>
-                      <span className="text-sm font-medium" style={{ color: '#ebebeb' }}>
-                        {formatCurrency(metrics.totalWithdrawn)}
+                      <span className="text-sm font-medium text-red-600">
+                        {metrics.totalWithdrawn > 0 ? '-' : ''}{formatCurrency(metrics.totalWithdrawn)}
                       </span>
                     </div>
 
